@@ -941,11 +941,11 @@
         </section>
       </div>
       <ol class="up-progress" id="upProgress"></ol>
-      ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the front cover, back cover and endpaper around them.</p></div>
-        <div class="media-grid pages">${(() => { let n = 0; return md.pages.map((m) => { const at = ++n; if (m.spread) n++; return mediaTile(m, m.spread ? `Pages ${at}–${at + 1}` : `Page ${at}`); }).join(''); })()}</div>` : ''}
-      ${md.photos.length ? `<div class="media-head"><h3>Photos <span class="count soft">${md.photos.length}</span></h3><p class="hint">${md.pages.length ? 'Shown in the photo gallery.' : 'Laid out in the album automatically and shown in the photo gallery.'}</p></div>
+      ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the front cover, back cover and endpaper around them. Drag a page, or use its arrows, to change the order.</p></div>
+        <div class="media-grid pages" data-sort="page">${pageLabels(md.pages.map((m) => !!m.spread)).map((l, i) => mediaTile(md.pages[i], l)).join('')}</div>` : ''}
+      ${md.photos.length ? `<div class="media-head"><h3>Photos <span class="count soft">${md.photos.length}</span></h3><p class="hint">${md.pages.length ? 'Shown in the photo gallery.' : 'Laid out in the album automatically and shown in the photo gallery.'} Drag a photo to change the order within its section.</p></div>
         ${groupBy(md.photos, (p) => p.section || 'Moments').map(([sec, list]) => `<h4 class="sec">${esc(sec)} <span class="hint">${list.length}</span></h4>
-          <div class="media-grid">${list.map((m) => mediaTile(m)).join('')}</div>`).join('')}` : ''}
+          <div class="media-grid" data-sort="photo">${list.map((m) => mediaTile(m)).join('')}</div>`).join('')}` : ''}
       ${!md.pages.length && !md.photos.length ? `<p class="hint empty-media">${a.built ? 'This album uses the photos built on your computer. Uploads here replace them.' : 'No photos yet. Upload photos or designed pages above.'}</p>` : ''}`;
 
     body.querySelectorAll('[data-drop]').forEach((zone) => {
@@ -956,7 +956,7 @@
     body.querySelectorAll('[data-pick]').forEach((input) => input.addEventListener('change', () => handleFiles(input.dataset.pick, [...input.files])));
     body.querySelectorAll('[data-del]').forEach((b) => b.addEventListener('click', async () => {
       if (!confirm('Remove this ' + (b.dataset.kind === 'page' ? 'page' : 'photo') + ' from the album?')) return;
-      try { await api(`albums/${encodeURIComponent(a.id)}/media/${encodeURIComponent(b.dataset.del)}`, { method: 'DELETE' }); b.closest('.media-tile').remove(); toast('Removed'); }
+      try { await api(`albums/${encodeURIComponent(a.id)}/media/${encodeURIComponent(b.dataset.del)}`, { method: 'DELETE' }); const g = b.closest('.media-grid'); b.closest('.media-tile').remove(); relabel(g); toast('Removed'); }
       catch (err) { toast(err.message); }
     }));
 
@@ -979,6 +979,32 @@
       catch (err) { toast(err.message); label.classList.remove('busy'); }
     });
     // one image = two pages, or just one
+    // order: drag tiles, or use the arrows; pages renumber at once and the order is saved
+    let saveTimer = null;
+    const saveOrder = (kind) => {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(async () => {
+        const ids = [...body.querySelectorAll(`[data-sort="${kind}"] .media-tile`)].map((t) => t.dataset.id);
+        try { await api(`albums/${encodeURIComponent(a.id)}/order`, { method: 'PUT', body: { kind, ids } }); toast(kind === 'page' ? 'Page order saved' : 'Photo order saved'); }
+        catch (err) { toast(err.message); }
+      }, 500);
+    };
+    const relabel = (grid) => {
+      if (grid.dataset.sort !== 'page') return;
+      const tiles = [...grid.querySelectorAll('.media-tile')];
+      pageLabels(tiles.map((t) => t.dataset.two === '1')).forEach((l, i) => { tiles[i].querySelector('figcaption').textContent = l; });
+    };
+    body.querySelectorAll('[data-sort]').forEach((grid) => makeSortable(grid, () => { relabel(grid); saveOrder(grid.dataset.sort); }));
+    body.querySelectorAll('[data-move]').forEach((b) => b.addEventListener('click', () => {
+      const tile = b.closest('.media-tile'), grid = tile.parentNode;
+      const back = +b.dataset.move < 0;
+      const other = back ? tile.previousElementSibling : tile.nextElementSibling;
+      if (!other) return;
+      grid.insertBefore(tile, back ? other : other.nextElementSibling);
+      b.focus();
+      tile.classList.remove('moved'); void tile.offsetWidth; tile.classList.add('moved');
+      relabel(grid); saveOrder(grid.dataset.sort);
+    }));
     body.querySelectorAll('[data-spread]').forEach((b) => b.addEventListener('click', async () => {
       const spread = b.dataset.spread === '1';
       b.disabled = true;
@@ -1083,9 +1109,93 @@
     // landscape images can be one page, or two pages designed as a single image
     const toggle = m.spread || m.width / m.height > 1.3
       ? `<button type="button" class="spread-toggle" data-spread="${m.spread ? '0' : '1'}" data-mid="${esc(m.id)}" title="${m.spread ? 'This image is shown across two pages' : 'Use this when the image holds two album pages side by side'}">${m.spread ? '<b>Two pages</b><span>Make it one page</span>' : '<b>One page</b><span>Split into two pages</span>'}</button>` : '';
-    return `<figure class="media-tile${m.spread ? ' spread' : ''}"><img src="${esc(m.thumb)}" alt="" loading="lazy">
+    const noun = m.kind === 'page' ? 'page' : 'photo';
+    return `<figure class="media-tile${m.spread ? ' spread' : ''}" data-id="${esc(m.id)}" data-two="${m.spread ? 1 : 0}"><img src="${esc(m.thumb)}" alt="" loading="lazy" draggable="false">
+      <div class="move" role="group" aria-label="Move this ${noun}">
+        <button type="button" class="mv" data-move="-1" title="Move earlier" aria-label="Move this ${noun} earlier"><svg><use href="#i-back"/></svg></button>
+        <span class="grip" title="Drag to move" aria-hidden="true"><svg viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/><circle cx="3" cy="8" r="1.4"/><circle cx="7" cy="8" r="1.4"/><circle cx="3" cy="13" r="1.4"/><circle cx="7" cy="13" r="1.4"/></svg></span>
+        <button type="button" class="mv next" data-move="1" title="Move later" aria-label="Move this ${noun} later"><svg><use href="#i-back"/></svg></button>
+      </div>
       <figcaption>${esc(label || m.name || '')}</figcaption>${toggle}
       <button type="button" class="icon-btn del" data-del="${esc(m.id)}" data-kind="${m.kind}" title="Remove"><svg><use href="#i-trash"/></svg></button></figure>`;
+  }
+  // "Page 1", "Pages 2–3" ... for a list of one-page / two-page flags
+  function pageLabels(twos) {
+    let n = 0;
+    return twos.map((two) => { const at = ++n; if (two) n++; return two ? `Pages ${at}–${at + 1}` : `Page ${at}`; });
+  }
+  // Drag tiles within a grid. Mouse: drag anywhere on the tile. Touch: drag the grip, so the page still scrolls.
+  function makeSortable(grid, onChange) {
+    let d = null;
+    const order = () => [...grid.children].map((t) => t.dataset.id).join(',');
+    grid.addEventListener('dragstart', (e) => e.preventDefault());
+    grid.addEventListener('pointerdown', (e) => {
+      const tile = e.target.closest('.media-tile');
+      if (!tile || e.button !== 0 || e.target.closest('button, a, input, label')) return;
+      if (e.pointerType !== 'mouse' && !e.target.closest('.grip')) return;
+      d = { tile, id: e.pointerId, x0: e.clientX, y0: e.clientY, x: e.clientX, y: e.clientY, started: false, order: order() };
+      addEventListener('pointermove', move, { passive: false });
+      addEventListener('pointerup', end);
+      addEventListener('pointercancel', end);
+    });
+    function start() {
+      const r = d.tile.getBoundingClientRect();
+      d.dx = d.x0 - r.left; d.dy = d.y0 - r.top;
+      d.ghost = d.tile.cloneNode(true);
+      d.ghost.classList.add('drag-ghost');
+      Object.assign(d.ghost.style, { width: r.width + 'px', height: r.height + 'px' });
+      document.body.appendChild(d.ghost);
+      d.tile.classList.add('drag-place');
+      document.body.classList.add('is-dragging');
+      d.started = true;
+      const tick = () => {   // scroll near the window edges, and keep placing while scrolling
+        if (!d || !d.started) return;
+        const edge = 70;
+        if (d.y < edge) scrollBy(0, -Math.ceil((edge - d.y) / 4));
+        else if (d.y > innerHeight - edge) scrollBy(0, Math.ceil((d.y - innerHeight + edge) / 4));
+        place();
+        d.raf = requestAnimationFrame(tick);
+      };
+      d.raf = requestAnimationFrame(tick);
+    }
+    function move(e) {
+      if (!d || e.pointerId !== d.id) return;
+      d.x = e.clientX; d.y = e.clientY;
+      if (!d.started) { if (Math.hypot(d.x - d.x0, d.y - d.y0) < 6) return; start(); }
+      e.preventDefault();
+      d.ghost.style.transform = `translate(${d.x - d.dx}px, ${d.y - d.dy}px) rotate(-1.5deg)`;
+    }
+    function place() {
+      const el = document.elementFromPoint(d.x, d.y);
+      const over = el && el.closest('.media-tile');
+      if (!over || over === d.tile || over.parentNode !== grid) return;
+      const r = over.getBoundingClientRect();
+      const ref = d.x > r.left + r.width / 2 ? over.nextElementSibling : over;
+      if (ref === d.tile || ref === d.tile.nextElementSibling) return;
+      // move the tile, then slide the others into their new places
+      const tiles = [...grid.children], before = new Map(tiles.map((t) => [t, t.getBoundingClientRect()]));
+      grid.insertBefore(d.tile, ref);
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      tiles.forEach((t) => {
+        if (t === d.tile) return;
+        const a = before.get(t), b = t.getBoundingClientRect();
+        if (a.left !== b.left || a.top !== b.top) t.animate([{ transform: `translate(${a.left - b.left}px, ${a.top - b.top}px)` }, { transform: 'none' }], { duration: 180, easing: 'ease-out' });
+      });
+    }
+    function end(e) {
+      if (!d || e.pointerId !== d.id) return;
+      removeEventListener('pointermove', move);
+      removeEventListener('pointerup', end);
+      removeEventListener('pointercancel', end);
+      if (d.started) {
+        cancelAnimationFrame(d.raf);
+        d.ghost.remove();
+        d.tile.classList.remove('drag-place');
+        document.body.classList.remove('is-dragging');
+        if (order() !== d.order) onChange();
+      }
+      d = null;
+    }
   }
   function groupBy(list, fn) {
     const m = new Map();

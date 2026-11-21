@@ -60,6 +60,7 @@ For very large albums you can also build on your computer: `node tools/build-alb
 | **Front cover, back cover, endpaper** | Details, Front cover, back cover and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
 | **Cover as one wide image** | Details, "Upload back + front cover as one image" (or a wide first page of a PDF) | Left half becomes the back cover, right half the front cover |
 | **Two pages in one image** | Photos and pages, each tile's "one page / two pages" button | Wide images are found automatically; the button fixes any that were guessed wrong |
+| **Page order** | Photos and pages: drag a page or photo, or use the arrows on it | Page numbers update at once (a two-page image counts as two); the order is saved automatically |
 
 ### Google Drive setup (once)
 
