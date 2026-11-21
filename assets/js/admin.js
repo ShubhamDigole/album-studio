@@ -1,4 +1,4 @@
-/* Admin: studio accounts, album shelf, new-album wizard, album details with the cover / end page / endpaper
+/* Admin: studio accounts, album shelf, new-album wizard, album details with the front cover / back cover / endpaper
    picker, uploads (photos, designed pages, PDF), blessings, the master's studio approvals and the studio profile. */
 (function () {
   'use strict';
@@ -16,7 +16,7 @@
     '<path d="M0 150 Q60 110 120 140 T240 128 T300 136 V200 H0Z" fill="#3B2440"/><path d="M0 172 Q90 140 170 166 T300 160 V200 H0Z" fill="#24162A"/>' +
     '<path d="M132 168 v-26 a6 6 0 0 1 12 0 v26 M150 168 v-30 a6 6 0 0 1 12 0 v30" fill="#140c18"/></svg>');
   const ACCENTS = ['#C8255F', '#EFA00B', '#D7263D', '#1B6CA8', '#5B8C2A', '#8E6BBF', '#E86A92'];
-  const PARTS = [['cover', 'Cover'], ['back', 'End page'], ['endpaper', 'Endpaper']];
+  const PARTS = [['cover', 'Front cover'], ['back', 'Back cover'], ['endpaper', 'Endpaper']];
   const PART_KIND = { cover: 'cover', back: 'back', endpaper: 'inside-front' };
 
   /* ---------- helpers ---------- */
@@ -138,9 +138,8 @@
     paintNav();
     $('#searchBox').hidden = !!parts[0];
     if (!parts[0]) return shelf();
-    if (parts[0] === 'new' && parts[1] === 'details') return wizardDetails();
-    if (parts[0] === 'new') return wizardCover(null);
-    if (parts[0] === 'add') return wizardCover(parts[1]);
+    if (parts[0] === 'new') return wizardDetails(null);
+    if (parts[0] === 'add') return wizardDetails(parts[1]);
     if (parts[0] === 'album') return albumPage(parts[1], parts[2] || 'details');
     if (parts[0] === 'studios' && state.user.isMaster) return studiosPage();
     if (parts[0] === 'studio') return studioPage();
@@ -171,7 +170,7 @@
     const intro = all.length
       ? `<b>${plural(all.length, 'album', 'albums')}</b> on ${state.user.isMaster ? 'all shelves' : 'your shelf'}, with <b>${plural(views30, 'view', 'views')}</b> in the last 30 days` +
         (pending ? ` and <span class="warn">${plural(pending, 'blessing', 'blessings')} waiting for you</span>.` : '.') + studioLine
-      : 'Your shelf is empty. Start an album and choose its cover first; the photos can come later.' + studioLine;
+      : 'Your shelf is empty. Start an album with its details and covers; the photos can come later.' + studioLine;
     const filters = all.length ? `<div class="filters" role="group" aria-label="Show">` +
       [['all', 'All albums'], ...types.map((t) => [t, typeLabel(t)]), ...(all.some((a) => a.status === 'draft') ? [['draft', 'Drafts']] : [])]
         .map(([k, l]) => `<button data-filter="${esc(k)}" aria-pressed="${state.filter === k}">${esc(l)}</button>`).join('') + '</div>' : '';
@@ -196,7 +195,7 @@
     const add = state.filter === 'all' && !q ? `
       <a class="shelf-item" href="#new">
         <div class="book new"><div class="board"><svg><use href="#i-plus"/></svg></div></div>
-        <h3>Start a new album</h3><p class="sub">Pick a cover design, then add the details</p>
+        <h3>Start a new album</h3><p class="sub">Add the details, then pick or upload the covers</p>
       </a>` : '';
     view.innerHTML = `<p class="intro">${intro}</p>${filters}<div class="shelf">${items}${ghosts}${add}</div>` +
       (!shown.length && all.length && q ? `<p class="hint">No album matches "${esc(state.q)}".</p>` : '');
@@ -250,59 +249,27 @@
     (part === 'cover' ? a.template : '') || (part !== 'cover' && a.designView && a.designView.cover && a.designView.cover.template) ||
     a.template || CT.defaultFor(a.type);
 
-  /* ---------- new album, step 1: cover ---------- */
+  /* ---------- new album: one page with the details, covers and endpaper ---------- */
   function blankDraft() {
     let studio = {};
     try { studio = JSON.parse(localStorage.getItem('albumviewer:studio') || '{}'); } catch (e) { /* ignore */ }
     return { id: '', type: 'wedding', names: ['', ''], title: '', date: '', location: '', studio, music: '', downloadUrl: '', accent: '',
-      template: '', designView: {}, status: 'draft', requireApproval: false, studioId: '' };
+      template: '', designView: {}, pending: {}, status: 'draft', requireApproval: false, studioId: '' };
   }
-  function wizardCover(presetId) {
+  function wizardDetails(presetId) {
     if (presetId) {
       const b = state.unregistered.find((x) => x.id === presetId) || { id: presetId };
-      state.draft = Object.assign(blankDraft(), { id: presetId, type: b.type || 'wedding', names: (b.names && b.names.length ? b.names : ['', '']).slice(),
-        date: b.date || '', location: b.location || '', template: b.template || '' });
-      state.draft.built = { pageWidth: b.pageWidth, pageHeight: b.pageHeight, cover: b.cover };
-      state.draft.idLocked = true;
-    } else if (!state.draft || state.draft.saved) state.draft = blankDraft();
-    const d = state.draft;
+      if (!state.draft || state.draft.id !== presetId || state.draft.saved) {
+        state.draft = Object.assign(blankDraft(), { id: presetId, type: b.type || 'wedding', names: (b.names && b.names.length ? b.names : ['', '']).slice(),
+          date: b.date || '', location: b.location || '', template: b.template || '' });
+        state.draft.built = { pageWidth: b.pageWidth, pageHeight: b.pageHeight, cover: b.cover };
+        state.draft.idLocked = true;
+      }
+    } else if (!state.draft || state.draft.saved || state.draft.idLocked) state.draft = blankDraft();
     view.innerHTML = `
-      <div class="crumbs"><a href="#"><svg class="i"><use href="#i-back"/></svg>All albums</a>
-        <div class="steps"><span class="on"><i>1</i>Choose a cover</span><span><i>2</i>Add the details</span></div></div>
-      <h1 class="page-title display">Start with the cover</h1>
-      <p class="lede">Pick the occasion and type the names to see them on every design. You can change it later, and upload your own cover or a PDF once the album exists.</p>
-      <div class="quick">
-        <label class="field type"><span>Occasion</span><select id="qType">${Object.entries(M.TYPES).map(([k, t]) => `<option value="${k}"${k === d.type ? ' selected' : ''}>${esc(t.label || 'Other')}</option>`).join('')}</select></label>
-        <label class="field"><span>Name</span><input id="qName1" maxlength="60" value="${esc(d.names[0] || '')}" placeholder="Aarav" /></label>
-        <label class="field"><span>And <em>optional</em></span><input id="qName2" maxlength="60" value="${esc(d.names[1] || '')}" placeholder="Ananya" /></label>
-      </div>
-      <div id="picker"></div>
-      <div class="wizard-actions"><a class="btn quiet" href="#">Cancel</a><a class="btn" href="#new/details">Continue to details</a></div>`;
-    const sample = () => Object.assign({}, d, { names: d.names.filter(Boolean) });
-    const pick = (key) => { d.template = key; d.designView = { cover: { template: key } }; };
-    const mount = () => {
-      // a fresh element so old click listeners go away
-      const host = $('#picker');
-      const fresh = host.cloneNode(false);
-      host.replaceWith(fresh);
-      mountPicker(fresh, { album: sample(), part: 'cover', getSelected: () => d.template || CT.defaultFor(d.type), onPick: pick });
-    };
-    mount();
-    let t;
-    ['#qType', '#qName1', '#qName2'].forEach((sel) => $(sel).addEventListener('input', () => {
-      d.type = $('#qType').value; d.names = [$('#qName1').value.trim(), $('#qName2').value.trim()];
-      clearTimeout(t); t = setTimeout(mount, 150);
-    }));
-  }
-
-  /* ---------- new album, step 2: details ---------- */
-  function wizardDetails() {
-    if (!state.draft) state.draft = blankDraft();
-    view.innerHTML = `
-      <div class="crumbs"><a href="#new"><svg class="i"><use href="#i-back"/></svg>Cover design</a>
-        <div class="steps"><span><i>1</i>Choose a cover</span><span class="on"><i>2</i>Add the details</span></div></div>
-      <h1 class="page-title display">The details</h1>
-      <p class="lede">Everything here shows on the cover, the end page and the top of the album. Only the album link is permanent.</p>
+      <div class="crumbs"><a href="#"><svg class="i"><use href="#i-back"/></svg>All albums</a></div>
+      <h1 class="page-title display">A new album</h1>
+      <p class="lede">Fill in the details, then choose a design for the front cover, back cover and endpaper, or upload your own from your computer. Everything except the album link can be changed later.</p>
       <div id="editorHost"></div>`;
     mountEditor($('#editorHost'), state.draft, { isNew: true });
   }
@@ -343,13 +310,13 @@
               <label class="field"><span>Date</span><input type="date" name="date" value="${esc(a.date || '')}" /></label>
               <label class="field"><span>Location</span><input name="location" maxlength="120" value="${esc(a.location || '')}" placeholder="Udaipur" /></label>
             </div></section>
-          <section class="sheet"><div><h2>Cover, end page and endpaper</h2><p class="why">Choose a design for each, or upload your own. Empty details show sample text until you fill them in.</p></div>
-            <div class="fields"><div class="parts" id="parts"></div>${isNew ? '<p class="hint">You can upload your own images once the album is created.</p>' : ''}</div></section>
+          <section class="sheet"><div><h2>Front cover, back cover and endpaper</h2><p class="why">Pick a design for each, or upload the studio's own custom design from your computer. Empty details show sample text until you fill them in.</p></div>
+            <div class="fields"><div class="parts" id="parts"></div>${isNew ? '<p class="hint">Uploaded images are saved with the album when you create it.</p>' : ''}</div></section>
           ${isNew ? `<section class="sheet"><div><h2>Album link</h2><p class="why">Guests open the album at this address. It cannot be changed later.</p></div>
             <div class="fields"><label class="field"><span>Link</span><input name="id" maxlength="64" value="${esc(a.id || '')}" ${a.idLocked ? 'readonly' : ''} /></label>
             <p class="hint" id="linkHint"></p></div></section>` : ''}
           ${studioSheet}
-          <section class="sheet"><div><h2>Photographer credit</h2><p class="why">Printed on the end page. Leave empty to use ${fallbackStudio ? `your studio profile (${esc(fallbackStudio)})` : 'the studio profile'}.</p></div>
+          <section class="sheet"><div><h2>Photographer credit</h2><p class="why">Printed on the back cover. Leave empty to use ${fallbackStudio ? `your studio profile (${esc(fallbackStudio)})` : 'the studio profile'}.</p></div>
             <div class="fields">
               <label class="field"><span>Studio name</span><input name="studioName" maxlength="100" value="${esc(st.name || '')}" placeholder="${esc(fallbackStudio)}" /></label>
               <div class="two">
@@ -457,11 +424,16 @@
       $('#parts').innerHTML = PARTS.map(([k, l]) => {
         const dv = (s.designView || {})[k] || {};
         const t = CT.list.find((x) => x.key === currentKey(s, k));
-        return `<button type="button" class="part" data-part="${k}">
-          <span class="part-img" style="--ratio:${ratioOf(s)}">${partSvg(s, PART_KIND[k])}</span>
+        return `<div class="part" data-part="${k}">
+          <button type="button" class="part-img" data-open="${k}" style="--ratio:${ratioOf(s)}" aria-label="Choose a design for the ${l.toLowerCase()}">${partSvg(s, PART_KIND[k])}</button>
           <span class="part-name">${l}</span>
-          <span class="part-sub">${dv.upload ? 'Your own image' : esc(t ? t.name : 'Design')}</span>
-          <span class="part-change">Change</span></button>`;
+          <span class="part-sub">${dv.upload ? 'Your own image' : 'Design: ' + esc(t ? t.name : '')}</span>
+          <div class="part-actions">
+            <button type="button" class="btn quiet sm" data-open="${k}"><svg><use href="#i-book"/></svg>Designs</button>
+            <label class="btn quiet sm upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace' : 'Upload'}<input type="file" accept="image/*" data-part-upload="${k}" hidden /></label>
+          </div>
+          ${dv.upload ? `<button type="button" class="link part-remove" data-part-remove="${k}">Remove, use a design</button>` : ''}
+        </div>`;
       }).join('');
     }
     function refresh() {
@@ -473,11 +445,26 @@
       if (isNew) Object.assign(state.draft, v, { names: v.names.length ? v.names : state.draft.names, studioId: v.studioId || '' });
       drawParts();
     }
-    $('#parts').addEventListener('click', (e) => {
-      const b = e.target.closest('.part'); if (!b) return;
-      openDesignModal(isNew ? state.draft : a, b.dataset.part, { isDraft: isNew, preview: shown, onChange: refresh });
+    $('#parts').addEventListener('click', async (e) => {
+      const rm = e.target.closest('[data-part-remove]');
+      if (rm) {
+        try { await setPartDesign(a, { part: rm.dataset.partRemove, removeUpload: true }, isNew); refresh(); toast('Your image was removed'); } catch (err) { toast(err.message); }
+        return;
+      }
+      const b = e.target.closest('[data-open]'); if (!b) return;
+      openDesignModal(a, b.dataset.open, { isDraft: isNew, preview: shown, onChange: refresh });
+    });
+    $('#parts').addEventListener('change', async (e) => {
+      const input = e.target;
+      if (!input.dataset.partUpload || !input.files || !input.files[0]) return;
+      const label = input.closest('label');
+      label.classList.add('busy');
+      const name = PARTS.find((x) => x[0] === input.dataset.partUpload)[1];
+      try { await uploadPart(a, input.dataset.partUpload, input.files[0], { isDraft: isNew }); refresh(); toast(name + (isNew ? ' added' : ' uploaded')); }
+      catch (err) { toast(err.message); label.classList.remove('busy'); }
     });
     form.addEventListener('input', (e) => {
+      if (e.target.type === 'file') return;   // handled on change; redrawing here would remove the input first
       if (e.target.name === 'id') idTouched = true;
       if (e.target.name === 'type') drawSwatches();
       refresh();
@@ -501,6 +488,11 @@
           for (const [k] of PARTS) { const t = state.draft.designView && state.draft.designView[k] && state.draft.designView[k].template; if (t) design[k] = { template: t }; }
           await api('albums', { method: 'POST', body: Object.assign({}, v, { template: state.draft.template || '', design }) });
           state.draft.saved = true;
+          if (Object.keys(state.draft.pending || {}).length) {
+            note.textContent = 'Uploading your images…';
+            try { await sendPending(Object.assign(state.draft, { id: v.id })); }
+            catch (err) { toast('The album was created, but an image did not upload: ' + err.message); location.hash = '#album/' + encodeURIComponent(v.id); return; }
+          }
           toast('Album created');
           location.hash = '#album/' + encodeURIComponent(v.id) + '/photos';
         } else {
@@ -523,39 +515,73 @@
     });
   }
 
-  /* ---------- the cover / end page / endpaper modal ---------- */
+  /* ---------- the front cover / back cover / endpaper modal ---------- */
   function closeModal() { const m = $('#modal'); if (m) { m.hidden = true; $('#modalCard').innerHTML = ''; document.body.classList.remove('modal-open'); } }
   $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
 
+  /* Your own image for a part (or a photo in a design's slot). For a new album that is not created yet,
+     the image is kept in the browser (a.pending) and shown from a blob URL, then uploaded by sendPending(). */
+  function postDesignFile(id, part, file, slot) {
+    const form = new FormData();
+    form.append('kind', 'design'); form.append('part', part);
+    if (slot !== undefined) form.append('slot', String(slot));
+    form.append('file', file, 'design.jpg');
+    return api('albums/' + encodeURIComponent(id) + '/upload', { method: 'POST', form });
+  }
+  function dropPending(a, part, wholeOnly) {
+    for (const [k, p] of Object.entries(a.pending || {})) {
+      if (p.part === part && (!wholeOnly || p.slot === undefined)) { URL.revokeObjectURL(p.url); delete a.pending[k]; }
+    }
+  }
+  async function uploadPart(a, part, file, { slot, isDraft } = {}) {
+    const img = await prepareImage(file, 3000, 0);
+    if (isDraft) {
+      a.pending = a.pending || {};
+      const k = part + (slot === undefined ? '' : ':' + slot);
+      if (a.pending[k]) URL.revokeObjectURL(a.pending[k].url);
+      const url = URL.createObjectURL(img.file);
+      a.pending[k] = { part, slot, file: img.file, url };
+      a.designView = Object.assign({}, a.designView);
+      const d = a.designView[part] = Object.assign({}, a.designView[part]);
+      if (slot === undefined) d.upload = url;
+      else { d.photos = (d.photos || []).slice(); d.photos[slot] = url; }
+      return;
+    }
+    await postDesignFile(a.id, part, img.file, slot);
+    const fresh = await api('albums/' + encodeURIComponent(a.id));
+    a.design = fresh.album.design; a.designView = fresh.designView;
+  }
+  async function sendPending(a) {
+    for (const [k, p] of Object.entries(a.pending || {})) {
+      await postDesignFile(a.id, p.part, p.file, p.slot);
+      URL.revokeObjectURL(p.url); delete a.pending[k];
+    }
+  }
+  // pick a design / remove your image / use an album photo / fill a slot
+  async function setPartDesign(a, body, isDraft) {
+    if (isDraft) {
+      a.designView = Object.assign({}, a.designView);
+      const d = Object.assign({}, a.designView[body.part]);
+      if (body.removeUpload || body.template) { dropPending(a, body.part, true); delete d.upload; }
+      if (body.template) { d.template = body.template; if (body.part === 'cover') a.template = body.template; }
+      a.designView[body.part] = d;
+      return;
+    }
+    const r = await api('albums/' + encodeURIComponent(a.id) + '/design', { method: 'PUT', body });
+    a.design = r.design; a.designView = r.designView;
+  }
+
   function openDesignModal(a, startPart, { isDraft, preview, onChange }) {
-    const card = $('#modalCard');
+    // a fresh card each time, so listeners from an earlier opening go away
+    const old = $('#modalCard'); const card = old.cloneNode(false); old.replaceWith(card);
     let part = startPart;
     $('#modal').hidden = false;
     document.body.classList.add('modal-open');
     function photosOfAlbum() { return (a.media && a.media.photos) || []; }
     function pagesOfAlbum() { return (a.media && a.media.pages) || []; }
-
-    async function saveDesign(body) {
-      if (isDraft) {
-        a.designView = Object.assign({}, a.designView);
-        a.designView[body.part] = Object.assign({}, a.designView[body.part], { template: body.template });
-        if (body.part === 'cover') a.template = body.template;
-        return;
-      }
-      const r = await api('albums/' + encodeURIComponent(a.id) + '/design', { method: 'PUT', body });
-      a.design = r.design; a.designView = r.designView;
-    }
-    async function uploadDesign(file, slot) {
-      const img = await prepareImage(file, 3000, 0);
-      const form = new FormData();
-      form.append('kind', 'design'); form.append('part', part);
-      if (slot !== undefined) form.append('slot', String(slot));
-      form.append('file', img.file, 'design.jpg');
-      await api('albums/' + encodeURIComponent(a.id) + '/upload', { method: 'POST', form });
-      const fresh = await api('albums/' + encodeURIComponent(a.id));
-      a.design = fresh.album.design; a.designView = fresh.designView;
-    }
+    const saveDesign = (body) => setPartDesign(a, body, isDraft);
+    const uploadDesign = (file, slot) => uploadPart(a, part, file, { slot, isDraft });
 
     function draw() {
       const p = preview ? Object.assign(preview(), { designView: a.designView, template: a.template }) : a;
@@ -563,33 +589,35 @@
       const key = currentKey(p, part);
       const t = CT.list.find((x) => x.key === key) || { slots: 0 };
       const slots = part === 'cover' && !dv.upload ? (t.slots || 0) : 0;
+      const hasMedia = photosOfAlbum().length || pagesOfAlbum().length;
+      const label = PARTS.find((x) => x[0] === part)[1];
       card.innerHTML = `
-        <div class="modal-head"><h2 class="display" id="modalTitle">Cover, end page and endpaper</h2>
+        <div class="modal-head"><h2 class="display" id="modalTitle">Front cover, back cover and endpaper</h2>
           <button class="icon-btn" type="button" data-close aria-label="Close"><svg><use href="#i-close"/></svg></button></div>
         <nav class="tabs modal-tabs">${PARTS.map(([k, l]) => `<button type="button" class="tab" data-part="${k}" ${k === part ? 'aria-current="page"' : ''}>${l}</button>`).join('')}</nav>
         <div class="modal-body">
           <div class="current">
             <div class="current-img" style="--ratio:${ratioOf(p)}">${partSvg(p, PART_KIND[part])}</div>
             <div class="current-info">
-              <h3>${dv.upload ? 'Your own image' : esc(t.name || 'Design')}</h3>
+              <h3>${dv.upload ? 'Your own ' + label.toLowerCase() : esc(t.name || 'Design')}</h3>
               <p class="hint">${dv.upload ? 'Shown exactly as uploaded. Pick a design below to go back to a design.' : esc(t.description || '')}</p>
-              ${isDraft ? '<p class="hint">Uploads become available once the album is created.</p>' : `
               <div class="own-actions">
-                <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace from computer' : 'Upload from computer'}
+                <label class="btn upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace with another image' : 'Upload your own ' + label.toLowerCase()}
                   <input type="file" accept="image/*" data-own hidden /></label>
-                ${photosOfAlbum().length || pagesOfAlbum().length ? '<button type="button" class="btn quiet" data-choose-part><svg><use href="#i-photos"/></svg>Choose from album photos</button>' : ''}
+                ${!isDraft && hasMedia ? '<button type="button" class="btn quiet" data-choose-part><svg><use href="#i-photos"/></svg>Choose from album photos</button>' : ''}
                 ${dv.upload ? '<button type="button" class="link" data-remove>Remove your image</button>' : ''}
               </div>
-              ${photosOfAlbum().length || pagesOfAlbum().length ? '' : '<p class="hint">Upload photos to the album to choose one of them here.</p>'}`}
+              <p class="hint">${dv.upload ? '' : 'A custom design made by the studio, from your computer. JPG or PNG, ideally the same shape as the album pages. '}${isDraft ? 'It is saved when you create the album.' : hasMedia ? '' : 'Once the album has photos you can also pick one of them.'}</p>
               ${slots ? `<div class="slots"><p class="slots-title">Photos in this design</p>${Array.from({ length: slots }, (_, i) => {
                 const src = (dv.photos || [])[i] || (i === 0 ? photoOf(p) : '');
                 return `<div class="slot"><span class="slot-img">${src ? `<img src="${esc(src)}" alt="">` : ''}</span>
-                  ${isDraft ? '' : `<label class="link">Upload<input type="file" accept="image/*" data-slot="${i}" hidden /></label>
-                  ${photosOfAlbum().length ? `<button type="button" class="link" data-choose="${i}">Choose from album</button>` : ''}`}</div>`;
+                  <label class="link">Upload<input type="file" accept="image/*" data-slot="${i}" hidden /></label>
+                  ${!isDraft && photosOfAlbum().length ? `<button type="button" class="link" data-choose="${i}">Choose from album</button>` : ''}</div>`;
               }).join('')}</div>` : ''}
             </div>
           </div>
           <div class="chooser" id="chooser" hidden></div>
+          <p class="slots-title picker-title">Or pick a design for the ${label.toLowerCase()}</p>
           <div id="modalPicker"></div>
         </div>`;
       mountPicker($('#modalPicker'), {
@@ -825,7 +853,7 @@
       <div class="uploader">
         <section class="up-card covers-card">
           <h3>Front and back cover</h3>
-          <p class="hint">Upload your own designed front cover and back cover from your computer. Without them the album uses the cover design from Details.</p>
+          <p class="hint">Upload your own designed front cover and back cover from your computer. You can also do this in Details, where you can pick a design instead.</p>
           <div class="cover-tiles">${coverTile('cover', 'Front cover')}${coverTile('back', 'Back cover')}</div>
         </section>
         <section class="up-card">
@@ -840,7 +868,7 @@
           <h3>Designed album pages</h3>
           <p class="hint">Already designed the album? Upload its pages as images, in order, or one PDF. They replace the automatic layout.</p>
           <label class="check"><input type="checkbox" id="upCover"${hasCover ? '' : ' checked'} /> Use the first page as the cover</label>
-          <label class="check"><input type="checkbox" id="upBack" /> Use the last page as the end page</label>
+          <label class="check"><input type="checkbox" id="upBack" /> Use the last page as the back cover</label>
           <label class="check"><input type="checkbox" id="upSpreads" /> The pages are two-page spreads <em class="hint">(found automatically for wide pages)</em></label>
           <label class="drop" data-drop="page"><svg><use href="#i-pdf"/></svg><span>Choose pages or a PDF</span><small>Images are sorted by file name. A PDF is turned into images in your browser.</small>
             <input type="file" accept="image/*,application/pdf" multiple hidden data-pick="page" /></label>
@@ -862,7 +890,7 @@
         </section>
       </div>
       <ol class="up-progress" id="upProgress"></ol>
-      ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the cover, end page and endpaper around them.</p></div>
+      ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the front cover, back cover and endpaper around them.</p></div>
         <div class="media-grid pages">${md.pages.map((m, i) => mediaTile(m, `Page ${i + 1}${m.spread ? ', spread' : ''}`)).join('')}</div>` : ''}
       ${md.photos.length ? `<div class="media-head"><h3>Photos <span class="count soft">${md.photos.length}</span></h3><p class="hint">${md.pages.length ? 'Shown in the photo gallery.' : 'Laid out in the album automatically and shown in the photo gallery.'}</p></div>
         ${groupBy(md.photos, (p) => p.section || 'Moments').map(([sec, list]) => `<h4 class="sec">${esc(sec)} <span class="hint">${list.length}</span></h4>
@@ -968,7 +996,7 @@
           form.append('file', img.file, 'image.jpg');
           set(li, 'Uploading');
           await api('albums/' + encodeURIComponent(a.id) + '/upload', { method: 'POST', form });
-          set(li, asCover ? 'Set as cover' : asBack ? 'Set as end page' : 'Done', 'done');
+          set(li, asCover ? 'Set as cover' : asBack ? 'Set as back cover' : 'Done', 'done');
         } catch (err) { failed++; set(li, err.message, 'error'); }
         done++;
       }
@@ -1067,7 +1095,7 @@
     try { s = (await api('studio')).studio; } catch (err) { toast(err.message); return; }
     view.innerHTML = `
       <h1 class="page-title display">${s ? esc(s.name) : 'Your account'}</h1>
-      <p class="lede">${s ? 'Your studio details are printed on the end page of every album that does not set its own.' : 'The master account has no studio profile.'}</p>
+      <p class="lede">${s ? 'Your studio details are printed on the back cover of every album that does not set its own.' : 'The master account has no studio profile.'}</p>
       ${s ? `<form class="sheet-form" id="studioForm">
         <section class="sheet"><div><h2>Studio profile</h2></div><div class="fields">
           <label class="field"><span>Studio name</span><input name="name" maxlength="80" value="${esc(s.name)}" required /></label>

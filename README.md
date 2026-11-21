@@ -3,7 +3,7 @@
 Online flipbook photo albums for weddings and every other occasion, run as one platform for many photo studios.
 
 - **Guests** turn real-feeling pages, zoom, browse the photo gallery, leave blessings and heart their favourite photos.
-- **Studios** sign up, get approved, and make albums: choose one of 31 cover designs, upload photos, designed pages or a PDF, or their own cover and end page.
+- **Studios** sign up, get approved, and make albums: choose one of 31 cover designs, upload photos, designed pages or a PDF, or their own custom front cover, back cover and endpaper.
 - **The master account** approves studios and sees everything.
 
 It runs on Cloudflare's free plan (Pages, Functions, D1, R2). The front end has no framework and no build step.
@@ -40,8 +40,8 @@ An older local database needs the files in `migrations/` run in order.
 
 ## Making an album (studio)
 
-1. **New album:** pick the occasion, type the names and choose a cover design.
-2. **Details:** the date, place, link and colour. On the same page you choose the **cover, end page and endpaper**. Each opens a picker with a design list filtered by occasion, an "upload your own" option, and photo spots for photo designs.
+1. **New album** opens the details page straight away: occasion, names, date, place, link and colour.
+2. On the same page, the **front cover, back cover and endpaper** each have two buttons: **Designs** opens a picker with designs filtered by occasion (and photo spots for photo designs), and **Upload** takes the studio's own custom design from the computer. Uploads chosen before the album exists are kept in the browser and saved when you press Create album.
 3. **Photos and pages:**
    - **Photos:** grouped by ceremony and laid out automatically.
    - **Designed pages:** images or **one PDF**, converted in the browser. They replace the automatic layout, and the first page can become the cover.
@@ -57,7 +57,7 @@ For very large albums you can also build on your computer: `node tools/build-alb
 | **PDF** | Photos and pages, Designed pages card | Turned into page images in the browser; the first page can become the cover |
 | **Google Drive** | Photos and pages, From Google Drive (shown once `GOOGLE_API_KEY` is set) | Paste a folder or file link shared as "Anyone with the link"; import as photos or as designed pages/PDF |
 | **Front and back cover** | Photos and pages, Front and back cover | Your own designed covers, uploaded from the computer |
-| **Cover and end page** | Details, Cover, end page and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
+| **Front cover, back cover, endpaper** | Details, Front cover, back cover and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
 
 ### Google Drive setup (once)
 

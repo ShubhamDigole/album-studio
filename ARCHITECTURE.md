@@ -67,12 +67,12 @@ favorites album_id, photo, visitor            views  album_id, day, count       
 → the master sees it under **Studios** → `PATCH /api/admin/master/studios/:id {status: active}` → the owner can sign in.
 
 ### 2. Making an album
-1. **New album:** pick the occasion, type the names, and choose a cover design. Every design previews the real names; empty details show sample text.
+1. **New album** goes straight to the details page (there is no separate cover step).
 2. **Details:** names, date, location, link, photographer credit, colour, music and download link, draft or published (`POST /api/admin/albums`).
-3. **Cover, end page and endpaper:** on the details page, each opens a picker with tabs. Choose a design per part (filtered by occasion), upload your own image from the computer, use one of the album's photos (`PUT …/design {useMedia}`), or put photos into a design's photo spots (`PUT /api/admin/albums/:id/design`, `POST …/upload kind=design`).
+3. **Front cover, back cover and endpaper** (stored as the parts `cover`, `back`, `endpaper`): on the details page each part has **Designs** and **Upload**. Every design previews the real names; empty details show sample text. For a new album, uploads are kept in the browser as blob URLs (`draft.pending`) and sent with `POST …/upload kind=design` right after the album is created. Designs opens a picker with tabs. Choose a design per part (filtered by occasion), upload your own image from the computer, use one of the album's photos (`PUT …/design {useMedia}`), or put photos into a design's photo spots (`PUT /api/admin/albums/:id/design`, `POST …/upload kind=design`).
 4. **Photos and pages**, any of:
    - **Photos:** dropped in the browser, resized to 2400 px with a 480 px thumbnail. Re-encoding removes EXIF and GPS. Upload goes to R2 (`kind=photo`, with a ceremony section). The album lays them out automatically: a title page, a divider per ceremony, landscape photos full-page, portraits in pairs, then a thank-you page.
-   - **Designed pages:** images in file-name order, or **a PDF** that pdf.js turns into images in the browser (`kind=page`). Wide pages become two-page spreads. You can use the first page as the cover and the last as the end page.
+   - **Designed pages:** images in file-name order, or **a PDF** that pdf.js turns into images in the browser (`kind=page`). Wide pages become two-page spreads. You can use the first page as the front cover and the last as the back cover.
    - **Google Drive:** paste a folder or file link shared as "Anyone with the link". The browser lists and downloads the files through the Drive API (v3, using the `GOOGLE_API_KEY` browser key from `GET /api/admin/config`), then resizes and uploads them exactly like files from the computer.
    - **Local build (optional, larger albums):** `node tools/build-album.mjs <id>` reads `originals/<id>/` and writes `dist/albums/<id>/`. The photographer's own `cover.jpg`, `back.jpg`, `inside-*.jpg` and `spreads/` are used when present.
 5. **Publish:** guests open `/a/<id>` (the flipbook) or `/g/<id>` (the gallery).
