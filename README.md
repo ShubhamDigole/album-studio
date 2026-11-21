@@ -9,13 +9,19 @@ Online flipbook photo albums for weddings and every other occasion, run as one p
 It runs on Cloudflare's free plan (Pages, Functions, D1, R2). The front end has no framework and no build step.
 See **[ARCHITECTURE.md](ARCHITECTURE.md)** for the tech stack, data model, flows and API, and `PLAN.md` for the original plan.
 
-## Run it locally
+## Run it locally (no Cloudflare needed)
 
 ```bash
 npm install
-npx wrangler d1 execute album_db --local --file=schema.sql   # a fresh local database
-npm run dev                                                   # http://127.0.0.1:8788
+npm run local          # http://localhost:8080/admin
 ```
+
+Everything is kept in the local `data/` folder, which is git-ignored:
+- `data/album.sqlite`: albums, studios, blessings and so on;
+- `data/media/`: uploaded photos, PDF pages and covers.
+
+The same backend code later runs on Cloudflare, with D1 and R2 in place of this folder.
+To use Cloudflare's local emulation instead, run `npm run dev` (wrangler, http://127.0.0.1:8788).
 
 Create `.dev.vars` (git-ignored):
 ```
@@ -49,7 +55,8 @@ For very large albums you can also build on your computer: `node tools/build-alb
 |---|---|---|
 | **Computer** | Photos and pages, Photos card | Drop files or choose them; grouped by ceremony |
 | **PDF** | Photos and pages, Designed pages card | Turned into page images in the browser; the first page can become the cover |
-| **Google Drive** | Photos and pages, From Google Drive | Paste a folder or file link shared as "Anyone with the link"; import as photos or as designed pages/PDF |
+| **Google Drive** | Photos and pages, From Google Drive (shown once `GOOGLE_API_KEY` is set) | Paste a folder or file link shared as "Anyone with the link"; import as photos or as designed pages/PDF |
+| **Front and back cover** | Photos and pages, Front and back cover | Your own designed covers, uploaded from the computer |
 | **Cover and end page** | Details, Cover, end page and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
 
 ### Google Drive setup (once)

@@ -6,7 +6,8 @@
     "build:album": "node tools/build-album.mjs",
     "build:site": "node tools/build-site.mjs",
     "db:local": "wrangler d1 execute album_db --local --file=schema.sql",
-    "dev": "node tools/build-site.mjs && wrangler pages dev dist --port 8788"
+    "dev": "node tools/build-site.mjs && wrangler pages dev dist --port 8788",
+    "local": "node tools/build-site.mjs && node server/local.mjs"
   },
   "dependencies": {
     "sharp": "0.35.5",

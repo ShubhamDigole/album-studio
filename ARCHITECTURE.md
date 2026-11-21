@@ -121,13 +121,17 @@ Static build output under `/albums/<id>/` is served by Pages with long cache hea
 
 ## Local development
 
-```
-npm install
-npx wrangler d1 execute album_db --local --file=schema.sql     # fresh database
-npm run dev                                                     # http://127.0.0.1:8788  (admin: /admin)
-```
-`.dev.vars` (git-ignored): `ALBUM_SECRET`, `ADMIN_PASSWORD`, `MASTER_EMAIL`, optional `ALBUM_PASSWORD` and `GOOGLE_API_KEY`.
-R2 and D1 are emulated locally by wrangler.
+There are two ways to run it on your computer. Both read `.dev.vars` (git-ignored): `ALBUM_SECRET`, `ADMIN_PASSWORD`, `MASTER_EMAIL`, and optionally `ALBUM_PASSWORD` and `GOOGLE_API_KEY`.
+
+| | `npm run local` (default for now) | `npm run dev` |
+|---|---|---|
+| Server | `server/local.mjs`, plain Node 24 | wrangler pages dev (workerd) |
+| Database | `data/album.sqlite` (Node's built-in SQLite, behind a D1-style wrapper) | D1 emulated in `.wrangler/` |
+| Files | `data/media/` (behind an R2-style wrapper) | R2 emulated in `.wrangler/` |
+| URL | http://localhost:8080 | http://127.0.0.1:8788 |
+| Needs | Node only | wrangler and workerd |
+
+`server/local.mjs` loads the same `functions/` files with Cloudflare Pages routing rules: `[param]` and `[[catchall]]` segments, `_middleware.js` chains, `onRequestGet` and so on. It serves `dist/` with pretty URLs and applies `schema.sql` on start, so the code that runs locally is the code that will run on Cloudflare.
 
 ## Deploying to Cloudflare
 

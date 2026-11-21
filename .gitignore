@@ -7,3 +7,4 @@ node_modules/
 .wrangler/
 *.log
 build/
+data/

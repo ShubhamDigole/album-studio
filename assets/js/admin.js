@@ -810,8 +810,24 @@
     const md = a.media;
     const sections = [...new Set(md.photos.map((p) => p.section).filter(Boolean))];
     const hasCover = !!((a.designView || {}).cover || {}).upload;
+    const dvAll = a.designView || {};
+    const coverTile = (part, label) => {
+      const own = (dvAll[part] || {}).upload;
+      return `<div class="cover-tile">
+        <span class="cover-img" style="--ratio:${ratioOf(a)}">${partSvg(a, PART_KIND[part])}</span>
+        <div class="cover-meta"><b>${label}</b><span class="hint">${own ? 'Your own image' : 'Design: ' + esc((CT.list.find((t) => t.key === currentKey(a, part)) || {}).name || '')}</span>
+          <div class="own-actions">
+            <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>${own ? 'Replace' : 'Upload ' + label.toLowerCase()}<input type="file" accept="image/*" data-cover="${part}" hidden /></label>
+            ${own ? `<button type="button" class="link" data-cover-remove="${part}">Remove</button>` : ''}
+          </div></div></div>`;
+    };
     body.innerHTML = `
       <div class="uploader">
+        <section class="up-card covers-card">
+          <h3>Front and back cover</h3>
+          <p class="hint">Upload your own designed front cover and back cover from your computer. Without them the album uses the cover design from Details.</p>
+          <div class="cover-tiles">${coverTile('cover', 'Front cover')}${coverTile('back', 'Back cover')}</div>
+        </section>
         <section class="up-card">
           <h3>Photos</h3>
           <p class="hint">For the photo gallery and the automatic album layout. Upload one ceremony at a time.</p>
@@ -829,7 +845,7 @@
           <label class="drop" data-drop="page"><svg><use href="#i-pdf"/></svg><span>Choose pages or a PDF</span><small>Images are sorted by file name. A PDF is turned into images in your browser.</small>
             <input type="file" accept="image/*,application/pdf" multiple hidden data-pick="page" /></label>
         </section>
-        <section class="up-card drive-card">
+        <section class="up-card drive-card" hidden>
           <div class="drive-text">
             <h3><svg class="drive-logo"><use href="#i-drive"/></svg>From Google Drive</h3>
             <p class="hint">Paste the link of a Drive folder or file that is shared as "Anyone with the link". Photos use the section above; pages and PDFs use the options above.</p>
@@ -864,6 +880,32 @@
       try { await api(`albums/${encodeURIComponent(a.id)}/media/${encodeURIComponent(b.dataset.del)}`, { method: 'DELETE' }); b.closest('.media-tile').remove(); toast('Removed'); }
       catch (err) { toast(err.message); }
     }));
+
+    // front / back cover from the computer
+    body.querySelectorAll('[data-cover]').forEach((input) => input.addEventListener('change', async () => {
+      const f = input.files[0]; if (!f) return;
+      const label = input.closest('label');
+      label.classList.add('busy');
+      try {
+        const img = await prepareImage(f, 3000, 0);
+        const form = new FormData();
+        form.append('kind', 'design'); form.append('part', input.dataset.cover);
+        form.append('file', img.file, 'cover.jpg');
+        await api('albums/' + encodeURIComponent(a.id) + '/upload', { method: 'POST', form });
+        toast(input.dataset.cover === 'cover' ? 'Front cover uploaded' : 'Back cover uploaded');
+        albumPage(a.id, 'photos');
+      } catch (err) { toast(err.message); label.classList.remove('busy'); }
+    }));
+    body.querySelectorAll('[data-cover-remove]').forEach((b) => b.addEventListener('click', async () => {
+      try { await api('albums/' + encodeURIComponent(a.id) + '/design', { method: 'PUT', body: { part: b.dataset.coverRemove, removeUpload: true } }); toast('Removed'); albumPage(a.id, 'photos'); }
+      catch (err) { toast(err.message); }
+    }));
+    // Google Drive import only shows once a Google API key is configured
+    (async () => {
+      try { if (!state.config) state.config = await api('config'); } catch (e) { state.config = {}; }
+      const card = body.querySelector('.drive-card');
+      if (card) card.hidden = !state.config.googleApiKey;
+    })();
 
     $('#driveGo').addEventListener('click', async () => {
       const note = $('#driveNote'), btn = $('#driveGo');
