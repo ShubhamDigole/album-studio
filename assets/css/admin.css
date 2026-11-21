@@ -304,6 +304,16 @@ h4.sec { margin: 22px 0 10px; font-weight: 600; }
 .media-tile figcaption { padding: 4px 8px; font-size: 12px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .media-tile .del { position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; background: rgba(0, 0, 0, .55); color: #fff; opacity: 0; transition: opacity .2s; }
 .media-tile:hover .del, .media-tile .del:focus-visible { opacity: 1; }
+.media-tile.spread img { aspect-ratio: 3 / 1; }
+/* one image = one page or two pages */
+.spread-toggle { display: flex; align-items: baseline; gap: 8px; width: 100%; padding: 6px 8px 8px; border: 0; border-top: 1px solid var(--line, rgba(255, 255, 255, .08)); background: none; color: var(--ink-soft); font: inherit; font-size: 12px; text-align: left; cursor: pointer; }
+.spread-toggle b { color: var(--ink); font-weight: 600; }
+.spread-toggle span { color: var(--active); font-weight: 600; }
+.spread-toggle:hover span, .spread-toggle:focus-visible span { text-decoration: underline; }
+.spread-toggle:disabled { opacity: .5; cursor: progress; }
+.cover-spread { display: grid; justify-items: start; gap: 6px; margin-top: 14px; }
+.cover-spread .hint { margin: 0; }
+.covers-card > .upload-btn { justify-self: start; width: auto; margin-top: 14px; }
 .empty-media { margin-top: 30px; }
 
 /* ---------- studios (master) ---------- */

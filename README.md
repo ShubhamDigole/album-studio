@@ -58,6 +58,8 @@ For very large albums you can also build on your computer: `node tools/build-alb
 | **Google Drive** | Photos and pages, From Google Drive (shown once `GOOGLE_API_KEY` is set) | Paste a folder or file link shared as "Anyone with the link"; import as photos or as designed pages/PDF |
 | **Front and back cover** | Photos and pages, Front and back cover | Your own designed covers, uploaded from the computer |
 | **Front cover, back cover, endpaper** | Details, Front cover, back cover and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
+| **Cover as one wide image** | Details, "Upload back + front cover as one image" (or a wide first page of a PDF) | Left half becomes the back cover, right half the front cover |
+| **Two pages in one image** | Photos and pages, each tile's "one page / two pages" button | Wide images are found automatically; the button fixes any that were guessed wrong |
 
 ### Google Drive setup (once)
 

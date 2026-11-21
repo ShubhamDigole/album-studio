@@ -1,5 +1,5 @@
 // POST /api/admin/albums/:id/upload   (multipart form)
-//   kind=photo   file, thumb, width, height, section, position, name     -> a gallery / auto-layout photo
+//   kind=photo   file, thumb, width, height, section, position, name, spread  -> a gallery / auto-layout photo (spread = one image holding two pages)
 //   kind=page    file, thumb, width, height, spread, position, name      -> a designed album page (image or PDF page)
 //   kind=design  file, part=cover|back|endpaper [, slot=n]               -> your own cover / end page / endpaper, or a photo in a design's slot
 // The browser resizes images before upload (which also removes EXIF/GPS); files are stored in R2.
@@ -70,7 +70,7 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
   if (thumbKey) await put(thumbKey, thumb);
   await env.DB.prepare(`INSERT INTO media (id, album_id, kind, key, thumb_key, width, height, section, spread, position, name, bytes, created_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, row.id, kind, key, thumbKey, width, height, kind === 'photo' ? section : '', kind === 'page' && form.get('spread') === '1' ? 1 : 0,
+    .bind(id, row.id, kind, key, thumbKey, width, height, kind === 'photo' ? section : '', form.get('spread') === '1' ? 1 : 0,
       intField(form, 'position'), name, file.size + (thumb && typeof thumb !== 'string' ? thumb.size : 0), Date.now()).run();
   return json({ ok: true, item: { id, kind, url: '/media/' + key, thumb: '/media/' + (thumbKey || key), width, height, section, name } }, 201);
 });

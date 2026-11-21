@@ -17,6 +17,7 @@
     '<path d="M132 168 v-26 a6 6 0 0 1 12 0 v26 M150 168 v-30 a6 6 0 0 1 12 0 v30" fill="#140c18"/></svg>');
   const ACCENTS = ['#C8255F', '#EFA00B', '#D7263D', '#1B6CA8', '#5B8C2A', '#8E6BBF', '#E86A92'];
   const PARTS = [['cover', 'Front cover'], ['back', 'Back cover'], ['endpaper', 'Endpaper']];
+  const SPREAD_RATIO = 1.9;   // wider than this, an image is taken to hold two pages side by side
   const PART_KIND = { cover: 'cover', back: 'back', endpaper: 'inside-front' };
 
   /* ---------- helpers ---------- */
@@ -311,7 +312,12 @@
               <label class="field"><span>Location</span><input name="location" maxlength="120" value="${esc(a.location || '')}" placeholder="Udaipur" /></label>
             </div></section>
           <section class="sheet"><div><h2>Front cover, back cover and endpaper</h2><p class="why">Pick a design for each, or upload the studio's own custom design from your computer. Empty details show sample text until you fill them in.</p></div>
-            <div class="fields"><div class="parts" id="parts"></div>${isNew ? '<p class="hint">Uploaded images are saved with the album when you create it.</p>' : ''}</div></section>
+            <div class="fields"><div class="parts" id="parts"></div>
+              <div class="cover-spread">
+                <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>Upload back + front cover as one image<input type="file" accept="image/*" data-cover-spread hidden /></label>
+                <p class="hint">For a cover designed as one wide image: the left half becomes the back cover and the right half the front cover.</p>
+              </div>
+              ${isNew ? '<p class="hint">Uploaded images are saved with the album when you create it.</p>' : ''}</div></section>
           ${isNew ? `<section class="sheet"><div><h2>Album link</h2><p class="why">Guests open the album at this address. It cannot be changed later.</p></div>
             <div class="fields"><label class="field"><span>Link</span><input name="id" maxlength="64" value="${esc(a.id || '')}" ${a.idLocked ? 'readonly' : ''} /></label>
             <p class="hint" id="linkHint"></p></div></section>` : ''}
@@ -460,8 +466,19 @@
       const label = input.closest('label');
       label.classList.add('busy');
       const name = PARTS.find((x) => x[0] === input.dataset.partUpload)[1];
-      try { await uploadPart(a, input.dataset.partUpload, input.files[0], { isDraft: isNew }); refresh(); toast(name + (isNew ? ' added' : ' uploaded')); }
-      catch (err) { toast(err.message); label.classList.remove('busy'); }
+      try {
+        const how = await uploadPart(a, input.dataset.partUpload, input.files[0], { isDraft: isNew });
+        refresh(); toast(how === 'split' ? 'Split into the back cover and front cover' : name + (isNew ? ' added' : ' uploaded'));
+      } catch (err) { toast(err.message); label.classList.remove('busy'); }
+    });
+    form.querySelector('[data-cover-spread]').addEventListener('change', async (e) => {
+      const input = e.target;
+      if (!input.files || !input.files[0]) return;
+      const label = input.closest('label');
+      label.classList.add('busy');
+      try { await uploadCoverSpread(a, input.files[0], isNew); refresh(); toast('Split into the back cover and front cover'); }
+      catch (err) { toast(err.message); }
+      finally { label.classList.remove('busy'); input.value = ''; }
     });
     form.addEventListener('input', (e) => {
       if (e.target.type === 'file') return;   // handled on change; redrawing here would remove the input first
@@ -534,7 +551,38 @@
       if (p.part === part && (!wholeOnly || p.slot === undefined)) { URL.revokeObjectURL(p.url); delete a.pending[k]; }
     }
   }
-  async function uploadPart(a, part, file, { slot, isDraft } = {}) {
+  // one image with the back cover on the left half and the front cover on the right half (as printed on a real album)
+  async function splitHalves(file) {
+    const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    const half = Math.floor(bmp.width / 2);
+    const cut = (sx) => {
+      const c = document.createElement('canvas');
+      c.width = half; c.height = bmp.height;
+      c.getContext('2d').drawImage(bmp, sx, 0, half, bmp.height, 0, 0, half, bmp.height);
+      return new Promise((res) => c.toBlob(res, 'image/jpeg', 0.92));
+    };
+    const out = [await cut(0), await cut(bmp.width - half)];
+    bmp.close && bmp.close();
+    return out;
+  }
+  async function uploadCoverSpread(a, file, isDraft) {
+    const [left, right] = await splitHalves(file);
+    await uploadPart(a, 'back', left, { isDraft, whole: true });
+    await uploadPart(a, 'cover', right, { isDraft, whole: true });
+  }
+  async function imageRatio(file) {
+    const bmp = await createImageBitmap(file);
+    const r = bmp.width / bmp.height;
+    bmp.close && bmp.close();
+    return r;
+  }
+  // returns 'split' when a wide cover image was split into back + front cover
+  async function uploadPart(a, part, file, { slot, isDraft, whole } = {}) {
+    if (!whole && slot === undefined && (part === 'cover' || part === 'back') && await imageRatio(file) > SPREAD_RATIO &&
+      confirm('This image looks like the back cover and front cover together.\n\nOK: split it, left half as the back cover and right half as the front cover.\nCancel: use the whole image as the ' + (part === 'cover' ? 'front' : 'back') + ' cover.')) {
+      await uploadCoverSpread(a, file, isDraft);
+      return 'split';
+    }
     const img = await prepareImage(file, 3000, 0);
     if (isDraft) {
       a.pending = a.pending || {};
@@ -669,8 +717,8 @@
       const label = input.closest('label');
       if (label) label.classList.add('busy');
       try {
-        await uploadDesign(input.files[0], input.dataset.slot !== undefined ? +input.dataset.slot : undefined);
-        draw(); onChange && onChange(); toast('Uploaded');
+        const how = await uploadDesign(input.files[0], input.dataset.slot !== undefined ? +input.dataset.slot : undefined);
+        draw(); onChange && onChange(); toast(how === 'split' ? 'Split into the back cover and front cover' : 'Uploaded');
       } catch (err) { toast(err.message); if (label) label.classList.remove('busy'); }
     });
     draw();
@@ -747,6 +795,7 @@
   // Resize in the browser before upload: smaller files, and re-encoding drops EXIF/GPS.
   async function prepareImage(file, maxSide = 2400, thumbSide = 480) {
     const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+    if (bmp.width / bmp.height > SPREAD_RATIO) maxSide = Math.round(maxSide * 1.6);   // two pages in one image: keep each page sharp
     const enc = async (side, q) => {
       const k = Math.min(1, side / Math.max(bmp.width, bmp.height));
       const c = document.createElement('canvas');
@@ -854,7 +903,9 @@
         <section class="up-card covers-card">
           <h3>Front and back cover</h3>
           <p class="hint">Upload your own designed front cover and back cover from your computer. You can also do this in Details, where you can pick a design instead.</p>
-          <div class="cover-tiles">${coverTile('cover', 'Front cover')}${coverTile('back', 'Back cover')}</div>
+          <div class="cover-tiles">${coverTile('back', 'Back cover')}${coverTile('cover', 'Front cover')}</div>
+          <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>Upload back + front cover as one image<input type="file" accept="image/*" data-cover-spread hidden /></label>
+          <p class="hint">The left half becomes the back cover, the right half the front cover.</p>
         </section>
         <section class="up-card">
           <h3>Photos</h3>
@@ -891,7 +942,7 @@
       </div>
       <ol class="up-progress" id="upProgress"></ol>
       ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the front cover, back cover and endpaper around them.</p></div>
-        <div class="media-grid pages">${md.pages.map((m, i) => mediaTile(m, `Page ${i + 1}${m.spread ? ', spread' : ''}`)).join('')}</div>` : ''}
+        <div class="media-grid pages">${(() => { let n = 0; return md.pages.map((m) => { const at = ++n; if (m.spread) n++; return mediaTile(m, m.spread ? `Pages ${at}–${at + 1}` : `Page ${at}`); }).join(''); })()}</div>` : ''}
       ${md.photos.length ? `<div class="media-head"><h3>Photos <span class="count soft">${md.photos.length}</span></h3><p class="hint">${md.pages.length ? 'Shown in the photo gallery.' : 'Laid out in the album automatically and shown in the photo gallery.'}</p></div>
         ${groupBy(md.photos, (p) => p.section || 'Moments').map(([sec, list]) => `<h4 class="sec">${esc(sec)} <span class="hint">${list.length}</span></h4>
           <div class="media-grid">${list.map((m) => mediaTile(m)).join('')}</div>`).join('')}` : ''}
@@ -915,14 +966,27 @@
       const label = input.closest('label');
       label.classList.add('busy');
       try {
-        const img = await prepareImage(f, 3000, 0);
-        const form = new FormData();
-        form.append('kind', 'design'); form.append('part', input.dataset.cover);
-        form.append('file', img.file, 'cover.jpg');
-        await api('albums/' + encodeURIComponent(a.id) + '/upload', { method: 'POST', form });
-        toast(input.dataset.cover === 'cover' ? 'Front cover uploaded' : 'Back cover uploaded');
+        const how = await uploadPart(a, input.dataset.cover, f, {});
+        toast(how === 'split' ? 'Split into the back cover and front cover' : input.dataset.cover === 'cover' ? 'Front cover uploaded' : 'Back cover uploaded');
         albumPage(a.id, 'photos');
       } catch (err) { toast(err.message); label.classList.remove('busy'); }
+    }));
+    body.querySelector('[data-cover-spread]').addEventListener('change', async (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const label = e.target.closest('label');
+      label.classList.add('busy');
+      try { await uploadCoverSpread(a, f, false); toast('Split into the back cover and front cover'); albumPage(a.id, 'photos'); }
+      catch (err) { toast(err.message); label.classList.remove('busy'); }
+    });
+    // one image = two pages, or just one
+    body.querySelectorAll('[data-spread]').forEach((b) => b.addEventListener('click', async () => {
+      const spread = b.dataset.spread === '1';
+      b.disabled = true;
+      try {
+        await api(`albums/${encodeURIComponent(a.id)}/media/${encodeURIComponent(b.dataset.mid)}`, { method: 'PATCH', body: { spread } });
+        toast(spread ? 'Shown as two pages' : 'Shown as one page');
+        albumPage(a.id, 'photos');
+      } catch (err) { toast(err.message); b.disabled = false; }
     }));
     body.querySelectorAll('[data-cover-remove]').forEach((b) => b.addEventListener('click', async () => {
       try { await api('albums/' + encodeURIComponent(a.id) + '/design', { method: 'PUT', body: { part: b.dataset.coverRemove, removeUpload: true } }); toast('Removed'); albumPage(a.id, 'photos'); }
@@ -981,6 +1045,14 @@
           const file = await real(f, li);
           set(li, 'Preparing');
           const asCover = useCover && i === 0, asBack = useBack && i === total - 1;
+          if (asCover && await imageRatio(file) > SPREAD_RATIO) {
+            // a wide first page is the whole cover: back cover on the left, front cover on the right
+            set(li, 'Uploading');
+            await uploadCoverSpread(a, file, false);
+            set(li, 'Split into the back and front cover', 'done');
+            done++;
+            return;
+          }
           const img = await prepareImage(file, asCover || asBack ? 3000 : kind === 'page' ? 3200 : 2400, asCover || asBack ? 0 : 480);
           const form = new FormData();
           if (asCover || asBack) {
@@ -990,7 +1062,7 @@
             form.append('width', img.width); form.append('height', img.height);
             form.append('position', String(base + i)); form.append('name', f.name);
             if (kind === 'photo') form.append('section', section);
-            if (kind === 'page') form.append('spread', forceSpreads || img.width / img.height > 1.9 ? '1' : '0');
+            form.append('spread', (kind === 'page' && forceSpreads) || img.width / img.height > SPREAD_RATIO ? '1' : '0');
             form.append('thumb', img.thumb, 'thumb.jpg');
           }
           form.append('file', img.file, 'image.jpg');
@@ -1008,8 +1080,11 @@
     }
   }
   function mediaTile(m, label) {
-    return `<figure class="media-tile${m.kind === 'page' && m.spread ? ' spread' : ''}"><img src="${esc(m.thumb)}" alt="" loading="lazy">
-      <figcaption>${esc(label || m.name || '')}</figcaption>
+    // landscape images can be one page, or two pages designed as a single image
+    const toggle = m.spread || m.width / m.height > 1.3
+      ? `<button type="button" class="spread-toggle" data-spread="${m.spread ? '0' : '1'}" data-mid="${esc(m.id)}" title="${m.spread ? 'This image is shown across two pages' : 'Use this when the image holds two album pages side by side'}">${m.spread ? '<b>Two pages</b><span>Make it one page</span>' : '<b>One page</b><span>Split into two pages</span>'}</button>` : '';
+    return `<figure class="media-tile${m.spread ? ' spread' : ''}"><img src="${esc(m.thumb)}" alt="" loading="lazy">
+      <figcaption>${esc(label || m.name || '')}</figcaption>${toggle}
       <button type="button" class="icon-btn del" data-del="${esc(m.id)}" data-kind="${m.kind}" title="Remove"><svg><use href="#i-trash"/></svg></button></figure>`;
   }
   function groupBy(list, fn) {
