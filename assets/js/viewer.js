@@ -937,6 +937,14 @@
       if (!pages.length) throw new Error('This album has no pages yet. Build the photos with tools/build-album.mjs.');
       const abs = (u) => (u ? new URL(u, base).href : '');
       album.musicUrl = abs(album.music);
+      // built-in songs that need an attribution (CC BY) are credited in the "How to view" box
+      if (/^\/assets\/music\//.test(album.music)) {
+        fetch('/assets/music/tracks.json').then((r) => (r.ok ? r.json() : [])).then((list) => {
+          const t = (list || []).find((x) => x.file === album.music);
+          const el2 = document.getElementById('musicCredit');
+          if (t && el2) { el2.textContent = 'Music: ' + (t.credit || (t.title + (t.artist ? ' by ' + t.artist : '') + (t.license ? ' (' + t.license + ')' : ''))); el2.hidden = false; }
+        }).catch(() => {});
+      }
       album.downloadUrlAbs = abs(album.downloadUrl);
       if (album.studio.logo) { album.studio.logoUrl = abs(album.studio.logo); $('#brandLogo').src = album.studio.logoUrl; }
       if (album.downloadUrl) el.downloadBtn.href = album.downloadUrlAbs;

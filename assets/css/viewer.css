@@ -221,6 +221,8 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
   .panel { top: 6px; bottom: 6px; }
 }
 
+.music-credit { margin: 0 22px 4px; color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+
 /* generated pages (cover templates) */
 .gen { position: absolute; inset: 0; display: block; }
 .gen > svg, .gen svg { display: block; width: 100%; height: 100%; }

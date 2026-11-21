@@ -359,7 +359,11 @@
             <div class="fields"><div class="swatches" id="swatches"></div></div></section>
           <section class="sheet"><div><h2>Extras</h2><p class="why">Optional. Music plays softly after a guest's first click.</p></div>
             <div class="fields">
-              <label class="field"><span>Background music <em>a web address of an mp3</em></span><input name="music" maxlength="300" value="${esc(a.music || '')}" placeholder="https://…/song.mp3" /></label>
+              <div class="field songs-field"><span>Background music</span>
+                <div class="songs" id="songs" role="radiogroup" aria-label="Background music"><p class="hint">Loading songs…</p></div>
+              </div>
+              <label class="field own-song"><span>Your own song <em>a web address of an mp3, used when "Your own link" is chosen</em></span><input name="music" maxlength="300" value="${esc(a.music && !/^\/assets\/music\//.test(a.music) ? a.music : '')}" placeholder="https://…/song.mp3" /></label>
+              <div class="song-examples" id="songExamples" hidden></div>
               <label class="field"><span>Download all photos <em>for example a Google Drive folder</em></span><input name="downloadUrl" maxlength="500" value="${esc(a.downloadUrl || '')}" placeholder="https://drive.google.com/…" /></label>
             </div></section>
           <section class="sheet"><div><h2>Who can open it</h2><p class="why">Drafts stay on your shelf until you publish them.</p></div>
@@ -435,7 +439,7 @@
         date: f.date.value,
         location: f.location.value.trim(),
         studio: { name: f.studioName.value.trim(), phone: f.studioPhone.value.trim(), url: f.studioUrl.value.trim() },
-        music: f.music.value.trim(),
+        music: (() => { const sel = form.querySelector('input[name="song"]:checked'); return !sel ? (a.music || '') : sel.value === 'own' ? f.music.value.trim() : sel.value; })(),
         downloadUrl: f.downloadUrl.value.trim(),
         accent,
         template: a.template || '',
@@ -520,6 +524,7 @@
     });
     drawSwatches();
     refresh();
+    mountSongs(form, a);
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -563,6 +568,70 @@
       try { await api('albums/' + encodeURIComponent(a.id), { method: 'DELETE' }); toast('Album deleted'); location.hash = ''; }
       catch (err) { toast(err.message); }
     });
+  }
+
+  /* ---------- background music: built-in songs (assets/music/tracks.json) or the studio's own link ---------- */
+  let songsCache = null;
+  async function loadSongs() {
+    if (!songsCache) {
+      const get = async (u) => { try { const r = await fetch(u, { credentials: 'same-origin' }); return r.ok ? await r.json() : []; } catch (e) { return []; } };
+      const [tracks, examples] = await Promise.all([get('/assets/music/tracks.json'), get('/assets/music/examples.json')]);
+      songsCache = { tracks: Array.isArray(tracks) ? tracks : [], examples: Array.isArray(examples) ? examples : [] };
+    }
+    return songsCache;
+  }
+  const preview = new Audio();
+  preview.preload = 'none';
+  addEventListener('hashchange', () => preview.pause());
+  const mmss = (n) => (n ? Math.floor(n / 60) + ':' + String(Math.round(n % 60)).padStart(2, '0') : '');
+  async function mountSongs(form, a) {
+    const box = form.querySelector('#songs'), own = form.elements.music, ex = form.querySelector('#songExamples');
+    const { tracks, examples } = await loadSongs();
+    const type = () => form.elements.type.value;
+    const current = a.music || '';
+    const chosen = !current ? '' : tracks.some((t) => t.file === current) ? current : 'own';
+    const fits = (t) => (t.occasions || []).includes(type());
+    const draw = () => {
+      const list = [...tracks.filter(fits), ...tracks.filter((t) => !fits(t))];   // songs for this occasion first
+      const sel = (form.querySelector('input[name="song"]:checked') || {}).value ?? chosen;
+      box.innerHTML =
+        `<label class="song none"><input type="radio" name="song" value=""${sel === '' ? ' checked' : ''} /><span class="song-text"><b>No music</b></span></label>` +
+        list.map((t) => `<label class="song"><input type="radio" name="song" value="${esc(t.file)}"${sel === t.file ? ' checked' : ''} />
+          <span class="song-text"><b>${esc(t.title)}${fits(t) ? ' <em>Suits ' + esc(typeLabel(type()).toLowerCase()) + '</em>' : ''}</b><small>${esc(t.mood || '')}${t.artist ? ', ' + esc(t.artist) : ''}</small></span>
+          <span class="song-len">${mmss(t.seconds)}</span>
+          <button type="button" class="icon-btn play" data-play="${esc(t.file)}" aria-label="Listen to ${esc(t.title)}" title="Listen"><svg><use href="#i-play"/></svg></button></label>`).join('') +
+        `<label class="song"><input type="radio" name="song" value="own"${sel === 'own' ? ' checked' : ''} /><span class="song-text"><b>Your own link</b><small>Paste the address of an mp3 below</small></span></label>`;
+      if (!tracks.length) box.insertAdjacentHTML('afterbegin', '<p class="hint">No built-in songs are installed.</p>');
+      sync();
+    };
+    const sync = () => {
+      const sel = (form.querySelector('input[name="song"]:checked') || {}).value;
+      form.querySelector('.own-song').hidden = sel !== 'own';
+      ex.hidden = sel !== 'own' || !examples.length;
+      box.querySelectorAll('[data-play]').forEach((b) => {
+        const on = !preview.paused && preview.dataset.file === b.dataset.play;
+        b.classList.toggle('on', on);
+        b.querySelector('use').setAttribute('href', on ? '#i-pause' : '#i-play');
+      });
+    };
+    ex.innerHTML = '<p class="hint">Example links you can use:</p>' + examples.map((e, i) =>
+      `<button type="button" class="chip-btn" data-example="${i}" title="${esc(e.credit || e.license || '')}">${esc(e.title)}</button>`).join('');
+    ex.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-example]'); if (!b) return;
+      own.value = examples[+b.dataset.example].url;
+      own.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    box.addEventListener('click', (e) => {
+      const b = e.target.closest('[data-play]'); if (!b) return;
+      e.preventDefault();
+      if (!preview.paused && preview.dataset.file === b.dataset.play) preview.pause();
+      else { preview.src = b.dataset.play; preview.dataset.file = b.dataset.play; preview.currentTime = 0; preview.play().catch(() => toast('This song could not be played.')); }
+      sync();
+    });
+    preview.onpause = preview.onplay = sync;
+    box.addEventListener('change', () => { sync(); if ((form.querySelector('input[name="song"]:checked') || {}).value === 'own') own.focus(); });
+    form.elements.type.addEventListener('change', draw);
+    draw();
   }
 
   /* ---------- the front cover / back cover / endpaper modal ---------- */
