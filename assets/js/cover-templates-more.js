@@ -8,76 +8,8 @@
   const CT = root.CoverTemplates;
   if (!CT || !CT.register) return;
   const { MARIGOLD, ORANGE, JASMINE, PAPER, KOHL, DISPLAY, UI, TAU, esc, f, fit, t, nameBlock, placeLine, silkBg,
-    petal, marigold, studioBlock, photoSlot } = CT.helpers;
+    petal, marigold, studioBlock, photoSlot, mix, grain, iniLock, rng, isWide, smooth, star, glint, leaf, pairLine, lineSvg, stack, rose } = CT.helpers;
 
-  /* ---------- small utilities ---------- */
-  // deterministic generator (mulberry32) so every render of a design is identical
-  function rng(seed) {
-    let a = seed >>> 0;
-    return () => {
-      a = (a + 0x6D2B79F5) >>> 0;
-      let x = Math.imul(a ^ (a >>> 15), 1 | a);
-      x = (x + Math.imul(x ^ (x >>> 7), 61 | x)) ^ x;
-      return ((x ^ (x >>> 14)) >>> 0) / 4294967296;
-    };
-  }
-  function hex(c) {
-    const m = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(String(c || '').trim());
-    if (!m) return null;
-    const h = m[1].length === 3 ? m[1].replace(/./g, (x) => x + x) : m[1];
-    return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
-  }
-  // blend colour a towards b by k (0..1); falls back to a for non-hex colours
-  function mix(a, b, k) {
-    const A = hex(a), B = hex(b);
-    if (!A || !B) return a;
-    return '#' + A.map((v, i) => Math.round(v + (B[i] - v) * k).toString(16).padStart(2, '0')).join('');
-  }
-  const isWide = (W, H) => W >= H * 1.25;
-
-  // closed (or open) Catmull-Rom curve through points, as cubic beziers
-  function smooth(pts, closed = true) {
-    const n = pts.length;
-    const P = (i) => pts[closed ? (i + n) % n : Math.max(0, Math.min(n - 1, i))];
-    let s = `M${f(pts[0][0])} ${f(pts[0][1])}`;
-    for (let i = 0; i < (closed ? n : n - 1); i++) {
-      const p0 = P(i - 1), p1 = P(i), p2 = P(i + 1), p3 = P(i + 2);
-      s += ` C${f(p1[0] + (p2[0] - p0[0]) / 6)} ${f(p1[1] + (p2[1] - p0[1]) / 6)} ${f(p2[0] - (p3[0] - p1[0]) / 6)} ${f(p2[1] - (p3[1] - p1[1]) / 6)} ${f(p2[0])} ${f(p2[1])}`;
-    }
-    return s + (closed ? 'Z' : '');
-  }
-  function star(cx, cy, R, r, n = 5, rot = -90) {
-    let d = '';
-    for (let i = 0; i < n * 2; i++) {
-      const a = (rot + (i * 180) / n) * Math.PI / 180, rr = i % 2 ? r : R;
-      d += (i ? 'L' : 'M') + f(cx + Math.cos(a) * rr) + ' ' + f(cy + Math.sin(a) * rr);
-    }
-    return d + 'Z';
-  }
-  // four-pointed glint with concave sides
-  const glint = (x, y, s) => `M${f(x)} ${f(y - s)} Q${f(x)} ${f(y)} ${f(x + s * 0.7)} ${f(y)} Q${f(x)} ${f(y)} ${f(x)} ${f(y + s)} Q${f(x)} ${f(y)} ${f(x - s * 0.7)} ${f(y)} Q${f(x)} ${f(y)} ${f(x)} ${f(y - s)}Z`;
-  // a leaf pointing up from (0,0), length len, half-width wid, with a slight lean
-  const leaf = (len, wid, lean = 0.15) => `M0 0 C${f(wid * 1.1)} ${f(-len * 0.25)} ${f(wid * (0.9 + lean))} ${f(-len * 0.7)} ${f(len * lean * 0.3)} ${f(-len)} C${f(-wid * (0.9 - lean))} ${f(-len * 0.7)} ${f(-wid * 1.1)} ${f(-len * 0.25)} 0 0Z`;
-
-  // names on one line, "Aarav & Ananya", the ampersand in the accent colour
-  function pairLine(d, x, y, maxW, maxSize, { anchor = 'middle', color = JASMINE, amp = MARIGOLD } = {}) {
-    const txt = d.pair ? `${d.names[0]} & ${d.names[1]}` : d.title;
-    const size = fit(txt, maxW, maxSize);
-    const inner = d.pair ? `${esc(d.names[0])} <tspan fill="${amp}">&amp;</tspan> ${esc(d.names[1])}` : esc(d.title);
-    return { size, svg: `<text x="${f(x)}" y="${f(y)}" font-family="${DISPLAY}" font-size="${f(size)}" fill="${color}" text-anchor="${anchor}">${inner}</text>` };
-  }
-  function lineSvg(lines, x, y, { anchor = 'middle', color = JASMINE, size = 32, gap = 44, opacity = 0.88, weight = 400 } = {}) {
-    return lines.map((l, i) => t(x, y + i * gap, l, { size, color, family: UI, anchor, opacity, weight })).join('');
-  }
-  // name block + place/date lines, centred vertically on cy
-  function stack(d, cx, cy, maxW, maxSize, o = {}) {
-    const { anchor = 'middle', color = JASMINE, amp = MARIGOLD, lineColor = color, size = 32, gap = 44, first = 50, opacity = 0.88, weight = 400, lines = placeLine(d), pre = '' } = o;
-    const probe = nameBlock(d, cx, 0, maxW, maxSize, { anchor, color, amp });
-    const total = probe.bottom + (lines.length ? first + (lines.length - 1) * gap : 0);
-    const top = cy - total / 2;
-    const nb = nameBlock(d, cx, top, maxW, maxSize, { anchor, color, amp });
-    return { top, bottom: top + total, svg: pre + nb.svg + lineSvg(lines, cx, nb.bottom + first, { anchor, color: lineColor, size, gap, opacity, weight }) };
-  }
   const initials = (d) => d.initials.join(d.initials.length > 1 ? ' ' : '');
 
   /* ======================================================================
@@ -142,7 +74,7 @@
     back(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + ringDefs(id);
       s += ringsArt(W / 2, H * 0.25, H * 0.085, id);
-      s += t(W / 2, H * 0.5, initials(d), { size: fit(initials(d), W * 0.4, H * 0.08) });
+      s += iniLock(W / 2, H * 0.5, d, W * 0.4, H * 0.08);
       return s + studioBlock(d, W / 2, H * 0.66);
     },
   });
@@ -193,51 +125,16 @@
         <linearGradient id="${id}paper" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#E9DFCF" stop-opacity=".5"/></linearGradient></defs>`;
       // one print, its caption the couple's initials
       const cw = H * 0.26;
-      s += polaroid(id, 0, W / 2, H * 0.1, cw, -3, photos[1] || photos[0], initials(d), th);
+      s += polaroid(id, 0, W / 2, H * 0.1, cw, -3, photos[1] || photos[0], d.initials.join(d.initials.length > 1 ? ' & ' : ''), th);
       return s + studioBlock(d, W / 2, H * 0.62);
     },
   });
 
   /* ======================================================================
-     haldi-splash (haldi): a thick turmeric splash with marigold petals
+     haldi-splash (haldi): one dry-brush sweep of turmeric paste across
+     handmade paper, marigold petals scattered around it
      ====================================================================== */
-  function splashPath(cx, cy, rx, ry, seed, arms = 7) {
-    const r = rng(seed);
-    const ph = [r() * TAU, r() * TAU, r() * TAU];
-    const A = Array.from({ length: arms }, () => ({ a: r() * TAU, amp: 0.12 + r() * 0.22, w: 0.06 + r() * 0.08 }));
-    const pts = [], drops = [];
-    const N = 120;
-    for (let i = 0; i < N; i++) {
-      const th = (i / N) * TAU;
-      let k = 1 + 0.05 * Math.sin(3 * th + ph[0]) + 0.04 * Math.sin(5 * th + ph[1]) + 0.025 * Math.sin(11 * th + ph[2]);
-      A.forEach((arm) => { let dd = Math.abs(th - arm.a); dd = Math.min(dd, TAU - dd); k += arm.amp * Math.exp(-((dd / arm.w) ** 2)); });
-      pts.push([cx + Math.cos(th) * rx * k, cy + Math.sin(th) * ry * k]);
-    }
-    A.forEach((arm, j) => {
-      const reach = 1 + arm.amp;
-      for (let q = 0; q < 3; q++) {
-        const kk = reach + 0.09 + q * (0.08 + r() * 0.06), sz = (14 - q * 4) * (0.7 + r() * 0.6) * (rx / 400);
-        drops.push([cx + Math.cos(arm.a + (r() - 0.5) * 0.08) * rx * kk, cy + Math.sin(arm.a + (r() - 0.5) * 0.08) * ry * kk, Math.max(2.5, sz)]);
-      }
-      if (j % 2) drops.push([cx + Math.cos(arm.a + 0.3) * rx * 1.18, cy + Math.sin(arm.a + 0.3) * ry * 1.18, 4 * (rx / 400)]);
-    });
-    for (let i = 0; i < 26; i++) {
-      const a = r() * TAU, kk = 1.08 + r() * 0.35;
-      drops.push([cx + Math.cos(a) * rx * kk, cy + Math.sin(a) * ry * kk, 1.5 + r() * 3.5]);
-    }
-    return { d: smooth(pts), drops };
-  }
-  function splash(cx, cy, rx, ry, seed, fill, id, arms) {
-    const sp = splashPath(cx, cy, rx, ry, seed, arms);
-    let s = `<path d="${sp.d}" fill="#000" opacity=".2" transform="translate(5 8)"/>`;
-    s += `<path d="${sp.d}" fill="${fill}"/>`;
-    s += `<path d="${sp.d}" fill="url(#${id}paste)"/>`;
-    s += sp.drops.map(([x, y, r]) => `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r)}" fill="${fill}"/>`).join('');
-    return s;
-  }
-  function haldiDefs(id, th) {
-    return `<defs><radialGradient id="${id}paste" cx=".42" cy=".38" r=".7"><stop offset="0" stop-color="#FFF6C8" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#B86E00" stop-opacity=".35"/></radialGradient></defs>`;
-  }
+  const HALDI = ['#F2B705', '#E9A100', '#F7C948', '#DB8C00', '#F5BE2A'];
   function petalsAround(W, H, seed, avoid, count, colors) {
     const r = rng(seed);
     let s = '';
@@ -250,29 +147,78 @@
     }
     return s;
   }
+  function handmadePaper(W, H, id, tint) {
+    const r = rng(5);
+    let fib = '';
+    for (let i = 0; i < (W * H) / 5200; i++) { const x = r() * W, y = r() * H, a = r() * TAU, l = 8 + r() * 18; fib += `M${f(x)} ${f(y)} q${f(Math.cos(a) * l * 0.5 + 3)} ${f(Math.sin(a) * l * 0.5 - 3)} ${f(Math.cos(a) * l)} ${f(Math.sin(a) * l)}`; }
+    return `<defs><radialGradient id="${id}pv" cx=".5" cy=".45" r=".8"><stop offset=".6" stop-color="#8A6A2A" stop-opacity="0"/><stop offset="1" stop-color="#8A6A2A" stop-opacity=".22"/></radialGradient></defs>` +
+      `<rect width="${W}" height="${H}" fill="${tint}"/><path d="${fib}" fill="none" stroke="#9C7B45" stroke-width="1" opacity=".16"/>` +
+      `<rect width="${W}" height="${H}" fill="url(#${id}pv)"/>` + grain(id, W, H, 0.22);
+  }
+  // a broad brush stroke along a curve, built from many bristle strands with ragged dry ends
+  function brushSweep(ctl, hw, seed, base, k = 1) {
+    const r = rng(seed), C = CT.helpers.curvePts(ctl, false, 24), n = C.length;
+    const norm = C.map((p, i) => { const a = C[Math.max(0, i - 1)], b = C[Math.min(n - 1, i + 1)], l = Math.hypot(b[0] - a[0], b[1] - a[1]) || 1; return [-(b[1] - a[1]) / l, (b[0] - a[0]) / l]; });
+    const width = (u) => hw * (0.62 + 0.38 * Math.sin(Math.PI * Math.min(1, u * 1.25))) ;
+    const line = (v, u0, u1, wob) => {
+      const i0 = Math.floor(u0 * (n - 1)), i1 = Math.ceil(u1 * (n - 1));
+      let d = '';
+      for (let i = i0; i <= i1; i++) { const u = i / (n - 1), w = width(u) * v + Math.sin(u * 9 + wob) * hw * 0.025; d += (i > i0 ? 'L' : 'M') + f(C[i][0] + norm[i][0] * w) + ' ' + f(C[i][1] + norm[i][1] * w); }
+      return d;
+    };
+    // a solid body first so the strands read as paint, not hatching
+    let s = '';
+    const body = [];
+    for (let i = 0; i < n; i++) { const u = i / (n - 1), w = width(u) * 0.86; body.push([C[i][0] + norm[i][0] * w, C[i][1] + norm[i][1] * w]); }
+    for (let i = n - 1; i >= 0; i--) { const u = i / (n - 1), w = width(u) * 0.86; body.push([C[i][0] - norm[i][0] * w, C[i][1] - norm[i][1] * w]); }
+    s += `<path d="M${body.map(([x, y]) => f(x) + ' ' + f(y)).join(' L')}Z" fill="${base}" opacity=".92"/>`;
+    for (let q = 0; q < 70; q++) {
+      const v = -1 + 2 * r(), edge = Math.abs(v);
+      const u0 = r() * (0.04 + edge * 0.1), u1 = 1 - r() * (0.06 + edge * 0.28);
+      const c = HALDI[Math.floor(r() * HALDI.length)];
+      s += `<path d="${line(v, u0, u1, r() * 6)}" fill="none" stroke="${c}" stroke-width="${f((3 + r() * 9) * k)}" stroke-linecap="round" opacity="${f(0.55 + r() * 0.45)}"/>`;
+    }
+    // highlights and darker drag marks in the paste
+    for (let q = 0; q < 14; q++) {
+      const v = -0.8 + 1.6 * r(), u0 = 0.05 + r() * 0.3, u1 = u0 + 0.25 + r() * 0.4;
+      s += `<path d="${line(v, u0, Math.min(0.97, u1), r() * 6)}" fill="none" stroke="${q % 2 ? '#FFE69A' : '#C67A00'}" stroke-width="${f((1.5 + r() * 2.5) * k)}" stroke-linecap="round" opacity="${q % 2 ? 0.5 : 0.35}"/>`;
+    }
+    // flicks of paste off the end of the stroke
+    const [ex, ey] = C[n - 1], [nx, ny] = norm[n - 1];
+    for (let q = 0; q < 16; q++) {
+      const dist = hw * (0.3 + r() * 1.6), side = (r() - 0.5) * 2.4;
+      s += `<circle cx="${f(ex + (ex - C[n - 4][0]) * dist / 30 + nx * side * hw * 0.6)}" cy="${f(ey + (ey - C[n - 4][1]) * dist / 30 + ny * side * hw * 0.6)}" r="${f((2 + r() * 7) * k)}" fill="${HALDI[q % 5]}"/>`;
+    }
+    return s;
+  }
   CT.register('haldi-splash', {
     name: 'Haldi splash',
     occasions: ['haldi', 'mehendi'],
-    description: 'A thick splash of turmeric paste with scattered marigold petals',
+    description: 'A dry-brush sweep of turmeric paste across handmade paper, marigold petals around it',
     slots: 0,
-    motif: (c) => `<g fill="${c}"><path d="${splashPath(28, 30, 15, 13, 5, 5).d}"/><circle cx="50" cy="14" r="3"/><circle cx="8" cy="50" r="2"/></g>`,
+    motif: (c) => `<g fill="none" stroke="${c}" stroke-linecap="round"><path d="M8 40 C20 26 36 30 52 18" stroke-width="7"/><path d="M10 46 C22 33 38 36 50 26" stroke-width="2"/></g>`,
+    endpaper(W, H, d, th, id, isBack) {
+      let s = handmadePaper(W, H, id, '#F7EEDB') + petalsAround(W, H, 21, null, Math.round(W * H / 26000), [ORANGE, MARIGOLD, '#FFB703', '#D9531E']);
+      return s + (isBack && d.studio ? CT.helpers.studioCard(W, H, d, th, id) : '');
+    },
     cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk) + haldiDefs(id, th);
-      const rx = Math.min(W * 0.4, H * 0.56), ry = H * 0.33, cx = W / 2, cy = H * 0.5;
-      s += splash(W * 0.04, H * 0.06, H * 0.16, H * 0.13, 11, mix(th.accent, th.silk, 0.25), id, 5);
-      s += splash(W * 0.97, H * 0.95, H * 0.19, H * 0.15, 23, mix(th.accent, th.silk, 0.25), id, 5);
-      s += petalsAround(W, H, 4, { cx, cy, rx: rx * 1.35, ry: ry * 1.4 }, 22, [ORANGE, MARIGOLD, '#FFB703']);
-      s += splash(cx, cy, rx, ry, 3, th.accent, id, 7);
-      const ink = mix(th.silk, '#000', 0.25);
-      return s + stack(d, cx, cy, rx * 1.25, H * 0.12, { color: ink, amp: ORANGE, weight: 500, opacity: 0.9 }).svg;
+      const wide = isWide(W, H), k = H / 1000;
+      let s = handmadePaper(W, H, id, '#F7EEDB');
+      const base = mix('#EFAE05', th.accent, 0.2), ink = mix(th.silk, '#2A1800', 0.55);
+      const ctl = wide ? [[W * 0.05, H * 0.66], [W * 0.3, H * 0.52], [W * 0.62, H * 0.5], [W * 0.9, H * 0.36]] : [[W * 0.04, H * 0.6], [W * 0.35, H * 0.5], [W * 0.68, H * 0.47], [W * 0.93, H * 0.38]];
+      s += petalsAround(W, H, 4, { cx: W / 2, cy: H * 0.5, rx: W * 0.5, ry: H * 0.3 }, 16, [ORANGE, MARIGOLD, '#FFB703', '#D9531E']);
+      s += brushSweep(ctl, H * (wide ? 0.19 : 0.15), 3, base, k);
+      const st = stack(d, W / 2, H * 0.49, Math.min(W * 0.66, H * 0.95), H * (wide ? 0.13 : 0.1), { color: ink, amp: '#B4380F', lineColor: ink, opacity: 0.85, lines: [] });
+      s += st.svg;
+      s += lineSvg(placeLine(d), W / 2, Math.max(st.bottom + 80 * k, H * 0.74), { color: ink, opacity: 0.8 });
+      return s;
     },
     back(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk) + haldiDefs(id, th);
-      s += petalsAround(W, H, 9, { cx: W / 2, cy: H * 0.5, rx: W * 0.3, ry: H * 0.4 }, 12, [ORANGE, MARIGOLD]);
-      s += splash(W / 2, H * 0.32, H * 0.15, H * 0.13, 17, th.accent, id, 5);
-      const ink = mix(th.silk, '#000', 0.25);
-      s += t(W / 2, H * 0.32 + H * 0.028, initials(d), { size: fit(initials(d), H * 0.24, H * 0.08), color: ink });
-      return s + studioBlock(d, W / 2, H * 0.64);
+      const k = H / 1000, ink = mix(th.silk, '#2A1800', 0.55);
+      let s = handmadePaper(W, H, id, '#F7EEDB');
+      s += brushSweep([[W / 2 - H * 0.16, H * 0.34], [W / 2, H * 0.31], [W / 2 + H * 0.17, H * 0.27]], H * 0.07, 9, mix('#EFAE05', th.accent, 0.2), k * 0.6);
+      s += iniLock(W / 2, H * 0.335, d, H * 0.3, H * 0.08, { color: ink, amp: '#B4380F' });
+      return s + studioBlock(d, W / 2, H * 0.6, ink);
     },
   });
 
@@ -390,118 +336,144 @@
       s += hennaBand(gap, bw, H, line, 11) + hennaBand(W - gap - bw, bw, H, line, 13);
       const R = H * 0.19;
       s += hennaMedallion(W / 2, H * 0.33, R, line, { core: false });
-      s += t(W / 2, H * 0.33 + R * 0.12, initials(d), { size: fit(initials(d), R * 0.6, R * 0.34) });
+      s += iniLock(W / 2, H * 0.33 + R * 0.12, d, R * 0.6, R * 0.34);
       return s + studioBlock(d, W / 2, H * 0.67);
     },
   });
 
   /* ======================================================================
-     dhol-beats (sangeet): a laced dhol with phumman tassels, its beat
-     spreading in rings
+     dhol-beats (sangeet): a dhol engraved in gold line work, phumman
+     tassels in colour, its beat spreading in rings
      ====================================================================== */
   function dhol(cx, cy, L, r, rot, th, id) {
-    const rx = r * 0.3, hl = L / 2;
+    const rx = r * 0.32, hl = L / 2, sw = Math.max(1.4, r * 0.012), gold = `url(#${id}foil)`;
     let s = `<g transform="translate(${f(cx)} ${f(cy)}) rotate(${rot})">`;
     // strap
-    s += `<path d="M${f(-hl * 0.7)} ${f(-r * 0.92)} C${f(-hl * 0.5)} ${f(-r * 2.3)} ${f(hl * 0.5)} ${f(-r * 2.3)} ${f(hl * 0.7)} ${f(-r * 0.92)}" fill="none" stroke="${mix(th.accent, '#000', 0.35)}" stroke-width="${f(r * 0.13)}" stroke-linecap="round"/>`;
-    s += `<path d="M${f(-hl * 0.7)} ${f(-r * 0.92)} C${f(-hl * 0.5)} ${f(-r * 2.3)} ${f(hl * 0.5)} ${f(-r * 2.3)} ${f(hl * 0.7)} ${f(-r * 0.92)}" fill="none" stroke="${MARIGOLD}" stroke-width="2" stroke-dasharray="6 6"/>`;
-    const body = `M${f(-hl)} ${f(-r)} Q0 ${f(-r * 1.14)} ${f(hl)} ${f(-r)} L${f(hl)} ${f(r)} Q0 ${f(r * 1.14)} ${f(-hl)} ${f(r)} A${f(rx)} ${f(r)} 0 0 1 ${f(-hl)} ${f(-r)}Z`;
-    s += `<path d="${body}" fill="#000" opacity=".3" transform="translate(10 16)"/>`;
-    s += `<path d="${body}" fill="${th.accent}"/><path d="${body}" fill="url(#${id}cyl)"/>`;
-    // rim bands near each end
-    [-hl + L * 0.07, hl - L * 0.07].forEach((x) => {
-      s += `<path d="M${f(x)} ${f(-r * 0.99)} A${f(rx)} ${f(r * 0.99)} 0 0 1 ${f(x)} ${f(r * 0.99)}" fill="none" stroke="url(#${id}foil)" stroke-width="${f(r * 0.09)}"/>`;
-    });
-    // rope lacing zigzag with metal rings at the turns
-    const n = 10, xl = -hl + L * 0.12, xr = hl - L * 0.12;
-    let z = '', rings = '';
-    for (let k = 0; k <= n; k++) {
-      const y = -r * 0.93 * Math.cos((Math.PI * k) / n), x = k % 2 ? xr : xl;
-      z += (k ? 'L' : 'M') + f(x) + ' ' + f(y);
-      rings += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.04)}" fill="none" stroke="#E9E4DA" stroke-width="2"/>`;
+    s += `<path d="M${f(-hl * 0.72)} ${f(-r * 0.95)} C${f(-hl * 0.5)} ${f(-r * 2.2)} ${f(hl * 0.5)} ${f(-r * 2.2)} ${f(hl * 0.72)} ${f(-r * 0.95)}" fill="none" stroke="${mix(th.accent, '#000000', 0.25)}" stroke-width="${f(r * 0.1)}" stroke-linecap="round"/>`;
+    s += `<path d="M${f(-hl * 0.72)} ${f(-r * 0.95)} C${f(-hl * 0.5)} ${f(-r * 2.2)} ${f(hl * 0.5)} ${f(-r * 2.2)} ${f(hl * 0.72)} ${f(-r * 0.95)}" fill="none" stroke="${MARIGOLD}" stroke-width="${f(sw)}" stroke-dasharray="${f(r * 0.05)} ${f(r * 0.05)}"/>`;
+    const body = `M${f(-hl)} ${f(-r)} Q0 ${f(-r * 1.12)} ${f(hl)} ${f(-r)} L${f(hl)} ${f(r)} Q0 ${f(r * 1.12)} ${f(-hl)} ${f(r)} A${f(rx)} ${f(r)} 0 0 1 ${f(-hl)} ${f(-r)}Z`;
+    s += `<path d="${body}" fill="#000" opacity=".28" transform="translate(${f(r * 0.06)} ${f(r * 0.1)})"/>`;
+    s += `<path d="${body}" fill="${mix(th.silk, '#000000', 0.3)}"/>`;
+    // engraved shading: lines that follow the barrel, dense towards the lower side
+    let hatch = '';
+    for (let i = 1; i < 16; i++) {
+      const v = -1 + (i / 16) * 2, y = v * r * 0.98, bulge = (1 - v * v) * r * 0.12;
+      if (v < -0.55 && i % 2) continue;
+      hatch += `M${f(-hl + rx * Math.sqrt(1 - v * v) * 0.2)} ${f(y)} Q0 ${f(y + Math.sign(v || 1) * bulge)} ${f(hl)} ${f(y)}`;
     }
-    s += `<path d="${z}" fill="none" stroke="#2A160E" stroke-width="5" opacity=".35" transform="translate(2 3)"/><path d="${z}" fill="none" stroke="${MARIGOLD}" stroke-width="4" stroke-linejoin="round"/>` + rings;
-    // visible playing face
-    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 1.04)}" ry="${f(r * 1.04)}" fill="url(#${id}foil)"/>`;
-    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 0.86)}" ry="${f(r * 0.92)}" fill="#F3E6CC"/>`;
-    s += `<ellipse cx="${f(hl + rx * 0.1)}" cy="${f(-r * 0.1)}" rx="${f(rx * 0.4)}" ry="${f(r * 0.45)}" fill="#fff" opacity=".35"/>`;
-    // phumman tassels hanging under each rim
-    [-hl + L * 0.07, hl - L * 0.07].forEach((x, j) => {
-      const y0 = r * 0.98;
-      [[-0.07, 0.42, ORANGE], [0.05, 0.3, mix(th.accent, '#fff', 0.25)], [0.15, 0.48, MARIGOLD]].forEach(([dx, len, c]) => {
+    s += `<path d="${hatch}" fill="none" stroke="${MARIGOLD}" stroke-width="${f(sw * 0.7)}" opacity=".45"/>`;
+    s += `<path d="${body}" fill="none" stroke="${gold}" stroke-width="${f(sw * 2.2)}"/>`;
+    // rims
+    [-hl + L * 0.06, hl - L * 0.06].forEach((x) => {
+      s += `<path d="M${f(x)} ${f(-r * 1.02)} A${f(rx)} ${f(r * 1.02)} 0 0 1 ${f(x)} ${f(r * 1.02)}" fill="none" stroke="${gold}" stroke-width="${f(r * 0.07)}"/>`;
+      s += `<path d="M${f(x + r * 0.06)} ${f(-r * 0.98)} A${f(rx)} ${f(r * 0.98)} 0 0 1 ${f(x + r * 0.06)} ${f(r * 0.98)}" fill="none" stroke="${MARIGOLD}" stroke-width="${f(sw)}" opacity=".7"/>`;
+    });
+    // rope lacing, a band of carving at the waist
+    const n = 12, xl = -hl + L * 0.12, xr = hl - L * 0.12;
+    let z = '', rings = '';
+    for (let q = 0; q <= n; q++) {
+      const y = -r * 0.92 * Math.cos((Math.PI * q) / n), x = q % 2 ? xr : xl;
+      z += (q ? 'L' : 'M') + f(x) + ' ' + f(y);
+      rings += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(r * 0.035)}" fill="${mix(th.silk, '#000000', 0.3)}" stroke="${MARIGOLD}" stroke-width="${f(sw)}"/>`;
+    }
+    s += `<path d="${z}" fill="none" stroke="${mix(th.silk, '#000000', 0.5)}" stroke-width="${f(sw * 4)}" stroke-linejoin="round"/><path d="${z}" fill="none" stroke="${gold}" stroke-width="${f(sw * 2)}" stroke-linejoin="round"/>` + rings;
+    // the playing face: stretched skin with the dark syahi patch
+    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 1.05)}" ry="${f(r * 1.05)}" fill="${mix(th.silk, '#000000', 0.15)}" stroke="${gold}" stroke-width="${f(sw * 2.6)}"/>`;
+    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 0.86)}" ry="${f(r * 0.88)}" fill="#EFE3C8"/>`;
+    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 0.86)}" ry="${f(r * 0.88)}" fill="url(#${id}skin)"/>`;
+    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 0.66)}" ry="${f(r * 0.68)}" fill="none" stroke="#B68A3E" stroke-width="${f(sw)}" opacity=".6"/>`;
+    s += `<ellipse cx="${f(hl)}" cy="0" rx="${f(rx * 0.3)}" ry="${f(r * 0.3)}" fill="#3A2A1E" opacity=".85"/>`;
+    // phumman tassels under each rim
+    [-hl + L * 0.06, hl - L * 0.06].forEach((x, j) => {
+      const y0 = r * 1.0;
+      [[-0.1, 0.45, ORANGE], [0.04, 0.32, mix(th.accent, '#FFFFFF', 0.15)], [0.16, 0.52, MARIGOLD]].forEach(([dx, len, c]) => {
         const tx = x + dx * r * (j ? 1 : -1), ty = y0 + len * r;
-        s += `<line x1="${f(x)}" y1="${f(y0)}" x2="${f(tx)}" y2="${f(ty)}" stroke="${MARIGOLD}" stroke-width="2"/>`;
-        s += marigold(tx, ty + r * 0.08, r * 0.1, c);
+        s += `<path d="M${f(x)} ${f(y0)} Q${f((x + tx) / 2 + r * 0.03)} ${f((y0 + ty) / 2)} ${f(tx)} ${f(ty)}" fill="none" stroke="${MARIGOLD}" stroke-width="${f(sw)}"/>`;
+        s += pom(tx, ty + r * 0.1, r * 0.11, c);
       });
     });
     return s + '</g>';
   }
-  function dholDefs(id) {
-    return `<defs><linearGradient id="${id}cyl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset=".28" stop-color="#000" stop-opacity=".05"/>
-      <stop offset=".4" stop-color="#fff" stop-opacity=".22"/><stop offset=".55" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".6"/></linearGradient></defs>`;
+  // a woollen pom-pom: a disc of short radiating strands
+  function pom(x, y, R, c) {
+    let s = `<circle cx="${f(x)}" cy="${f(y)}" r="${f(R * 0.82)}" fill="${c}"/>`;
+    let p = '';
+    for (let i = 0; i < 28; i++) { const a = (i / 28) * TAU; p += `M${f(x + Math.cos(a) * R * 0.5)} ${f(y + Math.sin(a) * R * 0.5)} L${f(x + Math.cos(a) * R * 1.08)} ${f(y + Math.sin(a) * R * 1.08)}`; }
+    return s + `<path d="${p}" stroke="${c}" stroke-width="${f(Math.max(1, R * 0.12))}" stroke-linecap="round"/><circle cx="${f(x - R * 0.25)}" cy="${f(y - R * 0.25)}" r="${f(R * 0.3)}" fill="#fff" opacity=".18"/>`;
   }
-  function beatRings(cx, cy, from, step, count, color) {
+  function dholDefs(id) {
+    return `<defs><radialGradient id="${id}skin" cx=".35" cy=".35" r=".75"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#7A5A2A" stop-opacity=".35"/></radialGradient></defs>`;
+  }
+  // rings of sound: arcs broken into beats, opening away from the drum face
+  function beatRings(cx, cy, from, step, count, color, dir = 0) {
     let s = '';
-    for (let i = 0; i < count; i++) s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(from + i * step)}" fill="none" stroke="${color}" stroke-width="${i % 3 === 0 ? 3 : 1.4}" opacity="${f(0.32 - i * 0.025)}"/>`;
+    for (let i = 0; i < count; i++) {
+      const R = from + i * step, span = 0.55 + i * 0.02, segs = 5 + i;
+      for (let q = 0; q < segs; q++) {
+        const a0 = dir - span + (q / segs) * span * 2, a1 = a0 + (span * 2 / segs) * 0.62;
+        s += `<path d="M${f(cx + Math.cos(a0) * R)} ${f(cy + Math.sin(a0) * R)} A${f(R)} ${f(R)} 0 0 1 ${f(cx + Math.cos(a1) * R)} ${f(cy + Math.sin(a1) * R)}" fill="none" stroke="${color}" stroke-width="${i % 3 === 0 ? 2.6 : 1.3}" stroke-linecap="round" opacity="${f(0.75 - i * 0.06)}"/>`;
+      }
+    }
     return s;
   }
   CT.register('dhol-beats', {
     name: 'Dhol beats',
     occasions: ['sangeet', 'wedding'],
-    description: 'A laced dhol with phumman tassels, its beat spreading in rings',
+    description: 'A dhol engraved in gold line work, phumman tassels swinging, its beat ringing out',
     slots: 0,
     motif: (c) => `<g fill="none" stroke="${c}" stroke-width="2"><rect x="12" y="20" width="36" height="22" rx="4"/><path d="M16 22 L24 40 L32 22 L40 40 L46 24"/></g>`,
     cover(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + dholDefs(id);
+      const ring = mix(MARIGOLD, th.accent, 0.35);
       if (isWide(W, H)) {
-        const cx = W * 0.3, cy = H * 0.56;
-        s += beatRings(cx, cy, H * 0.3, H * 0.075, 12, th.accent);
-        s += dhol(cx, cy, H * 0.5, H * 0.16, -16, th, id);
-        s += stack(d, W * 0.7, H * 0.5, W * 0.46, H * 0.13, { amp: th.accent }).svg;
+        const cx = W * 0.25, cy = H * 0.52, L = H * 0.5, r = H * 0.155, rot = -18;
+        const a = (rot * Math.PI) / 180, fx = cx + Math.cos(a) * L / 2, fy = cy + Math.sin(a) * L / 2;
+        s += beatRings(fx, fy, r * 1.5, H * 0.055, 8, ring, a);
+        s += dhol(cx, cy, L, r, rot, th, id);
+        s += stack(d, W * 0.72, H * 0.5, W * 0.4, H * 0.13, { amp: th.accent }).svg;
       } else {
-        const cx = W / 2, cy = H * 0.31, L = Math.min(H * 0.42, W * 0.5);
-        s += beatRings(cx, cy, L * 0.62, H * 0.07, 10, th.accent);
-        s += dhol(cx, cy, L, L * 0.3, -10, th, id);
+        const cx = W / 2, cy = H * 0.3, L = Math.min(H * 0.4, W * 0.56), r = L * 0.3, rot = -12;
+        const a = (rot * Math.PI) / 180, fx = cx + Math.cos(a) * L / 2, fy = cy + Math.sin(a) * L / 2;
+        s += beatRings(fx, fy, r * 1.4, H * 0.04, 6, ring, a);
+        s += dhol(cx, cy, L, r, rot, th, id);
         s += stack(d, W / 2, H * 0.74, W * 0.8, H * 0.1, { amp: th.accent }).svg;
       }
       return s;
     },
     back(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + dholDefs(id);
-      s += beatRings(W / 2, H * 0.3, H * 0.2, H * 0.06, 8, th.accent);
-      s += dhol(W / 2, H * 0.3, H * 0.3, H * 0.09, -8, th, id);
-      s += t(W / 2, H * 0.55, initials(d), { size: fit(initials(d), W * 0.4, H * 0.075) });
-      return s + studioBlock(d, W / 2, H * 0.68);
+      s += dhol(W / 2, H * 0.27, H * 0.3, H * 0.09, -8, th, id);
+      s += iniLock(W / 2, H * 0.53, d, W * 0.4, H * 0.075, { amp: th.accent });
+      return s + studioBlock(d, W / 2, H * 0.66);
     },
   });
 
   /* ======================================================================
-     fairy-lights (reception): warm string lights crossing the night
+     fairy-lights (reception): swags of warm bulbs across a night sky,
+     a softer string far behind, names glowing beneath
      ====================================================================== */
   function lightDefs(id, th) {
-    return `<defs><radialGradient id="${id}glow"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".75"/><stop offset=".35" stop-color="#FFC861" stop-opacity=".25"/><stop offset="1" stop-color="#FFC861" stop-opacity="0"/></radialGradient>
-      <radialGradient id="${id}bk"><stop offset="0" stop-color="${mix(th.accent, '#fff', 0.3)}" stop-opacity=".22"/><stop offset=".7" stop-color="${th.accent}" stop-opacity=".12"/><stop offset="1" stop-color="${th.accent}" stop-opacity="0"/></radialGradient>
-      <filter id="${id}tg" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="14"/></filter></defs>`;
+    return `<defs><radialGradient id="${id}glow"><stop offset="0" stop-color="#FFE2A0" stop-opacity=".8"/><stop offset=".3" stop-color="#FFC861" stop-opacity=".28"/><stop offset="1" stop-color="#FFC861" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${id}bk"><stop offset="0" stop-color="${mix(th.accent, '#FFFFFF', 0.3)}" stop-opacity=".2"/><stop offset=".7" stop-color="${th.accent}" stop-opacity=".1"/><stop offset="1" stop-color="${th.accent}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${id}sky" cx=".5" cy="0" r=".9"><stop offset="0" stop-color="#FFC861" stop-opacity=".16"/><stop offset="1" stop-color="#FFC861" stop-opacity="0"/></radialGradient>
+      <filter id="${id}tg" x="-10%" y="-30%" width="120%" height="160%"><feGaussianBlur stdDeviation="14"/></filter>
+      <filter id="${id}far" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="2.5"/></filter></defs>`;
   }
   function bulb(x, y, s, bright, id) {
-    return `<circle cx="${f(x)}" cy="${f(y + s * 0.9)}" r="${f(s * 3.4 * bright)}" fill="url(#${id}glow)"/>` +
-      `<rect x="${f(x - s * 0.28)}" y="${f(y - s * 0.1)}" width="${f(s * 0.56)}" height="${f(s * 0.45)}" fill="#3B3A36"/>` +
-      `<path transform="translate(${f(x)} ${f(y + s * 1.55)}) rotate(180)" d="${petal(s * 1.25, s * 0.55)}" fill="${bright > 0.8 ? '#FFF1C9' : '#F7D58C'}"/>`;
+    return `<circle cx="${f(x)}" cy="${f(y + s * 1.1)}" r="${f(s * 3.6 * bright)}" fill="url(#${id}glow)"/>` +
+      `<rect x="${f(x - s * 0.3)}" y="${f(y - s * 0.15)}" width="${f(s * 0.6)}" height="${f(s * 0.5)}" rx="${f(s * 0.1)}" fill="#4A463E"/>` +
+      `<path transform="translate(${f(x)} ${f(y + s * 1.6)}) rotate(180)" d="${petal(s * 1.3, s * 0.6)}" fill="${bright > 0.8 ? '#FFF3D2' : '#F9D892'}"/>` +
+      `<path transform="translate(${f(x - s * 0.12)} ${f(y + s * 1.25)}) rotate(180)" d="${petal(s * 0.6, s * 0.18)}" fill="#fff" opacity=".7"/>`;
   }
   function strand(x0, y0, x1, y1, sag, step, seed, id, size = 9) {
     const r = rng(seed);
     const mx = (x0 + x1) / 2, my = (y0 + y1) / 2 + sag;
-    let s = `<path d="M${f(x0)} ${f(y0)} Q${f(mx)} ${f(my)} ${f(x1)} ${f(y1)}" fill="none" stroke="#E8DFC8" stroke-opacity=".35" stroke-width="1.6"/>`;
+    let s = `<path d="M${f(x0)} ${f(y0)} Q${f(mx)} ${f(my)} ${f(x1)} ${f(y1)}" fill="none" stroke="#2C2A26" stroke-width="2.2"/>`;
     const len = Math.hypot(x1 - x0, y1 - y0), n = Math.max(2, Math.round(len / step));
     for (let i = 1; i < n; i++) {
       const k = i / n, x = (1 - k) ** 2 * x0 + 2 * k * (1 - k) * mx + k * k * x1, y = (1 - k) ** 2 * y0 + 2 * k * (1 - k) * my + k * k * y1;
-      s += bulb(x, y, size, 0.55 + r() * 0.45, id);
+      s += bulb(x, y, size, 0.6 + r() * 0.4, id);
     }
-    return s;
-  }
-  function curtain(x, len, step, id, size = 8) {
-    let s = `<line x1="${f(x)}" y1="0" x2="${f(x)}" y2="${f(len)}" stroke="#E8DFC8" stroke-opacity=".3" stroke-width="1.3"/>`;
-    for (let y = step * 0.6; y < len; y += step) s += bulb(x, y, size, 0.7, id);
     return s;
   }
   function bokeh(W, H, seed, count, y0, y1, id) {
@@ -513,29 +485,30 @@
   CT.register('fairy-lights', {
     name: 'Fairy lights',
     occasions: ['reception', 'sangeet', 'anniversary'],
-    description: 'Strings of warm bulbs criss-crossing a night sky, names softly glowing',
+    description: 'Swags of warm bulbs across a night sky, the names softly glowing beneath',
     slots: 0,
     motif: (c) => `<path d="M0 14 Q30 34 60 14" fill="none" stroke="${c}" stroke-width="1.5"/><path transform="translate(30 38) rotate(180)" d="${petal(12, 5)}" fill="${c}"/><circle cx="30" cy="24" r="2.5" fill="${c}"/>`,
     cover(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + lightDefs(id, th);
-      s += bokeh(W, H, 5, Math.round(W / 50), H * 0.25, H * 1.05, id);
-      s += strand(-20, H * 0.03, W + 20, H * 0.15, H * 0.16, 70, 1, id, 8);
-      s += strand(-20, H * 0.2, W + 20, H * 0.02, H * 0.14, 64, 2, id, 9);
-      s += strand(-20, H * 0.09, W + 20, H * 0.08, H * 0.26, 58, 3, id, 10);
-      const cw = Math.min(W * 0.11, 140);
-      [0.18, 0.5, 0.82].forEach((k, i) => { s += curtain(cw * k, H * (0.5 + i * 0.1), 46, id) + curtain(W - cw * k, H * (0.58 - i * 0.06), 46, id); });
-      const inner = W - 2 * cw - 60;
-      const glow = stack(d, W / 2, H * 0.66, inner * 0.92, H * 0.12, { color: '#FFD27A', amp: '#FFD27A', lineColor: '#FFD27A', opacity: 0.5 });
-      s += `<g filter="url(#${id}tg)" opacity=".55">${glow.svg}</g>`;
-      return s + stack(d, W / 2, H * 0.66, inner * 0.92, H * 0.12, { amp: th.accent }).svg;
+      s += `<rect width="${W}" height="${H * 0.6}" fill="url(#${id}sky)"/>`;
+      s += bokeh(W, H, 5, Math.round(W / 60), H * 0.45, H * 1.05, id);
+      // a far string, small and soft, then two near swags scalloping across the top
+      s += `<g filter="url(#${id}far)" opacity=".7">${strand(-20, H * 0.26, W + 20, H * 0.22, H * 0.1, 44, 9, id, 5)}</g>`;
+      const swags = isWide(W, H) ? 3 : 2;
+      for (let i = 0; i < swags; i++) s += strand((i / swags) * W - 4, H * 0.035, ((i + 1) / swags) * W + 4, H * 0.035, H * 0.2, 62, i + 1, id, 11);
+      s += strand(-20, H * 0.13, W + 20, H * 0.02, H * 0.2, 72, 7, id, 9);
+      const cy = H * 0.64, mw = Math.min(W * 0.76, H * 1.05);
+      const glow = stack(d, W / 2, cy, mw, H * 0.13, { color: '#FFD27A', amp: '#FFD27A', lineColor: '#FFD27A', opacity: 0.5 });
+      s += `<g filter="url(#${id}tg)" opacity=".5">${glow.svg}</g>`;
+      return s + stack(d, W / 2, cy, mw, H * 0.13, { amp: th.accent }).svg;
     },
     back(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + lightDefs(id, th);
+      s += `<rect width="${W}" height="${H * 0.5}" fill="url(#${id}sky)"/>`;
       s += bokeh(W, H, 8, Math.round(W / 70), H * 0.3, H, id);
       s += strand(-20, H * 0.04, W + 20, H * 0.04, H * 0.2, 64, 4, id, 9);
-      const ini = initials(d);
-      s += `<g filter="url(#${id}tg)" opacity=".6">${t(W / 2, H * 0.44, ini, { size: fit(ini, W * 0.4, H * 0.11), color: '#FFD27A' })}</g>`;
-      s += t(W / 2, H * 0.44, ini, { size: fit(ini, W * 0.4, H * 0.11) });
+      s += `<g filter="url(#${id}tg)" opacity=".6">${iniLock(W / 2, H * 0.44, d, W * 0.4, H * 0.11, { color: '#FFD27A', amp: '#FFD27A' })}</g>`;
+      s += iniLock(W / 2, H * 0.44, d, W * 0.4, H * 0.11, { amp: th.accent });
       return s + studioBlock(d, W / 2, H * 0.64);
     },
   });
@@ -598,7 +571,7 @@
       s += guillocheBand(H * 0.035, W, 22, 5, MARIGOLD, 0.55) + guillocheBand(H * 0.965 - 22, W, 22, 5, MARIGOLD, 0.55);
       const R = H * 0.24;
       s += locket(W / 2, H * 0.34, R, id, d, th);
-      s += t(W / 2, H * 0.34 + R * 0.14, initials(d), { size: fit(initials(d), R * 0.8, R * 0.42) });
+      s += iniLock(W / 2, H * 0.34 + R * 0.14, d, R * 0.8, R * 0.42);
       return s + studioBlock(d, W / 2, H * 0.68);
     },
   });
@@ -661,7 +634,7 @@
       let s = silkBg(id, W, H, th.silk) + balloonDefs(id);
       s += balloon(W / 2 - H * 0.07, H * 0.2, H * 0.07, -10, th.accent, id) + balloon(W / 2 + H * 0.06, H * 0.16, H * 0.075, 8, `url(#${id}foil)`, id);
       s += `<path d="M${f(W / 2 - H * 0.085)} ${f(H * 0.29)} Q${f(W / 2 - 20)} ${f(H * 0.36)} ${f(W / 2)} ${f(H * 0.4)} M${f(W / 2 + H * 0.045)} ${f(H * 0.26)} Q${f(W / 2 + 20)} ${f(H * 0.34)} ${f(W / 2)} ${f(H * 0.4)}" fill="none" stroke="#F2EBDD" stroke-opacity=".6" stroke-width="1.6"/>`;
-      s += t(W / 2, H * 0.53, initials(d), { size: fit(initials(d), W * 0.4, H * 0.08) });
+      s += iniLock(W / 2, H * 0.53, d, W * 0.4, H * 0.08);
       return s + studioBlock(d, W / 2, H * 0.66);
     },
   });
@@ -694,7 +667,8 @@
           `<path d="M${f(-R * 0.62)} ${f(-R * 0.05)} q${f(R * 0.09)} ${f(R * 0.08)} ${f(R * 0.18)} 0" fill="none" stroke="#7A4E06" stroke-width="${f(2.2 * scale)}" stroke-linecap="round" opacity=".6"/></g>`;
       } else if (kind === 'star') {
         const R = 40 * scale * sz;
-        hang += `<path d="${star(x, y1 + R * 0.95, R, R * 0.48)}" fill="${th.accent}" stroke="${th.accent}" stroke-width="${f(7 * scale)}" stroke-linejoin="round"/>`;
+        hang += `<path d="${star(x, y1 + R * 0.95, R, R * 0.48)}" fill="url(#${id}foil)" stroke="url(#${id}foil)" stroke-width="${f(7 * scale)}" stroke-linejoin="round"/>` +
+          `<path d="${star(x, y1 + R * 0.95, R * 0.5, R * 0.24)}" fill="#FFF1C9" opacity=".35"/>`;
       } else {
         const w = 120 * scale * sz;
         hang += `<g transform="translate(${f(x)} ${f(y1 + w * 0.3)})"><path d="${cloud(w)}" fill="#F6F0E4"/><path d="${cloud(w)}" fill="#000" opacity=".06" transform="translate(0 ${f(w * 0.06)}) scale(1 .7)"/></g>`;
@@ -720,7 +694,7 @@
       let s = silkBg(id, W, H, th.silk) + starrySky(W, H, 37, Math.round(W / 14));
       s += `<g transform="translate(${f(W / 2)} ${f(H * 0.3)}) rotate(-24)"><path d="${crescent(H * 0.13)}" fill="url(#${id}foil)"/></g>`;
       s += `<path d="${star(W / 2 + H * 0.12, H * 0.2, 22, 10)}" fill="${th.accent}" stroke="${th.accent}" stroke-width="5" stroke-linejoin="round"/>`;
-      s += t(W / 2, H * 0.54, initials(d), { size: fit(initials(d), W * 0.4, H * 0.075) });
+      s += iniLock(W / 2, H * 0.54, d, W * 0.4, H * 0.075);
       return s + studioBlock(d, W / 2, H * 0.67);
     },
   });
@@ -757,8 +731,7 @@
     },
     back(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + frame(W, H, id);
-      const ini = initials(d);
-      s += t(W / 2, H * 0.44, ini, { size: fit(ini, W * 0.4, H * 0.12), color: `url(#${id}foil)` });
+      s += iniLock(W / 2, H * 0.44, d, W * 0.4, H * 0.12, { color: `url(#${id}foil)`, amp: JASMINE });
       s += rule(W / 2, H * 0.52, 140, id);
       return s + studioBlock(d, W / 2, H * 0.66);
     },
@@ -810,7 +783,7 @@
       const w = H * 0.22, h = H * 0.3, x = (W - w) / 2, y = H * 0.12;
       s += `<path d="${archD(x, y, w, h)}" fill="${th.silk}"/><path d="${archD(x, y, w, h)}" fill="#000" opacity=".25" stroke="url(#${id}foil)" stroke-width="4"/>`;
       s += `<path d="${archD(x - 12, y - 12, w + 24, h + 12)}" fill="none" stroke="${MARIGOLD}" stroke-width="1.2" opacity=".7"/>`;
-      s += t(W / 2, y + h * 0.68, initials(d), { size: fit(initials(d), w * 0.75, H * 0.075) });
+      s += iniLock(W / 2, y + h * 0.68, d, w * 0.75, H * 0.075);
       return s + studioBlock(d, W / 2, H * 0.62);
     },
   });
@@ -863,16 +836,12 @@
       const r = 18;
       s += `<path d="${scallopEdgeH(H * 0.08, W, r)}" fill="none" stroke="url(#${id}foil)" stroke-width="3"/>`;
       s += `<path d="${scallopEdgeH(H * 0.08, W, r)}" fill="none" stroke="url(#${id}foil)" stroke-width="3" transform="translate(0 ${H}) scale(1 -1)"/>`;
-      s += t(W / 2, H * 0.43, initials(d), { size: fit(initials(d), W * 0.4, H * 0.1) });
+      s += iniLock(W / 2, H * 0.43, d, W * 0.4, H * 0.1);
       return s + studioBlock(d, W / 2, H * 0.6);
     },
   });
 
   /* ---- garland-ring: round photo inside a varmala of marigold, roses and mango leaves ---- */
-  function rose(x, y, r, c) {
-    return `<g transform="translate(${f(x)} ${f(y)})"><circle r="${f(r)}" fill="${c}"/>` +
-      `<path d="M${f(-r * 0.7)} ${f(-r * 0.1)} A${f(r * 0.7)} ${f(r * 0.7)} 0 0 1 ${f(r * 0.6)} ${f(-r * 0.35)} M${f(-r * 0.45)} ${f(r * 0.3)} A${f(r * 0.5)} ${f(r * 0.5)} 0 0 0 ${f(r * 0.5)} ${f(r * 0.1)} M${f(-r * 0.2)} ${f(-r * 0.05)} A${f(r * 0.22)} ${f(r * 0.22)} 0 1 1 ${f(r * 0.15)} ${f(r * 0.12)}" fill="none" stroke="#000" stroke-opacity=".28" stroke-width="${f(r * 0.12)}" stroke-linecap="round"/></g>`;
-  }
   function varmala(cx, cy, R, th, seed) {
     const r = rng(seed);
     const n = Math.max(14, Math.round((TAU * R) / (R * 0.2)));
@@ -900,11 +869,11 @@
     cover(W, H, d, th, id, photos = []) {
       let s = silkBg(id, W, H, th.silk);
       let cx, cy, R;
-      if (isWide(W, H)) { cx = W * 0.3; cy = H / 2; R = H * 0.3; } else { cx = W / 2; cy = H * 0.34; R = Math.min(H * 0.22, W * 0.3); }
+      if (isWide(W, H)) { cx = W * 0.28; cy = H / 2; R = H * 0.3; } else { cx = W / 2; cy = H * 0.34; R = Math.min(H * 0.22, W * 0.3); }
       s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 1.3)}" fill="#000" opacity=".12"/>`;
       s += photoSlot(id, 0, cx - R * 0.9, cy - R * 0.9, R * 1.8, R * 1.8, photos[0], { shape: 'circle', stroke: `url(#${id}foil)`, sw: 4 });
       s += varmala(cx, cy, R * 1.04, th, 4);
-      if (isWide(W, H)) s += stack(d, W * 0.72, H * 0.5, W * 0.44, H * 0.13, { amp: th.accent }).svg;
+      if (isWide(W, H)) s += stack(d, W * 0.74, H * 0.5, W * 0.4, H * 0.13, { amp: th.accent }).svg;
       else {
         s += pairLine(d, W / 2, H * 0.77, W * 0.86, H * 0.1, { amp: th.accent }).svg;
         s += lineSvg(placeLine(d), W / 2, H * 0.845, { gap: 42 });
@@ -915,7 +884,7 @@
       let s = silkBg(id, W, H, th.silk);
       const R = H * 0.14, cy = H * 0.32;
       s += varmala(W / 2, cy, R, th, 9);
-      s += t(W / 2, cy + R * 0.2, initials(d), { size: fit(initials(d), R * 1.2, R * 0.6) });
+      s += iniLock(W / 2, cy + R * 0.2, d, R * 1.2, R * 0.6);
       return s + studioBlock(d, W / 2, H * 0.62);
     },
   });
@@ -962,7 +931,7 @@
       let s = silkBg(id, W, H, th.silk) + filmDefs(id, th) + `<rect width="${W}" height="${H}" fill="url(#${id}leak)"/>`;
       const fw = H * 0.2;
       s += film(id, W / 2, H * 0.22, W, fw, fw * 0.72, 3, photos.slice(2), 2);
-      s += t(W / 2, H * 0.52, initials(d), { size: fit(initials(d), W * 0.4, H * 0.08) });
+      s += iniLock(W / 2, H * 0.52, d, W * 0.4, H * 0.08);
       return s + studioBlock(d, W / 2, H * 0.65);
     },
   });
@@ -1029,8 +998,8 @@
       s += `<defs><filter id="${id}ts" x="-10%" y="-20%" width="120%" height="140%"><feGaussianBlur stdDeviation="8"/></filter></defs>`;
       s += `<path d="${label}" fill="#000" opacity=".35" filter="url(#${id}ts)" transform="translate(0 10)"/><path d="${label}" fill="${PAPER}"/>`;
       s += `<rect x="${f(W / 2 - 70)}" y="${f(ly - 22)}" width="140" height="40" transform="rotate(-4 ${f(W / 2)} ${f(ly)})" fill="${th.accent}" opacity=".7"/>`;
-      s += t(W / 2, H * 0.24, initials(d), { size: fit(initials(d), W * 0.4, H * 0.1) });
-      return s + studioBlock(d, W / 2, ly + lh * 0.3, th.silk);
+      s += iniLock(W / 2, H * 0.24, d, W * 0.4, H * 0.1);
+      return s + studioBlock(d, W / 2, ly + lh * 0.3, th.silk, lw * 0.8);
     },
   });
 
@@ -1071,7 +1040,7 @@
       const w = H * 0.24, top = H * 0.12, bottom = H * 0.48;
       s += `<path d="${CT.helpers.cuspedArch(W / 2, top, w, bottom, 9, 0.3)}" fill="#000" opacity=".22" stroke="url(#${id}foil)" stroke-width="3"/>`;
       s += `<rect x="${f(W / 2 - w * 0.7)}" y="${f(bottom)}" width="${f(w * 1.4)}" height="10" fill="url(#${id}foil)"/>`;
-      s += t(W / 2, H * 0.4, initials(d), { size: fit(initials(d), w * 0.7, H * 0.08) });
+      s += iniLock(W / 2, H * 0.4, d, w * 0.7, H * 0.08);
       return s + studioBlock(d, W / 2, H * 0.64);
     },
   });
@@ -1148,49 +1117,61 @@
      ILLUSTRATED DESIGNS
      ====================================================================== */
 
-  /* ---- confetti (birthday): a burst of paper confetti and curling streamers ---- */
-  function confetti(W, H, seed, count, th, id, avoid) {
+  /* ---- confetti (birthday): foil confetti pouring from one corner, a few pieces out of focus ---- */
+  function confettiDefs(id, th) {
+    return `<defs><filter id="${id}cb" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+      <linearGradient id="${id}rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FBE3D6"/><stop offset=".5" stop-color="#D99577"/><stop offset="1" stop-color="#9C5A43"/></linearGradient>
+      <linearGradient id="${id}ac" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${mix(th.accent, '#FFFFFF', 0.45)}"/><stop offset="1" stop-color="${mix(th.accent, '#000000', 0.2)}"/></linearGradient></defs>`;
+  }
+  // pieces fall in a cone from (ox, oy) along angle dir; denser and larger near the source
+  function confetti(W, H, seed, count, id, ox, oy, dir, avoid) {
     const r = rng(seed);
-    const pal = [th.accent, MARIGOLD, '#F6F0E4', mix(th.accent, '#fff', 0.45), ORANGE, `url(#${id}foil)`];
-    let s = '';
-    // curling streamers from the top edge
-    for (let i = 0; i < 5; i++) {
-      const x = (i + 0.3 + r() * 0.4) * (W / 5), len = H * (0.18 + r() * 0.2), c = pal[i % 4];
-      let p = `M${f(x)} -10`, y = -10, dir = r() > 0.5 ? 1 : -1;
-      while (y < len) { p += ` q${f(dir * 26)} 18 0 36`; y += 36; dir = -dir; }
-      s += `<path d="${p}" fill="none" stroke="${c}" stroke-width="6" stroke-linecap="round" opacity=".9"/>`;
-    }
-    for (let i = 0, made = 0; i < count * 4 && made < count; i++) {
-      const x = r() * W, y = Math.pow(r(), 1.35) * H;
+    const fills = [`url(#${id}foil)`, `url(#${id}foil)`, `url(#${id}rg)`, `url(#${id}ac)`, '#F6F0E4'];
+    let far = '', near = '';
+    for (let i = 0, made = 0; i < count * 5 && made < count; i++) {
+      const t0 = Math.pow(r(), 1.25), dist = t0 * Math.hypot(W, H) * 0.95, spread = (r() - 0.5) * (0.9 + t0 * 0.7);
+      const a = dir + spread, x = ox + Math.cos(a) * dist, y = oy + Math.sin(a) * dist;
+      if (x < -40 || x > W + 40 || y < -40 || y > H + 40) continue;
       if (avoid && ((x - avoid.cx) / avoid.rx) ** 2 + ((y - avoid.cy) / avoid.ry) ** 2 < 1) continue;
       made++;
-      const c = pal[Math.floor(r() * pal.length)], rot = r() * 360, k = r(), sz = 0.7 + r() * 0.8;
+      const c = fills[Math.floor(r() * fills.length)], sz = (1.4 - t0 * 0.7) * (0.6 + r() * 0.7), rot = r() * 360, kind = r();
       const tr = `transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${f(sz)})"`;
-      if (k < 0.42) s += `<rect ${tr} x="-5" y="-11" width="10" height="22" rx="1" fill="${c}"/>`;
-      else if (k < 0.62) s += `<circle ${tr} r="6" fill="${c}"/>`;
-      else if (k < 0.78) s += `<path ${tr} d="M0 -8 L8 6 L-8 6Z" fill="${c}"/>`;
-      else if (k < 0.92) s += `<path ${tr} d="M-14 0 q3.5 -7 7 0 t7 0 t7 0 t7 0" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round"/>`;
-      else s += `<path ${tr} d="${star(0, 0, 9, 4)}" fill="${c}"/>`;
+      let p;
+      if (kind < 0.5) p = `<circle ${tr} r="9" fill="${c}"/>`;
+      else if (kind < 0.8) p = `<ellipse ${tr} rx="12" ry="4.5" fill="${c}"/>`;   // a disc seen edge-on
+      else p = `<rect ${tr} x="-4" y="-13" width="8" height="26" rx="1.5" fill="${c}"/>`;
+      if (r() < 0.12) far += `<g filter="url(#${id}cb)" opacity=".7"><circle cx="${f(x)}" cy="${f(y)}" r="${f(9 * sz * 2.2)}" fill="${c}"/></g>`;
+      else near += p;
     }
-    return s;
+    return far + near;
+  }
+  // a curling foil streamer drifting down
+  function streamer(x, y, len, seed, fill, w = 7) {
+    const r = rng(seed);
+    let pts = [], px = x, py = y, a = Math.PI / 2 + (r() - 0.5) * 0.6;
+    for (let i = 0; i < len; i++) { pts.push([px, py]); a += (r() - 0.5) * 0.9; px += Math.cos(a) * 34 + Math.sin(i * 1.3) * 22; py += Math.sin(a) * 30 + 8; }
+    return `<path d="${smooth(pts, false)}" fill="none" stroke="${fill}" stroke-width="${w}" stroke-linecap="round"/>`;
   }
   CT.register('confetti', {
     name: 'Confetti',
     occasions: ['birthday', 'sangeet', 'reception', 'other'],
-    description: 'A shower of paper confetti and curling streamers around the name',
+    description: 'Gold and rose-gold confetti pouring in from a corner, a few pieces out of focus',
     slots: 0,
-    motif: (c) => `<g fill="${c}"><rect x="12" y="10" width="6" height="13" transform="rotate(25 15 16)"/><circle cx="42" cy="18" r="4"/><path d="M26 40 L33 52 L19 52Z"/><path d="M40 40 q3 -5 6 0 t6 0" fill="none" stroke="${c}" stroke-width="2"/></g>`,
+    motif: (c) => `<g fill="${c}"><circle cx="16" cy="16" r="5"/><ellipse cx="42" cy="22" rx="7" ry="2.6" transform="rotate(30 42 22)"/><rect x="22" y="36" width="5" height="14" transform="rotate(-25 24 43)"/><circle cx="46" cy="46" r="3"/></g>`,
     cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
-      const cy = H * 0.57;
-      s += confetti(W, H, 12, Math.round(W / 7), th, id, { cx: W / 2, cy, rx: Math.min(W * 0.4, H * 0.5), ry: H * 0.27 });
-      return s + stack(d, W / 2, cy, Math.min(W * 0.72, H * 0.9), H * 0.16, { amp: th.accent }).svg;
+      let s = silkBg(id, W, H, th.silk) + confettiDefs(id, th);
+      const wide = isWide(W, H);
+      s += `<circle cx="${f(W)}" cy="0" r="${f(H * 0.9)}" fill="url(#${id}halo2)"/><defs><radialGradient id="${id}halo2"><stop offset="0" stop-color="#FFE2A8" stop-opacity=".16"/><stop offset="1" stop-color="#FFE2A8" stop-opacity="0"/></radialGradient></defs>`;
+      const nx = W * 0.08, ny = wide ? H * 0.62 : H * 0.7, mw = wide ? W * 0.5 : W * 0.84;
+      s += streamer(W * 0.74, -30, 12, 3, `url(#${id}foil)`, 8) + streamer(W * 0.9, -40, 10, 8, `url(#${id}rg)`, 7) + streamer(W * 0.56, -30, 6, 11, `url(#${id}foil)`, 6);
+      s += confetti(W, H, 12, Math.round(W / 4.5), id, W * 1.02, -H * 0.04, Math.PI * 0.7, { cx: nx + mw / 2, cy: ny, rx: mw * 0.62, ry: H * 0.24 });
+      return s + stack(d, nx, ny, mw, H * (wide ? 0.15 : 0.12), { anchor: 'start', amp: mix(th.accent, '#FFFFFF', 0.2) }).svg;
     },
     back(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
-      s += confetti(W, H * 0.6, 19, Math.round(W / 16), th, id, { cx: W / 2, cy: H * 0.45, rx: W * 0.25, ry: H * 0.12 });
-      s += t(W / 2, H * 0.47, initials(d), { size: fit(initials(d), W * 0.4, H * 0.1) });
-      return s + studioBlock(d, W / 2, H * 0.64);
+      let s = silkBg(id, W, H, th.silk) + confettiDefs(id, th);
+      s += confetti(W, H, 19, Math.round(W / 10), id, W * 1.02, -H * 0.04, Math.PI * 0.72, { cx: W / 2, cy: H * 0.6, rx: W * 0.36, ry: H * 0.3 });
+      s += iniLock(W / 2, H * 0.47, d, W * 0.4, H * 0.1, { amp: th.accent });
+      return s + studioBlock(d, W / 2, H * 0.62);
     },
   });
 
@@ -1241,10 +1222,10 @@
     cover(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + kalashDefs(id);
       if (isWide(W, H)) {
-        const cx = W * 0.3, by = H * 0.84, S = H * 0.46;
+        const cx = W * 0.28, by = H * 0.84, S = H * 0.46;
         s += `<circle cx="${f(cx)}" cy="${f(by - S * 0.75)}" r="${f(S * 1.05)}" fill="url(#${id}flame)" opacity=".5"/>`;
         s += kalash(cx, by, S, th, id) + diya(cx - S * 0.68, by, S * 0.09, id) + diya(cx + S * 0.6, by, S * 0.09, id);
-        s += stack(d, W * 0.7, H * 0.5, W * 0.46, H * 0.13, { amp: th.accent }).svg;
+        s += stack(d, W * 0.72, H * 0.5, W * 0.4, H * 0.13, { amp: th.accent }).svg;
       } else {
         const cx = W / 2, by = H * 0.56, S = H * 0.33;
         s += `<circle cx="${f(cx)}" cy="${f(by - S * 0.75)}" r="${f(S * 1.05)}" fill="url(#${id}flame)" opacity=".5"/>`;
@@ -1262,60 +1243,67 @@
   });
   const zariLine = (W, y, id) => `<rect x="${f(W / 2 - 120)}" y="${f(y)}" width="240" height="3" fill="${MARIGOLD}"/>`;
 
-  /* ---- peacock (sangeet, wedding): a fan of peacock feathers ---- */
-  function feather(x, y, len, ang, seed) {
+  /* ---- peacock (sangeet, wedding): two layers of peacock feathers sweeping in from the corner ---- */
+  function feather(x, y, len, ang, seed, id) {
     const r = rng(seed);
-    const a = (ang * Math.PI) / 180, bend = len * 0.06;
+    const bend = len * 0.06;
     let s = `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(ang + 90)})">`;
     // in local space the shaft runs from (0,0) up to (0,-len)
-    const bx = (t) => bend * Math.sin(t * Math.PI);
-    let barbs = '';
-    const N = 70;
-    for (let i = 8; i < N; i++) {
-      const tt = i / N, sy = -tt * len, sx = bx(tt);
-      const eyeT = 0.82, w = len * 0.13 * Math.sin(Math.min(1, tt / eyeT) * Math.PI * 0.5) * (tt > eyeT ? Math.max(0.3, 1 - (tt - eyeT) / (1 - eyeT) * 0.8) : 1);
+    const bx = (u) => bend * Math.sin(u * Math.PI);
+    let barbs = '', tips = '';
+    const N = 90, eyeT = 0.84;
+    for (let i = 6; i < N; i++) {
+      const u = i / N, sy = -u * len, sx = bx(u);
+      const w = len * 0.15 * Math.sin(Math.min(1, u / eyeT) * Math.PI * 0.5) * (u > eyeT ? Math.max(0.35, 1 - (u - eyeT) / (1 - eyeT) * 0.75) : 1);
       [-1, 1].forEach((side) => {
-        const ex = sx + side * w * (0.85 + r() * 0.3), ey = sy - w * 0.9;
-        barbs += `M${f(sx)} ${f(sy)} Q${f(sx + side * w * 0.5)} ${f(sy - w * 0.2)} ${f(ex)} ${f(ey)}`;
+        const ex = sx + side * w * (0.85 + r() * 0.3), ey = sy - w * (0.7 + r() * 0.4);
+        const seg = `M${f(sx)} ${f(sy)} Q${f(sx + side * w * 0.45)} ${f(sy - w * 0.15)} ${f(ex)} ${f(ey)}`;
+        if (u > 0.62) tips += seg; else barbs += seg;
       });
     }
-    s += `<path d="${barbs}" fill="none" stroke="#8DB86B" stroke-width="1" opacity=".55"/>`;
-    s += `<path d="M0 0 Q${f(bend * 2)} ${f(-len * 0.5)} 0 ${f(-len * 0.98)}" fill="none" stroke="#D8C38A" stroke-width="2"/>`;
-    const ey = -len * 0.84, ex = bx(0.84);
+    s += `<path d="${barbs}" fill="none" stroke="#6E9A4E" stroke-width="1.1" opacity=".55"/>`;
+    s += `<path d="${tips}" fill="none" stroke="url(#${id}barb)" stroke-width="1.2" opacity=".85"/>`;
+    s += `<path d="M0 0 Q${f(bend * 2)} ${f(-len * 0.5)} 0 ${f(-len * 0.98)}" fill="none" stroke="#E2CF96" stroke-width="${f(Math.max(1.5, len * 0.005))}"/>`;
+    const ey = -len * 0.86, ex = bx(0.86), e = len * 0.062;
     s += `<g transform="translate(${f(ex)} ${f(ey)})">` +
-      `<ellipse rx="${f(len * 0.085)}" ry="${f(len * 0.11)}" fill="#C9A227"/>` +
-      `<ellipse cy="${f(len * 0.008)}" rx="${f(len * 0.066)}" ry="${f(len * 0.086)}" fill="#2E8B57"/>` +
-      `<ellipse cy="${f(len * 0.016)}" rx="${f(len * 0.05)}" ry="${f(len * 0.064)}" fill="#1B9AAA"/>` +
-      `<path d="M0 ${f(-len * 0.03)} C${f(len * 0.045)} ${f(-len * 0.03)} ${f(len * 0.04)} ${f(len * 0.05)} 0 ${f(len * 0.06)} C${f(-len * 0.04)} ${f(len * 0.05)} ${f(-len * 0.045)} ${f(-len * 0.03)} 0 ${f(-len * 0.03)}Z" fill="#0B2A6F"/>` +
-      `<ellipse cx="${f(-len * 0.01)}" cy="${f(len * 0.004)}" rx="${f(len * 0.012)}" ry="${f(len * 0.02)}" fill="#3FA7D6" opacity=".7"/></g>`;
+      `<ellipse rx="${f(e * 1.25)}" ry="${f(e * 1.6)}" fill="#A47E2A" opacity=".85"/>` +
+      `<ellipse cy="${f(e * 0.08)}" rx="${f(e * 1.02)}" ry="${f(e * 1.32)}" fill="#D9B84A"/>` +
+      `<ellipse cy="${f(e * 0.16)}" rx="${f(e * 0.84)}" ry="${f(e * 1.08)}" fill="#2F8A57"/>` +
+      `<ellipse cy="${f(e * 0.24)}" rx="${f(e * 0.64)}" ry="${f(e * 0.82)}" fill="#1B9AA6"/>` +
+      `<path d="M0 ${f(-e * 0.28)} C${f(e * 0.62)} ${f(-e * 0.5)} ${f(e * 0.6)} ${f(e * 0.7)} 0 ${f(e * 0.86)} C${f(-e * 0.6)} ${f(e * 0.7)} ${f(-e * 0.62)} ${f(-e * 0.5)} 0 ${f(-e * 0.28)}Z" fill="#0E2C73"/>` +
+      `<ellipse cx="${f(-e * 0.12)}" cy="${f(e * 0.18)}" rx="${f(e * 0.16)}" ry="${f(e * 0.26)}" fill="#3F7FD6" opacity=".7"/></g>`;
     return s + '</g>';
   }
-  function fan(ox, oy, base, from, to, count, seed, scale) {
+  function fan(ox, oy, base, from, to, count, seed, id) {
     let s = '';
     for (let i = 0; i < count; i++) {
       const k = i / (count - 1), ang = from + (to - from) * k;
-      const len = base * (0.78 + 0.22 * Math.sin(k * Math.PI)) * scale;
-      s += feather(ox, oy, len, ang, seed + i);
+      const len = base * (0.8 + 0.2 * Math.sin(k * Math.PI));
+      s += feather(ox, oy, len, ang, seed + i, id);
     }
     return s;
   }
+  const peacockDefs = (id) => `<defs><linearGradient id="${id}barb" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#7FA65A"/><stop offset="1" stop-color="#D6C27A"/></linearGradient></defs>`;
   CT.register('peacock', {
     name: 'Peacock feathers',
     occasions: ['sangeet', 'wedding', 'mehendi'],
-    description: 'A fan of peacock feathers sweeping in from the corner',
+    description: 'Two layers of peacock feathers sweeping in from the corner',
     slots: 0,
     motif: (c) => `<g transform="translate(30 56)"><path d="M0 0 V-46" stroke="${c}" stroke-width="1.4"/><ellipse cy="-38" rx="7" ry="10" fill="none" stroke="${c}" stroke-width="1.6"/><ellipse cy="-36" rx="3" ry="4.5" fill="${c}"/></g>`,
     cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
+      let s = silkBg(id, W, H, th.silk) + peacockDefs(id);
       const wide = isWide(W, H);
-      s += fan(W + 30, H + 40, H * (wide ? 0.92 : 0.78), -178, -92, 9, 40, 1);
-      s += stack(d, W * 0.08, wide ? H * 0.36 : H * 0.3, wide ? W * 0.5 : W * 0.6, H * 0.13, { anchor: 'start', amp: th.accent }).svg;
+      const base = wide ? H * 0.95 : Math.min(H * 0.6, W * 0.86);
+      s += fan(W + 30, H + 40, base * 1.05, -182, -88, 11, 40, id);
+      s += fan(W + 30, H + 40, base * 0.72, -176, -96, 8, 80, id);
+      if (wide) s += stack(d, W * 0.08, H * 0.38, W * 0.5, H * 0.13, { anchor: 'start', amp: th.accent }).svg;
+      else s += stack(d, W * 0.09, H * 0.25, W * 0.82, H * 0.11, { anchor: 'start', amp: th.accent }).svg;
       return s;
     },
     back(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
-      s += feather(W / 2 - H * 0.2, H * 0.52, H * 0.42, -60, 3);
-      s += t(W / 2, H * 0.6, initials(d), { size: fit(initials(d), W * 0.4, H * 0.08) });
+      let s = silkBg(id, W, H, th.silk) + peacockDefs(id);
+      s += feather(W / 2 - H * 0.22, H * 0.5, H * 0.42, -62, 3, id);
+      s += iniLock(W / 2, H * 0.6, d, W * 0.4, H * 0.08, { amp: th.accent });
       return s + studioBlock(d, W / 2, H * 0.72);
     },
   });
@@ -1369,145 +1357,245 @@
       let s = silkBg(id, W, H, th.silk);
       s += sunburst(W / 2, H * 0.5, H * 0.36, 30, id, 0.18);
       s += `<circle cx="${f(W / 2)}" cy="${f(H * 0.42)}" r="${f(H * 0.1)}" fill="${th.silk}" stroke="url(#${id}foil)" stroke-width="3"/>`;
-      s += t(W / 2, H * 0.42 + H * 0.025, initials(d), { size: fit(initials(d), H * 0.15, H * 0.07) });
+      s += iniLock(W / 2, H * 0.42 + H * 0.025, d, H * 0.15, H * 0.07);
       return s + studioBlock(d, W / 2, H * 0.66);
     },
   });
 
-  /* ---- rangoli: a powder rangoli drawn at the threshold, diyas on its rim ---- */
-  function rangoli(cx, cy, R, th, seed, id) {
-    const r = rng(seed);
-    const deep = mix(th.accent, '#7A1030', 0.45), light = mix(th.accent, '#fff', 0.45);
-    let s = `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R)}" fill="#000" opacity=".12"/>`;
-    const ring = (n, r0, len, wid, fill, off = 0) => {
-      let g = '';
-      for (let i = 0; i < n; i++) g += `<path transform="translate(${f(cx)} ${f(cy)}) rotate(${f((i + off) * 360 / n)}) translate(0 ${f(-r0)})" d="${petal(len, wid)}" fill="${fill}"/>`;
-      return g;
+  /* ---- rangoli: a pulli kolam in rice-flour white, its line looping round a grid of dots ---- */
+  // Lines run diagonally between the dots and turn back at the edge and at "mirrors",
+  // the way a kolam is drawn. Works on a doubled grid: dots at odd/odd points, the line's
+  // turning points at points whose coordinates add up to an odd number.
+  function kolamLoops(N, mirrors) {
+    const M = 2 * N, key = (x, y) => x + ',' + y + '|', loops = [], seen = new Set();
+    const step = (x, y, dx, dy) => {
+      let fx = 0, fy = 0;
+      const m = mirrors[x + ',' + y];
+      if (x + dx < 0 || x + dx > M || m === 'v') { dx = -dx; fx = 1; }
+      if (y + dy < 0 || y + dy > M || m === 'h') { dy = -dy; fy = 1; }
+      return { dx, dy, fx, fy };
     };
-    s += ring(32, R * 0.86, R * 0.13, R * 0.045, '#F6F0E4');
-    s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 0.86)}" fill="${deep}"/>`;
-    s += ring(24, R * 0.58, R * 0.28, R * 0.1, MARIGOLD);
-    s += ring(24, R * 0.58, R * 0.2, R * 0.06, ORANGE);
-    s += `<path d="${scallops(cx, cy, R * 0.6, 24)}" fill="${light}"/>`;
-    s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 0.6)}" fill="#2F7D4F"/>`;
-    s += ring(12, R * 0.3, R * 0.28, R * 0.12, th.accent, 0.5);
-    s += ring(12, R * 0.3, R * 0.18, R * 0.06, light, 0.5);
-    s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 0.3)}" fill="${MARIGOLD}"/>`;
-    s += ring(8, R * 0.04, R * 0.24, R * 0.08, deep);
-    s += `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 0.07)}" fill="#F6F0E4"/>`;
-    s += dotsRing(cx, cy, R * 0.92, 48, R * 0.012, '#F6F0E4');
-    s += dotsRing(cx, cy, R * 0.83, 40, R * 0.01, MARIGOLD);
-    // powder grain
-    let g = '';
-    for (let i = 0; i < 500; i++) { const a = r() * TAU, rr = Math.sqrt(r()) * R * 0.98; g += `<circle cx="${f(cx + Math.cos(a) * rr)}" cy="${f(cy + Math.sin(a) * rr)}" r="${f(0.8 + r() * 1.4)}"/>`; }
-    return s + `<g fill="#fff" opacity=".16">${g}</g>`;
+    for (let y = 1; y < M; y++) for (let x = 1; x < M; x++) {
+      if ((x + y) % 2 === 0) continue;
+      for (const [dx0, dy0] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+        if (seen.has(key(x, y) + dx0 + '|' + dy0)) continue;
+        let px = x, py = y, dx = dx0, dy = dy0;
+        const pts = [];
+        for (let guard = 0; guard < 4 * M * M; guard++) {
+          seen.add(key(px, py) + dx + '|' + dy);
+          const st = step(px, py, dx, dy);
+          // a turn bulges outward past the turning point so the line wraps round the dot
+          pts.push([px + (st.fx ? dx * 0.55 : 0), py + (st.fy ? dy * 0.55 : 0)]);
+          // mark the reverse direction too, so the loop is drawn once
+          seen.add(key(px, py) + (-st.dx) + '|' + (-st.dy));
+          dx = st.dx; dy = st.dy; px += dx; py += dy;
+          if (px === x && py === y && dx === dx0 && dy === dy0) break;
+        }
+        if (pts.length > 2) loops.push(pts);
+      }
+    }
+    return loops;
   }
+  // square rings of mirrors nest smaller kolams inside the big one
+  function kolamMirrors(N, rings) {
+    const m = {};
+    rings.forEach((rr) => {
+      for (let v = N - rr + 1; v < N + rr; v++) {
+        [[N - rr, v, 'v'], [N + rr, v, 'v'], [v, N - rr, 'h'], [v, N + rr, 'h']].forEach(([x, y, t]) => { if ((x + y) % 2) m[x + ',' + y] = t; });
+      }
+    });
+    return m;
+  }
+  function kolam(cx, cy, size, N, id, th, rot = 45) {
+    const M = 2 * N, u = size / M;
+    const loops = kolamLoops(N, kolamMirrors(N, N > 5 ? [3] : [2]));
+    // between two turning points the line skirts one dot: bow it away from that dot
+    const P = (pts) => {
+      const out = [];
+      pts.forEach((a, i) => {
+        const b = pts[(i + 1) % pts.length];
+        out.push(a);
+        const mx = (Math.round(a[0]) + Math.round(b[0])) / 2, my = (Math.round(a[1]) + Math.round(b[1])) / 2;
+        const dot = [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]].map(([dx, dy]) => [mx + dx, my + dy]).find(([x, y]) => Math.abs(x % 2) === 1 && Math.abs(y % 2) === 1);
+        if (dot && Math.abs(Math.round(b[0]) - Math.round(a[0])) === 1) out.push([mx + (mx - dot[0]) * 0.32, my + (my - dot[1]) * 0.32]);
+      });
+      return smooth(out.map(([x, y]) => [(x - N) * u, (y - N) * u]));
+    };
+    const rice = '#F4EFE6';
+    let s = `<g transform="translate(${f(cx)} ${f(cy)}) rotate(${rot})">`;
+    let lines = loops.map((l) => P(l)).join(' ');
+    s += `<path d="${lines}" fill="none" stroke="#000" stroke-opacity=".28" stroke-width="${f(u * 0.2)}" stroke-linejoin="round" transform="translate(${f(u * 0.04)} ${f(u * 0.07)})"/>`;
+    s += `<g filter="url(#${id}chalk)"><path d="${lines}" fill="none" stroke="${rice}" stroke-width="${f(u * 0.15)}" stroke-linejoin="round" stroke-linecap="round"/>`;
+    let dots = '';
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const x = (2 * i + 1 - N) * u, y = (2 * j + 1 - N) * u;
+      if (i === (N - 1) / 2 && j === (N - 1) / 2) continue;
+      dots += `<circle cx="${f(x)}" cy="${f(y)}" r="${f(u * 0.13)}"/>`;
+    }
+    s += `<g fill="${rice}">${dots}</g></g>`;
+    // kumkum and haldi at the heart of the kolam
+    s += marigold(0, 0, u * 0.42, MARIGOLD) + `<circle r="${f(u * 0.12)}" fill="#C8102E"/>`;
+    return s + '</g>';
+  }
+  const kolamDefs = (id) => `<defs><filter id="${id}chalk" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="3" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.5"/></filter></defs>`;
   CT.register('rangoli', {
     name: 'Rangoli',
     occasions: ['other', 'haldi', 'mehendi', 'sangeet'],
-    description: 'A colour-powder rangoli at the threshold, diyas lit along its rim',
+    description: 'A pulli kolam drawn in rice-flour white, its line looping round a grid of dots',
     slots: 0,
-    motif: (c) => `<g fill="${c}">${[0, 1, 2, 3, 4, 5, 6, 7].map((i) => `<path transform="translate(30 30) rotate(${i * 45}) translate(0 -4)" d="${petal(13, 4)}"/>`).join('')}</g>`,
+    motif: (c) => `<g transform="translate(30 30) rotate(45)" fill="none" stroke="${c}" stroke-width="1.6"><rect x="-12" y="-12" width="24" height="24" rx="8"/><circle r="4"/></g><circle cx="30" cy="30" r="1.6" fill="${c}"/>`,
     cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk) + kalashDefs(id);
-      const R = Math.min(H * 0.5, W * 0.46), cy = H + R * 0.12;
-      s += rangoli(W / 2, cy, R, th, 5, id);
-      [-58, -32, 0, 32, 58].forEach((a) => {
-        const rad = ((a - 90) * Math.PI) / 180;
-        s += diya(W / 2 + Math.cos(rad) * R * 1.07, cy + Math.sin(rad) * R * 1.07 + 10, H * 0.022, id);
-      });
-      return s + stack(d, W / 2, H * 0.28, Math.min(W * 0.84, H * 1.1), H * 0.1, { amp: th.accent, lines: [placeLine(d).join(', ')], first: 46 }).svg;
-    },
-    back(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
-      s += rangoli(W / 2, H * 0.3, H * 0.19, th, 8, id);
-      return s + studioBlock(d, W / 2, H * 0.64);
-    },
-  });
-
-  /* ---- footprints (baby shower): tiny footprints walking under soft clouds ---- */
-  function foot(x, y, s, rot, flip, c) {
-    const sx = flip ? -1 : 1;
-    const sole = `M0 ${f(s * 0.95)} C${f(s * 0.32)} ${f(s * 0.95)} ${f(s * 0.36)} ${f(s * 0.5)} ${f(s * 0.3)} ${f(s * 0.2)} C${f(s * 0.26)} ${f(-s * 0.05)} ${f(s * 0.42)} ${f(-s * 0.25)} ${f(s * 0.36)} ${f(-s * 0.45)} C${f(s * 0.28)} ${f(-s * 0.72)} ${f(-s * 0.3)} ${f(-s * 0.72)} ${f(-s * 0.36)} ${f(-s * 0.38)} C${f(-s * 0.4)} ${f(-s * 0.1)} ${f(-s * 0.25)} ${f(s * 0.2)} ${f(-s * 0.3)} ${f(s * 0.5)} C${f(-s * 0.34)} ${f(s * 0.8)} ${f(-s * 0.25)} ${f(s * 0.95)} 0 ${f(s * 0.95)}Z`;
-    let g = `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${sx} 1)" fill="${c}"><path d="${sole}"/>`;
-    [[0.3, -0.86, 0.13], [0.06, -0.95, 0.1], [-0.12, -0.93, 0.085], [-0.27, -0.85, 0.075], [-0.38, -0.72, 0.065]].forEach(([tx, ty, tr]) => { g += `<circle cx="${f(tx * s)}" cy="${f(ty * s)}" r="${f(tr * s)}"/>`; });
-    return g + '</g>';
-  }
-  CT.register('footprints', {
-    name: 'Little footprints',
-    occasions: ['baby-shower', 'maternity', 'birthday'],
-    description: 'Tiny footprints padding across the page under soft clouds',
-    slots: 0,
-    motif: (c) => foot(22, 32, 13, -10, false, c) + foot(40, 26, 13, 10, true, c),
-    cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk) + starrySky(W, H * 0.6, 3, Math.round(W / 30));
-      const cl = '#F6F0E4';
-      [[0.1, 0.12, 1.4, 0.9], [0.86, 0.09, 1.1, 0.85], [0.68, 0.2, 0.7, 0.55], [0.24, 0.26, 0.6, 0.5]].forEach(([x, y, k, o]) => { s += `<g transform="translate(${f(W * x)} ${f(H * y)})" opacity="${o}"><path d="${cloud(H * 0.2 * k)}" fill="${cl}"/></g>`; });
-      // a gentle wandering trail along the bottom
-      const n = Math.max(6, Math.round(W / 190)), fs = H * 0.05;
-      for (let i = 0; i < n; i++) {
-        const k = (i + 0.5) / n, x = W * (0.06 + 0.88 * k), y = H * (0.86 - 0.05 * Math.sin(k * Math.PI * 1.6)) + (i % 2 ? -fs * 0.7 : fs * 0.7);
-        s += foot(x, y, fs, 78 + Math.cos(k * Math.PI * 1.6) * 12, i % 2 === 0, th.accent).replace('<g ', `<g opacity="${f(0.45 + 0.55 * k)}" `);
-      }
-      return s + stack(d, W / 2, H * 0.48, Math.min(W * 0.8, H * 0.9), H * 0.11, { amp: th.accent }).svg;
-    },
-    back(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
-      s += foot(W / 2 - H * 0.04, H * 0.3, H * 0.07, -8, false, th.accent) + foot(W / 2 + H * 0.04, H * 0.27, H * 0.07, 8, true, th.accent);
-      s += t(W / 2, H * 0.5, initials(d), { size: fit(initials(d), W * 0.4, H * 0.075) });
-      return s + studioBlock(d, W / 2, H * 0.64);
-    },
-  });
-
-  /* ---- bloom-bump (maternity): a single gold line drawing of a mother-to-be, flowers opening at the bump ---- */
-  const FRONT = [[0.47, 0], [0.53, 0.012], [0.566, 0.05], [0.575, 0.085], [0.6, 0.113], [0.582, 0.126], [0.589, 0.14], [0.58, 0.152], [0.576, 0.168], [0.548, 0.188], [0.538, 0.22], [0.552, 0.252], [0.585, 0.3], [0.603, 0.35], [0.577, 0.392], [0.6, 0.432], [0.662, 0.5], [0.69, 0.57], [0.672, 0.638], [0.624, 0.688], [0.602, 0.73], [0.61, 0.82], [0.6, 0.92]];
-  const BACK = [[0.47, 0], [0.425, 0.018], [0.405, 0.062], [0.418, 0.11], [0.44, 0.155], [0.448, 0.2], [0.44, 0.27], [0.428, 0.36], [0.44, 0.45], [0.468, 0.54], [0.474, 0.62], [0.482, 0.72], [0.5, 0.82], [0.515, 0.92]];
-  const ARM = [[0.5, 0.25], [0.478, 0.33], [0.482, 0.43], [0.53, 0.53], [0.6, 0.59], [0.655, 0.6]];
-  function bloomFigure(x, y, S, th, id) {
-    const P = (pts) => pts.map(([a, b]) => [x + (a - 0.5) * S, y + b * S]);
-    let s = `<g fill="none" stroke="url(#${id}foil)" stroke-width="${f(Math.max(3, S * 0.005))}" stroke-linecap="round" stroke-linejoin="round">`;
-    s += `<path d="${smooth(P(FRONT), false)}"/><path d="${smooth(P(BACK), false)}"/><path d="${smooth(P(ARM), false)}"/>`;
-    s += `<circle cx="${f(x + (0.4 - 0.5) * S)}" cy="${f(y + 0.045 * S)}" r="${f(S * 0.03)}"/>`;
-    s += '</g>';
-    // blooms opening along the bump
-    const fl = (a, b, rr, c) => {
-      const cx = x + (a - 0.5) * S, cy = y + b * S;
-      let g = '';
-      for (let i = 0; i < 6; i++) g += `<path transform="translate(${f(cx)} ${f(cy)}) rotate(${i * 60 + 15})" d="${petal(rr, rr * 0.42)}" fill="${c}"/>`;
-      return g + `<circle cx="${f(cx)}" cy="${f(cy)}" r="${f(rr * 0.22)}" fill="${MARIGOLD}"/>`;
-    };
-    const lf = (a, b, len, rot) => `<path transform="translate(${f(x + (a - 0.5) * S)} ${f(y + b * S)}) rotate(${rot})" d="${leaf(len * S, len * S * 0.22, 0.1)}" fill="${mix(th.silk, '#9BC48A', 0.55)}"/>`;
-    s += lf(0.69, 0.56, 0.08, 60) + lf(0.68, 0.62, 0.07, 110) + lf(0.66, 0.5, 0.06, 20) + lf(0.64, 0.66, 0.06, 140);
-    s += fl(0.705, 0.53, S * 0.03, th.accent) + fl(0.725, 0.6, S * 0.038, mix(th.accent, '#fff', 0.35)) + fl(0.69, 0.665, S * 0.026, th.accent);
-    s += `<circle cx="${f(x + 0.23 * S)}" cy="${f(y + 0.49 * S)}" r="${f(S * 0.008)}" fill="${MARIGOLD}"/><circle cx="${f(x + 0.25 * S)}" cy="${f(y + 0.7 * S)}" r="${f(S * 0.006)}" fill="${MARIGOLD}"/>`;
-    return s;
-  }
-  CT.register('bloom-bump', {
-    name: 'In bloom',
-    occasions: ['maternity', 'baby-shower'],
-    description: 'A single gold line drawing of a mother-to-be, flowers opening at the bump',
-    slots: 0,
-    motif: (c) => `<path d="M24 6 C30 6 32 14 30 20 C36 26 40 34 36 42 C34 48 30 50 30 56" fill="none" stroke="${c}" stroke-width="1.6"/><circle cx="38" cy="34" r="3" fill="${c}"/>`,
-    cover(W, H, d, th, id) {
-      let s = silkBg(id, W, H, th.silk);
+      let s = silkBg(id, W, H, th.silk) + kolamDefs(id);
       if (isWide(W, H)) {
-        const S = H * 0.92;
-        s += `<circle cx="${f(W * 0.3 + S * 0.15)}" cy="${f(H * 0.55)}" r="${f(H * 0.3)}" fill="${th.accent}" opacity=".08"/>`;
-        s += bloomFigure(W * 0.3, H * 0.06, S, th, id);
-        s += stack(d, W * 0.7, H * 0.5, W * 0.44, H * 0.13, { amp: th.accent }).svg;
+        const size = H * 0.5;
+        s += kolam(W * 0.73, H * 0.5, size, 7, id, th);
+        s += stack(d, W * 0.08, H * 0.5, W * 0.43, H * 0.13, { anchor: 'start', amp: MARIGOLD }).svg;
       } else {
-        const S = H * 0.9;
-        s += `<circle cx="${f(W * 0.22 + S * 0.15)}" cy="${f(H * 0.55)}" r="${f(H * 0.26)}" fill="${th.accent}" opacity=".08"/>`;
-        s += bloomFigure(W * 0.22, H * 0.06, S, th, id);
-        s += stack(d, W * 0.7, H * 0.52, W * 0.5, H * 0.1, { amp: th.accent, lines: [d.date, d.place].filter(Boolean) }).svg;
+        const size = Math.min(W * 0.52, H * 0.34);
+        s += kolam(W / 2, H * 0.32, size, 7, id, th);
+        s += stack(d, W / 2, H * 0.77, W * 0.84, H * 0.1, { amp: MARIGOLD }).svg;
       }
       return s;
     },
     back(W, H, d, th, id) {
+      let s = silkBg(id, W, H, th.silk) + kolamDefs(id);
+      s += kolam(W / 2, H * 0.3, H * 0.24, 5, id, th);
+      s += iniLock(W / 2, H * 0.6, d, W * 0.4, H * 0.07);
+      return s + studioBlock(d, W / 2, H * 0.7);
+    },
+  });
+
+  /* ---- footprints (baby shower): little feet in kantha running stitch on soft cotton ---- */
+  function foot(x, y, s, rot, flip, c, attrs = '') {
+    const sx = flip ? -1 : 1;
+    const sole = `M0 ${f(s * 0.95)} C${f(s * 0.32)} ${f(s * 0.95)} ${f(s * 0.36)} ${f(s * 0.5)} ${f(s * 0.3)} ${f(s * 0.2)} C${f(s * 0.26)} ${f(-s * 0.05)} ${f(s * 0.42)} ${f(-s * 0.25)} ${f(s * 0.36)} ${f(-s * 0.45)} C${f(s * 0.28)} ${f(-s * 0.72)} ${f(-s * 0.3)} ${f(-s * 0.72)} ${f(-s * 0.36)} ${f(-s * 0.38)} C${f(-s * 0.4)} ${f(-s * 0.1)} ${f(-s * 0.25)} ${f(s * 0.2)} ${f(-s * 0.3)} ${f(s * 0.5)} C${f(-s * 0.34)} ${f(s * 0.8)} ${f(-s * 0.25)} ${f(s * 0.95)} 0 ${f(s * 0.95)}Z`;
+    let g = `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)}) scale(${sx} 1)" fill="${c}" ${attrs}><path d="${sole}"/>`;
+    [[0.3, -0.86, 0.13], [0.06, -0.95, 0.1], [-0.12, -0.93, 0.085], [-0.27, -0.85, 0.075], [-0.38, -0.72, 0.065]].forEach(([tx, ty, tr]) => { g += `<circle cx="${f(tx * s)}" cy="${f(ty * s)}" r="${f(tr * s)}"/>`; });
+    return g + '</g>';
+  }
+  // a footprint quilted into the cloth: a soft fill, running stitch round it
+  const stitchedFoot = (x, y, s, rot, flip, th) =>
+    foot(x, y, s, rot, flip, mix(th.accent, '#FFFFFF', 0.3), `stroke="${th.silk}" stroke-width="${f(s * 0.035)}" stroke-dasharray="${f(s * 0.09)} ${f(s * 0.06)}" stroke-linecap="round"`);
+  function cotton(W, H, th, id) {
+    const ground = mix('#FBF6EE', th.accent, 0.14), thread = mix(ground, '#7A6A55', 0.5);
+    return `<defs><pattern id="${id}wv" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 1.5 H6 M1.5 0 V6" stroke="${thread}" stroke-width=".7" opacity=".22"/></pattern>
+      <radialGradient id="${id}cv" cx=".5" cy=".45" r=".8"><stop offset=".6" stop-color="${thread}" stop-opacity="0"/><stop offset="1" stop-color="${thread}" stop-opacity=".25"/></radialGradient></defs>` +
+      `<rect width="${W}" height="${H}" fill="${ground}"/><rect width="${W}" height="${H}" fill="url(#${id}wv)"/><rect width="${W}" height="${H}" fill="url(#${id}cv)"/>` + grain(id, W, H, 0.14);
+  }
+  function stitchBorder(W, H, th) {
+    const m = H * 0.045, dark = mix(th.accent, '#000000', 0.25);
+    return `<rect x="${f(m)}" y="${f(m)}" width="${f(W - 2 * m)}" height="${f(H - 2 * m)}" fill="none" stroke="${th.silk}" stroke-width="3" stroke-dasharray="16 10" stroke-linecap="round"/>` +
+      `<rect x="${f(m + 16)}" y="${f(m + 16)}" width="${f(W - 2 * m - 32)}" height="${f(H - 2 * m - 32)}" fill="none" stroke="${dark}" stroke-width="2" stroke-dasharray="6 9" stroke-linecap="round"/>`;
+  }
+  // tiny cross stitches scattered over the cloth
+  function crossStitches(W, H, seed, n, color, avoid) {
+    const r = rng(seed);
+    let s = '';
+    for (let i = 0, made = 0; i < n * 6 && made < n; i++) {
+      const x = W * (0.08 + r() * 0.84), y = H * (0.08 + r() * 0.84);
+      if (avoid && ((x - avoid.cx) / avoid.rx) ** 2 + ((y - avoid.cy) / avoid.ry) ** 2 < 1) continue;
+      made++;
+      const z = 6 + r() * 4;
+      s += `M${f(x - z)} ${f(y - z)} L${f(x + z)} ${f(y + z)} M${f(x + z)} ${f(y - z)} L${f(x - z)} ${f(y + z)}`;
+    }
+    return `<path d="${s}" stroke="${color}" stroke-width="2.4" stroke-linecap="round" opacity=".7"/>`;
+  }
+  CT.register('footprints', {
+    name: 'Little footprints',
+    occasions: ['baby-shower', 'maternity', 'birthday'],
+    description: 'Little footprints quilted in kantha running stitch across soft cotton',
+    slots: 0,
+    motif: (c) => foot(22, 32, 13, -10, false, c) + foot(40, 26, 13, 10, true, c),
+    endpaper(W, H, d, th, id, isBack) {
+      // cotton quilted with pairs of little feet in a half-drop
+      const T = 170, c = mix(th.accent, '#FFFFFF', 0.3);
+      let s = cotton(W, H, th, id) + `<defs><pattern id="${id}fp" width="${T}" height="${T}" patternUnits="userSpaceOnUse">` +
+        [[T * 0.25, T * 0.3], [T * 0.75, T * 0.8]].map(([x, y]) => foot(x - 11, y, 20, -10, false, c, `stroke="${th.silk}" stroke-width="1.4" stroke-dasharray="3 2.4" stroke-opacity=".7"`) + foot(x + 11, y - 8, 20, 10, true, c, `stroke="${th.silk}" stroke-width="1.4" stroke-dasharray="3 2.4" stroke-opacity=".7"`)).join('') +
+        `</pattern></defs><rect width="${W}" height="${H}" fill="url(#${id}fp)"/>` + stitchBorder(W, H, th);
+      return s + (isBack && d.studio ? CT.helpers.studioCard(W, H, d, th, id) : '');
+    },
+    cover(W, H, d, th, id) {
+      const wide = isWide(W, H);
+      let s = cotton(W, H, th, id) + stitchBorder(W, H, th);
+      const cy = H * (wide ? 0.4 : 0.38), mw = Math.min(W * 0.74, H * 0.95);
+      s += crossStitches(W, H, 7, wide ? 16 : 10, mix(th.accent, '#000000', 0.2), { cx: W / 2, cy, rx: mw * 0.62, ry: H * 0.24 });
+      // a trail walking in from the lower left, curving up to the right
+      const ctl = wide ? [[W * 0.06, H * 0.95], [W * 0.34, H * 0.8], [W * 0.62, H * 0.84], [W * 0.92, H * 0.62]] : [[W * 0.1, H * 0.95], [W * 0.4, H * 0.82], [W * 0.62, H * 0.87], [W * 0.88, H * 0.7]];
+      const C = CT.helpers.curvePts(ctl, false, 30), n = wide ? 6 : 5, fs = H * (wide ? 0.075 : 0.058);
+      for (let i = 0; i < n; i++) {
+        const j = Math.round((i + 0.5) / n * (C.length - 2)), [x, y] = C[j], [x2, y2] = C[j + 1];
+        const a = Math.atan2(y2 - y, x2 - x), side = i % 2 ? 1 : -1, off = fs * 0.55;
+        s += stitchedFoot(x - Math.sin(a) * off * side, y + Math.cos(a) * off * side, fs * (0.85 + 0.25 * i / n), (a * 180) / Math.PI + 90, side > 0, th);
+      }
+      return s + stack(d, W / 2, cy, mw, H * (wide ? 0.12 : 0.1), { color: th.silk, amp: mix(th.accent, '#000000', 0.25), lineColor: th.silk, opacity: 0.8 }).svg;
+    },
+    back(W, H, d, th, id) {
+      let s = cotton(W, H, th, id) + stitchBorder(W, H, th);
+      s += stitchedFoot(W / 2 - H * 0.045, H * 0.3, H * 0.07, -8, false, th) + stitchedFoot(W / 2 + H * 0.045, H * 0.27, H * 0.07, 8, true, th);
+      s += iniLock(W / 2, H * 0.5, d, W * 0.4, H * 0.075, { color: th.silk, amp: mix(th.accent, '#000000', 0.25) });
+      return s + studioBlock(d, W / 2, H * 0.63, th.silk);
+    },
+  });
+
+  /* ---- bloom-bump (maternity): an open wreath of blossoms curving like a bump, the names held inside ---- */
+  function blossom(x, y, r, c, rot, centre) {
+    let g = `<g transform="translate(${f(x)} ${f(y)}) rotate(${f(rot)})">`;
+    for (let i = 0; i < 5; i++) g += `<path transform="rotate(${i * 72})" d="M0 0 C${f(r * 0.55)} ${f(-r * 0.25)} ${f(r * 0.6)} ${f(-r * 0.95)} 0 ${f(-r)} C${f(-r * 0.6)} ${f(-r * 0.95)} ${f(-r * 0.55)} ${f(-r * 0.25)} 0 0Z" fill="${c}"/>`;
+    g += `<path d="${[0, 1, 2, 3, 4].map((i) => { const a = (i * 72 - 90) * Math.PI / 180; return `M0 0 L${f(Math.cos(a) * r * 0.5)} ${f(Math.sin(a) * r * 0.5)}`; }).join('')}" stroke="#000" stroke-opacity=".15" stroke-width="${f(Math.max(1, r * 0.06))}"/>`;
+    return g + `<circle r="${f(r * 0.2)}" fill="${centre}"/></g>`;
+  }
+  function wreath(cx, cy, R, th, id, seed, sparse = false) {
+    const r = rng(seed), a0 = -38, a1 = 232;   // open at the top right
+    const sage = mix('#8DB580', th.silk, 0.2), deep = mix('#4F7F4F', th.silk, 0.25);
+    const blush = mix(th.accent, '#FFFFFF', 0.55), ivory = '#F6F0E4';
+    const P = (deg, k = 1) => [cx + Math.cos(deg * Math.PI / 180) * R * k, cy + Math.sin(deg * Math.PI / 180) * R * k];
+    const [sx, sy] = P(a0), [ex, ey] = P(a1);
+    let s = `<path d="M${f(sx)} ${f(sy)} A${f(R)} ${f(R)} 0 1 1 ${f(ex)} ${f(ey)}" fill="none" stroke="url(#${id}foil)" stroke-width="${f(R * 0.012)}" stroke-linecap="round"/>`;
+    // fuller towards the bottom of the curve
+    const weight = (a) => 0.55 + 0.45 * Math.exp(-(((a - 95) / 70) ** 2));
+    let leaves = '', flowers = '';
+    const step = sparse ? 9 : 5;
+    for (let a = a0 + 4; a < a1 - 2; a += step) {
+      const w = weight(a), [x, y] = P(a), tang = a + 90;
+      [-1, 1].forEach((side) => {
+        const len = R * (0.12 + r() * 0.08) * w;
+        leaves += `<path transform="translate(${f(x)} ${f(y)}) rotate(${f(tang + side * (55 + r() * 25))})" d="${leaf(len, len * 0.3, 0.1 * side)}" fill="${r() < 0.5 ? sage : deep}"/>`;
+      });
+      if (r() < 0.22) { const [bx, by] = P(a + 2, 1 + (r() - 0.5) * 0.14); flowers += `<circle cx="${f(bx)}" cy="${f(by)}" r="${f(R * 0.014)}" fill="${MARIGOLD}"/><circle cx="${f(bx + R * 0.025)}" cy="${f(by + R * 0.012)}" r="${f(R * 0.011)}" fill="${MARIGOLD}"/>`; }
+    }
+    const blooms = sparse ? 9 : 19;
+    for (let i = 0; i < blooms; i++) {
+      const a = a0 + 12 + ((a1 - a0 - 24) * (i + 0.5)) / blooms + (r() - 0.5) * 6, w = weight(a);
+      const [x, y] = P(a, 1 + (r() - 0.5) * 0.12), rr = R * (0.05 + r() * 0.035) * (0.6 + w * 0.7);
+      flowers += blossom(x, y, rr, [th.accent, blush, ivory][i % 3], r() * 72, i % 3 === 2 ? MARIGOLD : '#F6E3A0');
+    }
+    // buds at both tips of the wreath
+    [[a0, -1], [a1, 1]].forEach(([a, dir]) => {
+      const [x, y] = P(a), tang = a + 90 * dir + 180;
+      flowers += `<path transform="translate(${f(x)} ${f(y)}) rotate(${f(tang + 90)})" d="${petal(R * 0.11, R * 0.035)}" fill="${blush}"/>`;
+    });
+    return s + leaves + flowers;
+  }
+  CT.register('bloom-bump', {
+    name: 'In bloom',
+    occasions: ['maternity', 'baby-shower'],
+    description: 'An open wreath of blossoms curving like a bump, the names held inside it',
+    slots: 0,
+    motif: (c) => `<path d="M42 14 A18 18 0 1 1 18 14" fill="none" stroke="${c}" stroke-width="1.6"/><circle cx="30" cy="48" r="4" fill="${c}"/><circle cx="14" cy="38" r="3" fill="${c}"/><circle cx="46" cy="38" r="3" fill="${c}"/>`,
+    cover(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk);
-      s += bloomFigure(W / 2 - H * 0.06, H * 0.08, H * 0.42, th, id);
-      s += t(W / 2, H * 0.6, initials(d), { size: fit(initials(d), W * 0.4, H * 0.07) });
-      return s + studioBlock(d, W / 2, H * 0.71);
+      const R = Math.min(H * 0.37, W * 0.4), cx = W / 2, cy = H * 0.5;
+      s += `<defs><radialGradient id="${id}bp"><stop offset=".55" stop-color="#000" stop-opacity=".2"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient></defs><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(R * 1.05)}" fill="url(#${id}bp)"/>`;
+      s += wreath(cx, cy, R, th, id, 5);
+      s += stack(d, cx, cy + R * 0.02, R * 1.3, R * 0.27, { amp: th.accent, size: Math.min(32, R * 0.085), gap: Math.min(42, R * 0.11), first: Math.min(48, R * 0.13) }).svg;
+      return s;
+    },
+    back(W, H, d, th, id) {
+      let s = silkBg(id, W, H, th.silk);
+      const R = H * 0.15;
+      s += wreath(W / 2, H * 0.32, R, th, id, 8, true);
+      s += iniLock(W / 2, H * 0.32 + R * 0.18, d, R * 1.2, R * 0.5, { amp: th.accent });
+      return s + studioBlock(d, W / 2, H * 0.64);
     },
   });
 
@@ -1560,7 +1648,7 @@
     back(W, H, d, th, id) {
       let s = silkBg(id, W, H, th.silk) + kalashDefs(id);
       s += gendaHeap(W + 20, -20, -1, 1, 0.8, 11, th, id);
-      s += t(W / 2, H * 0.42, initials(d), { size: fit(initials(d), W * 0.4, H * 0.1) });
+      s += iniLock(W / 2, H * 0.42, d, W * 0.4, H * 0.1);
       return s + studioBlock(d, W / 2, H * 0.6);
     },
   });
