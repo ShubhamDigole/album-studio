@@ -1,6 +1,7 @@
 // POST /api/admin/albums/:id/upload   (multipart form)
 //   kind=photo   file, thumb, width, height, section, position, name, spread  -> a gallery / auto-layout photo (spread = one image holding two pages)
 //   kind=page    file, thumb, width, height, spread, position, name      -> a designed album page (image or PDF page)
+//   (photo and page may also send full = a full-resolution copy, kept for zooming in and downloads)
 //   kind=design  file, part=cover|back|endpaper [, slot=n]               -> your own cover / end page / endpaper, or a photo in a design's slot
 // The browser resizes images before upload (which also removes EXIF/GPS); files are stored in R2.
 import { json, error, handle, HttpError } from '../../../../../lib/http.js';
@@ -8,6 +9,7 @@ import { findManaged } from '../../../../../lib/access.js';
 
 const TYPES = { 'image/jpeg': 'jpg', 'image/webp': 'webp', 'image/png': 'png' };
 const MAX_BYTES = 15 * 1024 * 1024;
+const MAX_FULL_BYTES = 40 * 1024 * 1024;   // full-resolution copies of large photos and pages
 const MAX_ITEMS = 3000;
 
 function newId() {
@@ -17,10 +19,10 @@ function intField(form, name, def = 0) {
   const n = parseInt(form.get(name), 10);
   return Number.isFinite(n) && n >= 0 && n < 100000 ? n : def;
 }
-function checkFile(file, label) {
+function checkFile(file, label, max = MAX_BYTES) {
   if (!file || typeof file === 'string') throw new HttpError(400, `${label} is missing.`);
   if (!TYPES[file.type]) throw new HttpError(415, `${label} must be a JPEG, WebP or PNG image.`);
-  if (file.size > MAX_BYTES) throw new HttpError(413, `${label} is larger than 15 MB.`);
+  if (file.size > max) throw new HttpError(413, `${label} is larger than ${Math.round(max / 1048576)} MB.`);
 }
 
 export const onRequestPost = handle(async ({ request, env, params, data }) => {
@@ -34,11 +36,14 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
   checkFile(file, 'The image');
   const thumb = form.get('thumb');
   if (thumb && typeof thumb !== 'string') checkFile(thumb, 'The thumbnail');
+  const full = kind === 'design' ? null : form.get('full');
+  if (full && typeof full !== 'string') checkFile(full, 'The full-quality image', MAX_FULL_BYTES);
 
   const id = newId();
   const ext = TYPES[file.type];
   const key = `a/${row.id}/${kind}/${id}.${ext}`;
   const thumbKey = thumb && typeof thumb !== 'string' ? `a/${row.id}/${kind}/${id}-t.${TYPES[thumb.type]}` : '';
+  const fullKey = full && typeof full !== 'string' ? `a/${row.id}/${kind}/${id}-f.${TYPES[full.type]}` : '';
   const put = (k, f) => env.MEDIA.put(k, f.stream(), { httpMetadata: { contentType: f.type, cacheControl: 'private, max-age=31536000, immutable' } });
 
   if (kind === 'design') {
@@ -68,9 +73,10 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
   const name = String(form.get('name') || '').replace(/[\u0000-\u001F\u007F]/g, '').trim().slice(0, 160);
   await put(key, file);
   if (thumbKey) await put(thumbKey, thumb);
-  await env.DB.prepare(`INSERT INTO media (id, album_id, kind, key, thumb_key, width, height, section, spread, position, name, bytes, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-    .bind(id, row.id, kind, key, thumbKey, width, height, kind === 'photo' ? section : '', form.get('spread') === '1' ? 1 : 0,
-      intField(form, 'position'), name, file.size + (thumb && typeof thumb !== 'string' ? thumb.size : 0), Date.now()).run();
+  if (fullKey) await put(fullKey, full);
+  await env.DB.prepare(`INSERT INTO media (id, album_id, kind, key, thumb_key, full_key, width, height, section, spread, position, name, bytes, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(id, row.id, kind, key, thumbKey, fullKey, width, height, kind === 'photo' ? section : '', form.get('spread') === '1' ? 1 : 0,
+      intField(form, 'position'), name, file.size + (thumb && typeof thumb !== 'string' ? thumb.size : 0) + (fullKey ? full.size : 0), Date.now()).run();
   return json({ ok: true, item: { id, kind, url: '/media/' + key, thumb: '/media/' + (thumbKey || key), width, height, section, name } }, 201);
 });

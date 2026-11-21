@@ -826,7 +826,12 @@
 
   /* ---------- photos and pages ---------- */
   // Resize in the browser before upload: smaller files, and re-encoding drops EXIF/GPS.
-  async function prepareImage(file, maxSide = 2400, thumbSide = 480) {
+  // Images are re-drawn on a canvas in the browser: this removes EXIF data such as GPS location (always), and makes
+  // a display copy that loads fast. With full = true, a full-resolution copy (up to FULL_SIDE) is made as well,
+  // for zooming in and downloads.
+  const FULL_SIDE = 8000;
+  const keepFull = () => { try { return localStorage.getItem('albumviewer:keepFull') !== '0'; } catch (e) { return true; } };
+  async function prepareImage(file, maxSide = 2400, thumbSide = 480, { full = false } = {}) {
     const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
     if (bmp.width / bmp.height > SPREAD_RATIO) maxSide = Math.round(maxSide * 1.6);   // two pages in one image: keep each page sharp
     const enc = async (side, q) => {
@@ -836,10 +841,12 @@
       c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
       return new Promise((res) => c.toBlob((b) => res({ blob: b, w: c.width, h: c.height }), 'image/jpeg', q));
     };
-    const main = await enc(maxSide, 0.86);
+    const main = await enc(maxSide, full ? 0.9 : 0.86);
     const thumb = thumbSide ? await enc(thumbSide, 0.8) : null;
+    // a full copy only when the original is larger than the display copy
+    const big = full && Math.max(bmp.width, bmp.height) > maxSide * 1.05 ? await enc(FULL_SIDE, 0.95) : null;
     bmp.close && bmp.close();
-    return { file: main.blob, thumb: thumb && thumb.blob, width: main.w, height: main.h };
+    return { file: main.blob, thumb: thumb && thumb.blob, full: big && big.blob, width: main.w, height: main.h };
   }
   // Render PDF pages to images with pdf.js (in the browser).
   async function pdfPages(file, onProgress) {
@@ -932,6 +939,8 @@
           </div></div></div>`;
     };
     body.innerHTML = `
+      <label class="check quality-check"><input type="checkbox" id="upFull"${keepFull() ? ' checked' : ''} />
+        <span><b>Keep full quality</b> for zooming in and downloads. Guests still flip through light, fast copies; the full-size image loads only when they zoom or download. Uses more storage.</span></label>
       <div class="uploader">
         <section class="up-card covers-card">
           <h3>Front and back cover</h3>
@@ -945,7 +954,7 @@
           <p class="hint">For the photo gallery and the automatic album layout. Upload one ceremony at a time.</p>
           <label class="field"><span>Ceremony or section</span><input id="upSection" list="sectionList" maxlength="60" placeholder="Haldi" /></label>
           <datalist id="sectionList">${['Haldi', 'Mehendi', 'Sangeet', 'Wedding', 'Reception', ...sections].filter((v, i, arr) => arr.indexOf(v) === i).map((s) => `<option value="${esc(s)}">`).join('')}</datalist>
-          <label class="drop" data-drop="photo"><svg><use href="#i-upload"/></svg><span>Choose photos or drop them here</span><small>JPEG, PNG or WebP. They are resized to 2400 px and location data is removed.</small>
+          <label class="drop" data-drop="photo"><svg><use href="#i-upload"/></svg><span>Choose photos or drop them here</span><small>JPEG, PNG or WebP. Location data is always removed.</small>
             <input type="file" accept="image/*" multiple hidden data-pick="photo" /></label>
         </section>
         <section class="up-card">
@@ -1011,6 +1020,7 @@
       try { await uploadCoverSpread(a, f, false); toast('Split into the back cover and front cover'); albumPage(a.id, 'photos'); }
       catch (err) { toast(err.message); label.classList.remove('busy'); }
     });
+    $('#upFull').addEventListener('change', (e) => { try { localStorage.setItem('albumviewer:keepFull', e.target.checked ? '1' : '0'); } catch (err) { /* ignore */ } });
     // one image = two pages, or just one
     // order: drag tiles, or use the arrows; pages renumber at once and the order is saved
     let saveTimer = null;
@@ -1093,6 +1103,7 @@
       }
       const section = ($('#upSection') && $('#upSection').value.trim()) || '';
       const useCover = kind === 'page' && $('#upCover').checked;
+      const full = $('#upFull').checked;
       const useBack = kind === 'page' && $('#upBack').checked && pages.length > 1;
       const forceSpreads = kind === 'page' && $('#upSpreads').checked;
       const queue = (kind === 'page' ? pages : files).map((f, i) => ({ f, i, li: item(f.name) }));
@@ -1112,7 +1123,7 @@
             done++;
             return;
           }
-          const img = await prepareImage(file, asCover || asBack ? 3000 : kind === 'page' ? 3200 : 2400, asCover || asBack ? 0 : 480);
+          const img = await prepareImage(file, asCover || asBack ? 3000 : kind === 'page' ? 3200 : 2400, asCover || asBack ? 0 : 480, { full: full && !asCover && !asBack });
           const form = new FormData();
           if (asCover || asBack) {
             form.append('kind', 'design'); form.append('part', asCover ? 'cover' : 'back');
@@ -1123,6 +1134,7 @@
             if (kind === 'photo') form.append('section', section);
             form.append('spread', (kind === 'page' && forceSpreads) || img.width / img.height > SPREAD_RATIO ? '1' : '0');
             form.append('thumb', img.thumb, 'thumb.jpg');
+            if (img.full) form.append('full', img.full, 'full.jpg');
           }
           form.append('file', img.file, 'image.jpg');
           set(li, 'Uploading');
@@ -1149,7 +1161,7 @@
         <span class="grip" title="Drag to move" aria-hidden="true"><svg viewBox="0 0 10 16"><circle cx="3" cy="3" r="1.4"/><circle cx="7" cy="3" r="1.4"/><circle cx="3" cy="8" r="1.4"/><circle cx="7" cy="8" r="1.4"/><circle cx="3" cy="13" r="1.4"/><circle cx="7" cy="13" r="1.4"/></svg></span>
         <button type="button" class="mv next" data-move="1" title="Move later" aria-label="Move this ${noun} later"><svg><use href="#i-back"/></svg></button>
       </div>
-      <figcaption>${esc(label || m.name || '')}</figcaption>${toggle}
+      ${m.full ? '<span class="hq" title="Full quality kept for zooming in and downloads">HD</span>' : ''}<figcaption>${esc(label || m.name || '')}</figcaption>${toggle}
       <button type="button" class="icon-btn del" data-del="${esc(m.id)}" data-kind="${m.kind}" title="Remove"><svg><use href="#i-trash"/></svg></button></figure>`;
   }
   // "Page 1", "Pages 2–3" ... for a list of one-page / two-page flags

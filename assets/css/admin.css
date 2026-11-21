@@ -317,6 +317,12 @@ h4.sec { margin: 22px 0 10px; font-weight: 600; }
 .media-tile figcaption { padding: 4px 8px; font-size: 12px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .media-tile .del { position: absolute; top: 6px; right: 6px; width: 34px; height: 34px; background: rgba(0, 0, 0, .55); color: #fff; opacity: 0; transition: opacity .2s; }
 .media-tile:hover .del, .media-tile .del:focus-visible { opacity: 1; }
+/* full quality */
+.quality-check { display: flex; align-items: flex-start; gap: 10px; max-width: 80ch; margin: 0 0 16px; color: var(--ink-soft); font-size: 15px; line-height: 1.45; }
+.quality-check input { flex: none; width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--marigold); }
+.quality-check b { color: var(--ink); }
+.media-tile .hq { position: absolute; top: 10px; right: 8px; padding: 1px 6px; border-radius: 4px; background: rgba(0, 0, 0, .6); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: .04em; pointer-events: none; }
+.media-tile:hover .hq { opacity: 0; }
 /* ordering: drag a tile, or use its arrows */
 .media-grid[data-sort] .media-tile { cursor: grab; user-select: none; }
 .media-tile .move { position: absolute; top: 6px; left: 6px; display: flex; align-items: center; gap: 2px; padding: 2px; border-radius: 99px; background: rgba(0, 0, 0, .58); color: #fff; opacity: 0; transition: opacity .2s; }

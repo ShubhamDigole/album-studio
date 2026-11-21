@@ -194,6 +194,33 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
   .toast { bottom: 150px; }
 }
 
+/* phones held sideways (and other short screens): every pixel of height goes to the book.
+   One slim toolbar row, a one-line title, no side arrows (swipe or tap instead). */
+@media (max-height: 500px) and (orientation: landscape) {
+  .titlebar { padding: 6px max(14px, env(safe-area-inset-right)) 0 max(14px, env(safe-area-inset-left)); align-items: center; }
+  .album-title { display: flex; align-items: baseline; gap: 12px; }
+  .album-title h1 { font-size: 18px; }
+  .album-title p { margin: 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .studio { display: none; }
+  .titlebar .icon-btn { width: 32px; height: 32px; }
+  .side-nav { display: none; }
+  .dock-wrap { padding: 0 max(8px, env(safe-area-inset-right)) 0 max(8px, env(safe-area-inset-left)); gap: 0; }
+  .dock { width: auto; max-width: 100%; border-radius: 14px 14px 0 0; margin-bottom: env(safe-area-inset-bottom); }
+  .progress { display: none; }
+  .dock-row { flex-wrap: nowrap; padding: 2px 6px; gap: 0; }
+  .tb-group.tools { width: auto; border-top: 0; padding-top: 0; }
+  .icon-btn { width: 34px; height: 34px; }
+  .icon-btn svg { width: 19px; height: 19px; }
+  .hide-sm, .hide-xs { display: none; }
+  .page-indicator { height: 30px; margin: 0 2px; padding: 0 6px; font-size: 13px; }
+  .page-indicator input { width: 40px; font-size: 13px; }
+  .zari { display: none; }
+  .drawer { bottom: 46px; }
+  .thumb .thumb-imgs { height: 48px; }
+  .toast { bottom: 52px; font-size: 14px; padding: 8px 14px; }
+  .panel { top: 6px; bottom: 6px; }
+}
+
 /* generated pages (cover templates) */
 .gen { position: absolute; inset: 0; display: block; }
 .gen > svg, .gen svg { display: block; width: 100%; height: 100%; }

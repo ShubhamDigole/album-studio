@@ -59,7 +59,7 @@
         pages.push({ gen: p.generated, text: p.text || '', title: p.title || '' });
       } else if (p.layout) {
         // a page laid out live from uploaded photos (full / pair / single)
-        pages.push({ layout: p.layout, photos: (p.photos || []).map((x) => ({ src: abs(x.src), thumb: abs(x.thumb || x.src), w: x.w, h: x.h })), title: p.title || '' });
+        pages.push({ layout: p.layout, photos: (p.photos || []).map((x) => ({ src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h })), title: p.title || '' });
       } else if (p.blank) {
         pages.push({ blank: true, title: p.title || '' });
       } else {
@@ -81,9 +81,10 @@
      ------------------------------------------------------------------------ */
   function measure() {
     const r = el.stage.getBoundingClientRect();
-    const small = r.width < 720;
+    const short = innerHeight <= 500 && innerWidth > innerHeight;   // a phone held sideways: no side arrows (see viewer.css)
+    const small = r.width < 720 || short;
     const padX = small ? 10 : 84;   // leave room for the side arrows
-    const padY = small ? 14 : 36;
+    const padY = short ? 8 : small ? 14 : 36;
     const aw = Math.max(120, r.width - padX * 2);
     const ah = Math.max(80, r.height - padY * 2);
     const ratio = S.album.pageWidth / S.album.pageHeight;
@@ -131,8 +132,9 @@
     return window.CoverTemplates.render(kind, Object.assign({}, a, { theme: M.theme(a) }), { ratio: a.pageWidth / a.pageHeight, text });
   }
   // HTML for a photo layout page; thumbnails use the small images
-  function layoutHtml(p, small, lazy) {
-    const img = (x) => '<img alt="" ' + (lazy ? 'data-src' : 'src') + '="' + (small ? x.thumb : x.src) + '">';
+  // small: thumbnails (drawers, contents); zoom: the full-quality copies, when zoomed in
+  function layoutHtml(p, small, lazy, zoom) {
+    const img = (x) => '<img alt="" ' + (lazy ? 'data-src' : 'src') + '="' + (small ? x.thumb : zoom ? x.zoom || x.src : x.src) + '">';
     return '<div class="lay lay-' + p.layout + '">' + p.photos.map((x) =>
       '<figure style="aspect-ratio:' + (x.w || 3) + ' / ' + (x.h || 2) + '">' + img(x) + '</figure>').join('') + '</div>';
   }
@@ -396,7 +398,7 @@
       box.style.width = (pano ? S.pw * 2 : S.pw) + 'px';
       box.style.height = S.ph + 'px';
       if (p.layout) {
-        box.innerHTML = layoutHtml(p, false);
+        box.innerHTML = layoutHtml(p, false, false, true);
         box.classList.add('gen');
       } else if (p.gen) {
         box.innerHTML = genSvg(p.gen, p.text);

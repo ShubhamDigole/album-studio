@@ -40,7 +40,25 @@ if (!vars.ALBUM_SECRET) {
 
 /* ---------- database: a D1-compatible wrapper around a local SQLite file ---------- */
 const sqlite = new DatabaseSync(join(DATA, 'album.sqlite'));
-sqlite.exec(readFileSync(join(root, 'schema.sql'), 'utf8'));
+const schemaSql = readFileSync(join(root, 'schema.sql'), 'utf8');
+sqlite.exec(schemaSql);
+// An existing data/album.sqlite may predate columns added to schema.sql later (D1 gets them from migrations/):
+// compare with a fresh in-memory copy of the schema and add what is missing.
+{
+  const fresh = new DatabaseSync(':memory:');
+  fresh.exec(schemaSql);
+  const tables = fresh.prepare("SELECT name FROM sqlite_master WHERE type = 'table'").all().map((t) => t.name);
+  for (const t of tables) {
+    const have = new Set(sqlite.prepare(`PRAGMA table_info(${t})`).all().map((c) => c.name));
+    for (const c of fresh.prepare(`PRAGMA table_info(${t})`).all()) {
+      if (have.has(c.name)) continue;
+      const def = c.dflt_value !== null ? ' DEFAULT ' + c.dflt_value : '';
+      sqlite.exec(`ALTER TABLE ${t} ADD COLUMN ${c.name} ${c.type}${c.notnull && def ? ' NOT NULL' : ''}${def}`);
+      console.log(`Database: added column ${t}.${c.name}`);
+    }
+  }
+  fresh.close();
+}
 const norm = (v) => (v === undefined ? null : typeof v === 'boolean' ? (v ? 1 : 0) : v);
 const plain = (row) => (row ? { ...row } : null);
 function statement(sql, args = []) {

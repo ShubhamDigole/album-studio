@@ -15,12 +15,12 @@ export const onRequestGet = handle(async ({ request, env, params, data }) => {
       (SELECT COUNT(*) FROM guestbook WHERE album_id = ?1) AS messages,
       (SELECT COUNT(*) FROM guestbook WHERE album_id = ?1 AND approved = 0) AS pending,
       (SELECT COUNT(*) FROM favorites WHERE album_id = ?1) AS hearts`).bind(params.id).first(),
-    env.DB.prepare("SELECT id, kind, key, thumb_key, width, height, section, spread, name, bytes FROM media WHERE album_id = ? AND kind IN ('photo', 'page') ORDER BY position, created_at").bind(params.id).all(),
+    env.DB.prepare("SELECT id, kind, key, thumb_key, full_key, width, height, section, spread, name, bytes FROM media WHERE album_id = ? AND kind IN ('photo', 'page') ORDER BY position, created_at").bind(params.id).all(),
     row.studio_id ? env.DB.prepare('SELECT id, name, phone, url FROM studios WHERE id = ?').bind(row.studio_id).first() : null,
   ]);
   const built = await getStaticAlbum(env, request, params.id);
   const album = rowToAlbum(row);
-  const items = media.results.map((m) => ({ ...m, url: '/media/' + m.key, thumb: '/media/' + (m.thumb_key || m.key) }));
+  const items = media.results.map((m) => ({ ...m, url: '/media/' + m.key, thumb: '/media/' + (m.thumb_key || m.key), full: m.full_key ? '/media/' + m.full_key : '' }));
   const firstLandscape = items.find((m) => m.kind === 'photo' && m.width > m.height);
   return json({
     album, designView: designUrls(album.design), studio,

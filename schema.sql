@@ -92,6 +92,7 @@ CREATE TABLE IF NOT EXISTS media (
   album_id   TEXT NOT NULL,
   kind       TEXT NOT NULL,                     -- photo | page | design
   key        TEXT NOT NULL,                     -- R2 key of the display image
+  full_key   TEXT NOT NULL DEFAULT '',          -- full-quality copy for zoom and download (optional)
   thumb_key  TEXT NOT NULL DEFAULT '',
   width      INTEGER NOT NULL DEFAULT 0,
   height     INTEGER NOT NULL DEFAULT 0,

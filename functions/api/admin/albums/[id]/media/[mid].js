@@ -15,9 +15,9 @@ export const onRequestPatch = handle(async ({ request, env, params, data }) => {
 export const onRequestDelete = handle(async ({ env, params, data }) => {
   const row = await findManaged(env, params.id, data.user);
   if (!row) return error(404, 'Album not found.');
-  const m = await env.DB.prepare('SELECT key, thumb_key FROM media WHERE id = ? AND album_id = ?').bind(String(params.mid), row.id).first();
+  const m = await env.DB.prepare('SELECT key, thumb_key, full_key FROM media WHERE id = ? AND album_id = ?').bind(String(params.mid), row.id).first();
   if (!m) return error(404, 'That photo is already gone.');
   await env.DB.prepare('DELETE FROM media WHERE id = ? AND album_id = ?').bind(String(params.mid), row.id).run();
-  if (env.MEDIA) await env.MEDIA.delete([m.key, m.thumb_key].filter(Boolean));
+  if (env.MEDIA) await env.MEDIA.delete([m.key, m.thumb_key, m.full_key].filter(Boolean));
   return json({ ok: true });
 });
