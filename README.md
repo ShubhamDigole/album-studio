@@ -62,6 +62,8 @@ For very large albums you can also build on your computer: `node tools/build-alb
 | **Two pages in one image** | Photos and pages, each tile's "one page / two pages" button | Wide images are found automatically; the button fixes any that were guessed wrong |
 | **Page order** | Photos and pages: drag a page or photo, or use the arrows on it | Page numbers update at once (a two-page image counts as two); the order is saved automatically |
 | **Extra pages** | Details, Extra pages | Tick or untick the endpapers, welcome page, section pages and thank-you page. Photo albums start with all four; designed albums with endpapers only |
+| **Full quality** | Photos and pages, "Keep full quality" (on by default) | A full-resolution copy (up to 8000 px) is kept for zooming in and downloads; guests flip through fast 2400 px copies. Location data is always removed |
+| **Background music** | Details, Extras | 8 built-in songs (Kevin MacLeod, CC BY 4.0, credited in the viewer) or your own mp3 link, with example links |
 
 ### Google Drive setup (once)
 
