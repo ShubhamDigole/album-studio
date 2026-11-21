@@ -1,0 +1,401 @@
+{
+  "id": "demo",
+  "type": "wedding",
+  "names": [
+    "Aarav",
+    "Ananya"
+  ],
+  "date": "2026-02-12",
+  "location": "Udaipur",
+  "title": "",
+  "studio": {
+    "name": "Your Studio Photography",
+    "logo": "",
+    "url": "https://example.com",
+    "phone": "+91 00000 00000"
+  },
+  "pageWidth": 1296,
+  "pageHeight": 864,
+  "hardCover": true,
+  "template": "jharokha",
+  "music": "",
+  "autoplayInterval": 4,
+  "downloadUrl": "",
+  "theme": {},
+  "sections": [
+    {
+      "key": "haldi",
+      "title": "Haldi",
+      "count": 3,
+      "page": 5
+    },
+    {
+      "key": "mehendi",
+      "title": "Mehendi",
+      "count": 3,
+      "page": 9
+    },
+    {
+      "key": "sangeet",
+      "title": "Sangeet",
+      "count": 3,
+      "page": 13
+    },
+    {
+      "key": "wedding",
+      "title": "The wedding",
+      "count": 5,
+      "page": 17
+    },
+    {
+      "key": "reception",
+      "title": "Reception",
+      "count": 4,
+      "page": 26
+    }
+  ],
+  "pages": [
+    {
+      "generated": "cover",
+      "title": "Cover"
+    },
+    {
+      "generated": "inside-front"
+    },
+    {
+      "src": "pages/title.svg",
+      "title": "Welcome"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding100/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding100/324/216"
+    },
+    {
+      "src": "pages/section-haldi.svg",
+      "title": "Haldi"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding101/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding101/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding102/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding102/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding103/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding103/324/216"
+    },
+    {
+      "src": "pages/section-mehendi.svg",
+      "title": "Mehendi"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding104/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding104/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding105/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding105/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding106/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding106/324/216"
+    },
+    {
+      "src": "pages/section-sangeet.svg",
+      "title": "Sangeet"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding107/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding107/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding108/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding108/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding109/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding109/324/216"
+    },
+    {
+      "src": "pages/section-wedding.svg",
+      "title": "The wedding"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding110/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding110/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding111/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding111/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding112/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding112/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding113/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding113/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding114/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding114/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding115/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding115/324/216"
+    },
+    {
+      "spread": "https://picsum.photos/seed/panorama116/2592/864",
+      "title": "By the lake"
+    },
+    {
+      "src": "pages/section-reception.svg",
+      "title": "Reception"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding117/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding117/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding118/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding118/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding119/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding119/324/216"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding120/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding120/324/216"
+    },
+    {
+      "src": "pages/thank-you.svg",
+      "title": "With gratitude"
+    },
+    {
+      "src": "https://picsum.photos/seed/wedding121/1296/864",
+      "thumb": "https://picsum.photos/seed/wedding121/324/216"
+    },
+    {
+      "generated": "inside-back"
+    },
+    {
+      "generated": "back",
+      "title": "Back cover"
+    }
+  ],
+  "gallery": [
+    {
+      "id": "0001-demo",
+      "section": "welcome",
+      "display": "https://picsum.photos/seed/wedding100/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding100/480/320",
+      "download": "https://picsum.photos/seed/wedding100/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0002-demo",
+      "section": "haldi",
+      "display": "https://picsum.photos/seed/wedding101/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding101/480/320",
+      "download": "https://picsum.photos/seed/wedding101/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0003-demo",
+      "section": "haldi",
+      "display": "https://picsum.photos/seed/wedding102/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding102/480/320",
+      "download": "https://picsum.photos/seed/wedding102/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0004-demo",
+      "section": "haldi",
+      "display": "https://picsum.photos/seed/wedding103/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding103/480/320",
+      "download": "https://picsum.photos/seed/wedding103/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0005-demo",
+      "section": "mehendi",
+      "display": "https://picsum.photos/seed/wedding104/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding104/480/320",
+      "download": "https://picsum.photos/seed/wedding104/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0006-demo",
+      "section": "mehendi",
+      "display": "https://picsum.photos/seed/wedding105/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding105/480/320",
+      "download": "https://picsum.photos/seed/wedding105/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0007-demo",
+      "section": "mehendi",
+      "display": "https://picsum.photos/seed/wedding106/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding106/480/320",
+      "download": "https://picsum.photos/seed/wedding106/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0008-demo",
+      "section": "sangeet",
+      "display": "https://picsum.photos/seed/wedding107/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding107/480/320",
+      "download": "https://picsum.photos/seed/wedding107/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0009-demo",
+      "section": "sangeet",
+      "display": "https://picsum.photos/seed/wedding108/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding108/480/320",
+      "download": "https://picsum.photos/seed/wedding108/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0010-demo",
+      "section": "sangeet",
+      "display": "https://picsum.photos/seed/wedding109/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding109/480/320",
+      "download": "https://picsum.photos/seed/wedding109/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0011-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding110/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding110/480/320",
+      "download": "https://picsum.photos/seed/wedding110/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0012-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding111/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding111/480/320",
+      "download": "https://picsum.photos/seed/wedding111/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0013-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding112/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding112/480/320",
+      "download": "https://picsum.photos/seed/wedding112/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0014-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding113/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding113/480/320",
+      "download": "https://picsum.photos/seed/wedding113/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0015-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding114/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding114/480/320",
+      "download": "https://picsum.photos/seed/wedding114/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0016-demo",
+      "section": "wedding",
+      "display": "https://picsum.photos/seed/wedding115/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding115/480/320",
+      "download": "https://picsum.photos/seed/wedding115/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0017-demo",
+      "section": "reception",
+      "display": "https://picsum.photos/seed/wedding117/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding117/480/320",
+      "download": "https://picsum.photos/seed/wedding117/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0018-demo",
+      "section": "reception",
+      "display": "https://picsum.photos/seed/wedding118/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding118/480/320",
+      "download": "https://picsum.photos/seed/wedding118/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0019-demo",
+      "section": "reception",
+      "display": "https://picsum.photos/seed/wedding119/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding119/480/320",
+      "download": "https://picsum.photos/seed/wedding119/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0020-demo",
+      "section": "reception",
+      "display": "https://picsum.photos/seed/wedding120/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding120/480/320",
+      "download": "https://picsum.photos/seed/wedding120/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    },
+    {
+      "id": "0021-demo",
+      "section": "reception",
+      "display": "https://picsum.photos/seed/wedding121/1800/1200",
+      "thumb": "https://picsum.photos/seed/wedding121/480/320",
+      "download": "https://picsum.photos/seed/wedding121/2400/1600",
+      "width": 1800,
+      "height": 1200,
+      "blur": ""
+    }
+  ]
+}

@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Design tokens shared by the viewer, gallery and admin pages.
+   Palette from Indian wedding textiles: peacock silk, rani pink, marigold, jasmine, kohl.
+   --silk and --accent are overwritten per album type (see album-meta.js).
+   ========================================================================== */
+:root {
+  --silk: #0F3D3E;
+  --accent: #C8255F;
+  --marigold: #EFA00B;
+  --jasmine: #FBF7F1;
+  --kohl: #1D1A26;
+  --paper: #F7F3EE;
+  --font-display: "Rozha One", Georgia, "Times New Roman", serif;
+  --font-ui: Mukta, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --ease: cubic-bezier(.22, .61, .36, 1);
+  --radius-s: 6px;
+  --radius-m: 12px;
+  --radius-l: 20px;
+}
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: var(--silk);
+  --ink: var(--jasmine);
+  --ink-soft: color-mix(in oklab, var(--jasmine) 70%, var(--silk));
+  --surface: color-mix(in oklab, var(--silk) 70%, #000);
+  --surface-raised: color-mix(in oklab, var(--silk) 82%, #000);
+  --line: color-mix(in oklab, var(--jasmine) 16%, transparent);
+  --hover: color-mix(in oklab, var(--jasmine) 9%, transparent);
+  --active: var(--marigold);
+  --progress: var(--marigold);
+  --zari: var(--marigold);
+  --sheen: rgba(255, 255, 255, .075);
+  --shade: rgba(0, 0, 0, .38);
+  --field: color-mix(in oklab, var(--silk) 55%, #000);
+}
+
+/* Light: "Gulabi" — Jaipur's pink sandstone in daylight, with the album's silk as the ink colour.
+   Warm shadows instead of grey, a quiet weave instead of a metallic sheen. */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --sandstone: #F6EAE6;
+  --ground: color-mix(in oklab, var(--silk) 5%, var(--sandstone));
+  --ink: var(--kohl);
+  --ink-soft: color-mix(in oklab, var(--kohl) 64%, var(--sandstone));
+  --surface: #FFFDFC;
+  --surface-raised: #FFFFFF;
+  --line: color-mix(in oklab, #5A1E2E 14%, transparent);
+  --hover: color-mix(in oklab, #A3124A 7%, transparent);
+  --active: color-mix(in oklab, var(--accent) 72%, #3A0518);
+  --progress: var(--silk);
+  --zari: color-mix(in oklab, var(--silk) 80%, #000);
+  --sheen: rgba(255, 255, 255, .28);
+  --shade: rgba(110, 40, 55, .14);
+  --field: #FFFFFF;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--ground); color: var(--ink); font: 400 16px/1.5 var(--font-ui); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; color: inherit; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 2px solid var(--active); outline-offset: 2px; }
+
+/* The silk backdrop: woven twill + two soft folds of sheen + a gentle falloff. */
+.silk {
+  background:
+    radial-gradient(130% 90% at 50% 42%, transparent 45%, var(--shade) 100%),
+    linear-gradient(112deg, transparent 18%, var(--sheen) 34%, transparent 48%, transparent 62%, color-mix(in srgb, var(--sheen) 55%, transparent) 74%, transparent 86%),
+    repeating-linear-gradient(45deg, color-mix(in srgb, var(--ink) 2.2%, transparent) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(-45deg, rgba(0, 0, 0, .045) 0 1px, transparent 1px 4px),
+    var(--ground);
+}
+
+/* Zari border: a woven bud motif, like the edge of a saree. */
+.zari {
+  height: 14px;
+  background: var(--zari);
+  opacity: .8;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Crect y='0' width='28' height='1'/%3E%3Crect y='13' width='28' height='1'/%3E%3Cpath d='M14 3.2c2.6 2 2.6 5.6 0 7.6-2.6-2-2.6-5.6 0-7.6z'/%3E%3Ccircle cx='3' cy='7' r='1.3'/%3E%3Ccircle cx='25' cy='7' r='1.3'/%3E%3C/svg%3E") repeat-x center / 28px 14px;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='14'%3E%3Crect y='0' width='28' height='1'/%3E%3Crect y='13' width='28' height='1'/%3E%3Cpath d='M14 3.2c2.6 2 2.6 5.6 0 7.6-2.6-2-2.6-5.6 0-7.6z'/%3E%3Ccircle cx='3' cy='7' r='1.3'/%3E%3Ccircle cx='25' cy='7' r='1.3'/%3E%3C/svg%3E") repeat-x center / 28px 14px;
+}
+
+.display { font-family: var(--font-display); font-weight: 400; letter-spacing: 0; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 42px; padding: 0 18px; border: 0; border-radius: var(--radius-m);
+  background: var(--accent); color: #fff; font-weight: 600; cursor: pointer; text-decoration: none;
+  transition: filter .2s;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn.quiet { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--line); }
+.btn.quiet:hover { background: var(--hover); filter: none; }
+.btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.field { display: block; }
+.field > span { display: block; font-size: 15px; margin-bottom: 4px; color: var(--ink-soft); }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 10px 12px; border-radius: var(--radius-s); border: 1px solid var(--line);
+  background: var(--field); color: var(--ink); font-size: 16px;
+}
+.field textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--active); outline-offset: 0; border-color: transparent; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}
+
+/* Blessings list + form notes (viewer panel and gallery) */
+.form-note { margin: 0; min-height: 1.4em; font-size: 15px; color: var(--ink-soft); }
+.form-note.error { color: color-mix(in oklab, var(--accent) 70%, var(--ink)); }
+.bless-list { list-style: none; margin: 0; padding: 8px 22px 16px; overflow-y: auto; flex: 1; }
+.bless-list li { padding: 14px 0; border-bottom: 1px solid var(--line); }
+.bless-list li:last-child { border-bottom: 0; }
+.bless-list .who { display: flex; justify-content: space-between; gap: 10px; font-weight: 600; }
+.bless-list .when { font-weight: 400; color: var(--ink-soft); font-size: 14px; white-space: nowrap; }
+.bless-list p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.55; }
+.bless-list .empty { color: var(--ink-soft); border: 0; }
+
+/* light mode: a finer, quieter weave on the sandstone */
+:root[data-theme="light"] .silk {
+  background:
+    radial-gradient(130% 90% at 50% 42%, transparent 55%, var(--shade) 100%),
+    linear-gradient(112deg, transparent 22%, var(--sheen) 36%, transparent 50%),
+    repeating-linear-gradient(45deg, rgba(90, 30, 46, .022) 0 1px, transparent 1px 5px),
+    var(--ground);
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0F3D3E" />
+  <title>Albums</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230F3D3E'/%3E%3Cpath d='M16 7c4 3 4 9 0 13-4-4-4-10 0-13z' fill='%23EFA00B'/%3E%3Crect x='7' y='24' width='18' height='2' fill='%23EFA00B'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="assets/css/fonts.css" />
+  <link rel="stylesheet" href="assets/css/base.css" />
+  <link rel="stylesheet" href="assets/css/admin.css" />
+  <script src="assets/js/album-meta.js"></script>
+  <script src="assets/js/cover-templates.js"></script>
+  <script src="assets/js/cover-templates-more.js"></script>
+</head>
+<body class="silk">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-bud" viewBox="0 0 24 24"><path d="M12 2.5c4.2 3.2 4.2 10.3 0 14-4.2-3.7-4.2-10.8 0-14z" fill="currentColor"/><rect x="5" y="19.5" width="14" height="1.6" rx=".8" fill="currentColor"/></symbol>
+      <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.4-7.5-10A4.3 4.3 0 0112 7.6 4.3 4.3 0 0119.5 10c0 5.6-7.5 10-7.5 10z"/></symbol>
+      <symbol id="i-bless" viewBox="0 0 24 24"><path d="M20 12a8 8 0 01-11.6 7.1L4 20l1-4A8 8 0 1120 12z"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+      <symbol id="i-out" viewBox="0 0 24 24"><path d="M15 4h3a2 2 0 012 2v12a2 2 0 01-2 2h-3M10 17l-5-5 5-5M5 12h11"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M12 6c-2-1.5-5-2-8-2v14c3 0 6 .5 8 2 2-1.5 5-2 8-2V4c-3 0-6 .5-8 2zM12 6v14"/></symbol>
+      <symbol id="i-photos" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 005.7 0l3-3a4 4 0 00-5.7-5.7l-1 1M14 10a4 4 0 00-5.7 0l-3 3a4 4 0 005.7 5.7l1-1"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+      <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M4 20h16"/></symbol>
+      <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></symbol>
+      <symbol id="i-pdf" viewBox="0 0 24 24"><path d="M6 2h9l5 5v15H6z"/><path d="M15 2v5h5M9 14h6M9 18h4"/></symbol>
+      <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9h16M9 20v-6h6v6"/></symbol>
+      <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0113 0M16 4.5a3.5 3.5 0 010 7M21.5 20a6.5 6.5 0 00-4-6"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></symbol>
+    </defs>
+  </svg>
+
+  <div class="app" id="app">
+    <!-- sign in -->
+    <main class="signin" id="signin" hidden>
+      <div class="signin-art" id="signinArt" aria-hidden="true"></div>
+      <div class="signin-forms">
+        <form id="loginForm" class="signin-form">
+          <svg class="mark"><use href="#i-bud"/></svg>
+          <h1 class="display">Your albums are waiting</h1>
+          <p>Sign in to add albums, choose their covers and read what guests have written.</p>
+          <label class="field"><span>Email</span><input type="email" name="email" autocomplete="email" required /></label>
+          <label class="field"><span>Password</span><input type="password" name="password" autocomplete="current-password" required /></label>
+          <div class="form-row"><button class="btn" type="submit">Sign in</button><button class="link" type="button" data-auth="signup">New here? Create a studio account</button></div>
+          <p class="form-note" id="loginNote" role="alert"></p>
+        </form>
+        <form id="signupForm" class="signin-form" hidden>
+          <svg class="mark"><use href="#i-bud"/></svg>
+          <h1 class="display">Bring your studio</h1>
+          <p>Create an account for your studio. You can start making albums as soon as it is approved.</p>
+          <label class="field"><span>Studio name</span><input name="studioName" maxlength="80" autocomplete="organization" required /></label>
+          <div class="two">
+            <label class="field"><span>Your name</span><input name="name" maxlength="80" autocomplete="name" required /></label>
+            <label class="field"><span>City</span><input name="city" maxlength="80" autocomplete="address-level2" /></label>
+          </div>
+          <div class="two">
+            <label class="field"><span>Email</span><input type="email" name="email" maxlength="120" autocomplete="email" required /></label>
+            <label class="field"><span>Phone</span><input name="phone" maxlength="40" inputmode="tel" autocomplete="tel" /></label>
+          </div>
+          <label class="field"><span>Password <em>at least 8 characters</em></span><input type="password" name="password" minlength="8" autocomplete="new-password" required /></label>
+          <div class="form-row"><button class="btn" type="submit">Create studio account</button><button class="link" type="button" data-auth="login">I already have an account</button></div>
+          <p class="form-note" id="signupNote" role="alert"></p>
+        </form>
+        <div id="signupDone" class="signin-form" hidden>
+          <svg class="mark"><use href="#i-bud"/></svg>
+          <h1 class="display">Thank you</h1>
+          <p>Your studio account is waiting for approval. You can sign in as soon as it is approved.</p>
+          <div class="form-row"><button class="btn quiet" type="button" data-auth="login">Back to sign in</button></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- signed in -->
+    <div class="shell" id="shell" hidden>
+      <header class="top">
+        <a class="brand" href="#"><svg><use href="#i-bud"/></svg><span class="display">Albums</span></a>
+        <nav class="nav" id="nav">
+          <a href="#" data-nav="albums">Albums</a>
+          <a href="#studios" data-nav="studios" id="navStudios" hidden>Studios <span class="badge" id="pendingBadge" hidden></span></a>
+          <a href="#studio" data-nav="studio" id="navStudio" hidden>Your studio</a>
+        </nav>
+        <div class="top-tools">
+          <span class="who" id="who"></span>
+          <label class="search" id="searchBox"><svg><use href="#i-search"/></svg><input id="search" type="search" placeholder="Find an album" aria-label="Find an album" /></label>
+          <a class="btn" href="#new"><svg><use href="#i-plus"/></svg>New album</a>
+          <button class="icon-btn" id="themeBtn" title="Light background"><svg><use href="#i-sun"/></svg></button>
+          <button class="icon-btn" id="signOut" title="Sign out"><svg><use href="#i-out"/></svg></button>
+        </div>
+      </header>
+      <main id="view"></main>
+    </div>
+  </div>
+  <div class="zari page-zari" aria-hidden="true"></div>
+  <div class="modal" id="modal" hidden><div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle" id="modalCard"></div></div>
+  <div class="toast" id="toast" role="status" hidden></div>
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>
