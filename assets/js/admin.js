@@ -534,6 +534,7 @@
     $('#modal').hidden = false;
     document.body.classList.add('modal-open');
     function photosOfAlbum() { return (a.media && a.media.photos) || []; }
+    function pagesOfAlbum() { return (a.media && a.media.pages) || []; }
 
     async function saveDesign(body) {
       if (isDraft) {
@@ -573,9 +574,13 @@
               <h3>${dv.upload ? 'Your own image' : esc(t.name || 'Design')}</h3>
               <p class="hint">${dv.upload ? 'Shown exactly as uploaded. Pick a design below to go back to a design.' : esc(t.description || '')}</p>
               ${isDraft ? '<p class="hint">Uploads become available once the album is created.</p>' : `
-              <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace your image' : 'Upload your own ' + PARTS.find((x) => x[0] === part)[1].toLowerCase()}
-                <input type="file" accept="image/*" data-own hidden /></label>
-              ${dv.upload ? '<button type="button" class="link" data-remove>Remove your image</button>' : ''}`}
+              <div class="own-actions">
+                <label class="btn quiet upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace from computer' : 'Upload from computer'}
+                  <input type="file" accept="image/*" data-own hidden /></label>
+                ${photosOfAlbum().length || pagesOfAlbum().length ? '<button type="button" class="btn quiet" data-choose-part><svg><use href="#i-photos"/></svg>Choose from album photos</button>' : ''}
+                ${dv.upload ? '<button type="button" class="link" data-remove>Remove your image</button>' : ''}
+              </div>
+              ${photosOfAlbum().length || pagesOfAlbum().length ? '' : '<p class="hint">Upload photos to the album to choose one of them here.</p>'}`}
               ${slots ? `<div class="slots"><p class="slots-title">Photos in this design</p>${Array.from({ length: slots }, (_, i) => {
                 const src = (dv.photos || [])[i] || (i === 0 ? photoOf(p) : '');
                 return `<div class="slot"><span class="slot-img">${src ? `<img src="${esc(src)}" alt="">` : ''}</span>
@@ -601,6 +606,20 @@
       if (tab && tab.classList.contains('tab')) { part = tab.dataset.part; draw(); return; }
       if (e.target.closest('[data-remove]')) {
         try { await saveDesign({ part, removeUpload: true }); draw(); onChange && onChange(); toast('Your image was removed'); } catch (err) { toast(err.message); }
+        return;
+      }
+      if (e.target.closest('[data-choose-part]')) {
+        // use an album photo or designed page as this whole part
+        const label = PARTS.find((x) => x[0] === part)[1].toLowerCase();
+        const box = $('#chooser');
+        box.hidden = false;
+        box.innerHTML = `<p class="slots-title">Choose a photo for the ${label}</p><div class="chooser-grid">` +
+          [...photosOfAlbum(), ...pagesOfAlbum()].map((m) => `<button type="button" data-use="${esc(m.id)}" title="${esc(m.name || '')}"><img src="${esc(m.thumb)}" alt="" loading="lazy"></button>`).join('') + '</div>';
+        box.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        box.onclick = async (ev) => {
+          const b = ev.target.closest('[data-use]'); if (!b) return;
+          try { await saveDesign({ part, useMedia: b.dataset.use }); draw(); onChange && onChange(); toast(`Photo set as the ${label}`); } catch (err) { toast(err.message); }
+        };
         return;
       }
       const choose = e.target.closest('[data-choose]');
@@ -734,6 +753,59 @@
     return out;
   }
 
+  /* ---------- Google Drive (shared links, Drive API v3 with a browser API key) ---------- */
+  async function googleKey() {
+    if (!state.config) state.config = await api('config');
+    if (!state.config.googleApiKey) throw new Error('Google Drive import is not set up yet: add a GOOGLE_API_KEY (see README, "Google Drive").');
+    return state.config.googleApiKey;
+  }
+  function driveTarget(link) {
+    const s = String(link || '').trim();
+    let m = s.match(/\/folders\/([\w-]{10,})/);
+    if (m) return { folder: m[1] };
+    m = s.match(/\/file\/d\/([\w-]{10,})/) || s.match(/[?&]id=([\w-]{10,})/) || s.match(/\/d\/([\w-]{10,})/);
+    if (m) return { file: m[1] };
+    if (/^[\w-]{20,}$/.test(s)) return { folder: s };
+    throw new Error('That does not look like a Google Drive folder or file link.');
+  }
+  async function driveGet(url) {
+    const res = await fetch(url);
+    if (res.ok) return res;
+    if (res.status === 404 || res.status === 403) {
+      throw new Error('Drive did not allow access. Share the folder or file as "Anyone with the link", then try again.');
+    }
+    if (res.status === 400) throw new Error('Google rejected the request. Check that the Google API key allows the Drive API.');
+    throw new Error('Google Drive answered ' + res.status + '. Try again in a moment.');
+  }
+  async function driveFiles(link, kind) {
+    const key = await googleKey();
+    const target = driveTarget(link);
+    const base = 'https://www.googleapis.com/drive/v3/files';
+    const common = '&supportsAllDrives=true&key=' + encodeURIComponent(key);
+    let items = [];
+    if (target.file) {
+      items = [await (await driveGet(`${base}/${target.file}?fields=id,name,mimeType,size${common}`)).json()];
+    } else {
+      let token = '';
+      do {
+        const q = encodeURIComponent(`'${target.folder}' in parents and trashed = false`);
+        const r = await (await driveGet(`${base}?q=${q}&fields=nextPageToken,files(id,name,mimeType,size)&pageSize=1000&includeItemsFromAllDrives=true${common}${token ? '&pageToken=' + token : ''}`)).json();
+        items.push(...(r.files || []));
+        token = r.nextPageToken || '';
+      } while (token);
+    }
+    const ok = (t) => (kind === 'page' ? /^image\/|^application\/pdf$/ : /^image\//).test(t || '');
+    const files = items.filter((f) => ok(f.mimeType) && !/heic|heif/i.test(f.mimeType)).map((f) => ({
+      name: f.name, type: f.mimeType,
+      load: async () => {
+        const blob = await (await driveGet(`${base}/${f.id}?alt=media${common}`)).blob();
+        return new File([blob], f.name, { type: f.mimeType });
+      },
+    }));
+    if (!files.length) throw new Error(kind === 'page' ? 'No images or PDFs were found at that link.' : 'No photos were found at that link (JPEG, PNG or WebP).');
+    return files;
+  }
+
   function photosTab(body, a) {
     const md = a.media;
     const sections = [...new Set(md.photos.map((p) => p.section).filter(Boolean))];
@@ -757,6 +829,21 @@
           <label class="drop" data-drop="page"><svg><use href="#i-pdf"/></svg><span>Choose pages or a PDF</span><small>Images are sorted by file name. A PDF is turned into images in your browser.</small>
             <input type="file" accept="image/*,application/pdf" multiple hidden data-pick="page" /></label>
         </section>
+        <section class="up-card drive-card">
+          <div class="drive-text">
+            <h3><svg class="drive-logo"><use href="#i-drive"/></svg>From Google Drive</h3>
+            <p class="hint">Paste the link of a Drive folder or file that is shared as "Anyone with the link". Photos use the section above; pages and PDFs use the options above.</p>
+          </div>
+          <div class="drive-form">
+            <label class="field"><span>Drive link</span><input id="driveLink" type="url" placeholder="https://drive.google.com/drive/folders/…" /></label>
+            <div class="choice row">
+              <label><input type="radio" name="driveAs" value="photo" checked /><span>As photos</span></label>
+              <label><input type="radio" name="driveAs" value="page" /><span>As designed pages or a PDF</span></label>
+            </div>
+            <div class="form-row"><button class="btn" type="button" id="driveGo"><svg><use href="#i-drive"/></svg>Import from Drive</button>
+              <p class="form-note" id="driveNote"></p></div>
+          </div>
+        </section>
       </div>
       <ol class="up-progress" id="upProgress"></ol>
       ${md.pages.length ? `<div class="media-head"><h3>Album pages <span class="count soft">${md.pages.length}</span></h3><p class="hint">Guests see these pages, with the cover, end page and endpaper around them.</p></div>
@@ -778,19 +865,35 @@
       catch (err) { toast(err.message); }
     }));
 
+    $('#driveGo').addEventListener('click', async () => {
+      const note = $('#driveNote'), btn = $('#driveGo');
+      note.className = 'form-note';
+      btn.disabled = true;
+      try {
+        const kind = body.querySelector('input[name="driveAs"]:checked').value;
+        note.textContent = 'Reading the Drive link…';
+        const files = await driveFiles($('#driveLink').value, kind);
+        note.textContent = plural(files.length, 'file', 'files') + ' found in Drive';
+        await handleFiles(kind, files);
+      } catch (err) { note.className = 'form-note error'; note.textContent = err.message; }
+      finally { btn.disabled = false; }
+    });
+
+    // files may be real Files (computer) or lazy Drive files { name, type, load() } downloaded when their turn comes
     async function handleFiles(kind, files) {
       files = files.filter((f) => /^image\/|application\/pdf/.test(f.type)).sort((x, y) => x.name.localeCompare(y.name, 'en', { numeric: true }));
       if (!files.length) { toast('Choose image or PDF files.'); return; }
       const list = $('#upProgress');
       const item = (name) => { const li = document.createElement('li'); li.innerHTML = '<span class="n"></span><span class="s">Waiting</span>'; li.querySelector('.n').textContent = name; list.appendChild(li); return li; };
       const set = (li, text, cls) => { li.querySelector('.s').textContent = text; if (cls) li.className = cls; };
+      const real = async (f, li) => { if (typeof f.load !== 'function') return f; set(li, 'Downloading from Drive'); return f.load(); };
       let pages = [];
       if (kind === 'page') {
         for (const f of files) {
           if (f.type === 'application/pdf') {
             const li = item(f.name);
-            try { pages.push(...await pdfPages(f, (i, n) => set(li, `Reading page ${i} of ${n}`))); set(li, 'Read', 'done'); }
-            catch (err) { set(li, 'This PDF could not be read', 'error'); }
+            try { pages.push(...await pdfPages(await real(f, li), (i, n) => set(li, `Reading page ${i} of ${n}`))); set(li, 'Read', 'done'); }
+            catch (err) { set(li, err.message && /Drive/.test(err.message) ? err.message : 'This PDF could not be read', 'error'); }
           } else pages.push(f);
         }
         if (!pages.length) return;
@@ -805,9 +908,10 @@
       let done = 0, failed = 0;
       async function one({ f, i, li }) {
         try {
+          const file = await real(f, li);
           set(li, 'Preparing');
           const asCover = useCover && i === 0, asBack = useBack && i === total - 1;
-          const img = await prepareImage(f, asCover || asBack ? 3000 : kind === 'page' ? 3200 : 2400, asCover || asBack ? 0 : 480);
+          const img = await prepareImage(file, asCover || asBack ? 3000 : kind === 'page' ? 3200 : 2400, asCover || asBack ? 0 : 480);
           const form = new FormData();
           if (asCover || asBack) {
             form.append('kind', 'design'); form.append('part', asCover ? 'cover' : 'back');

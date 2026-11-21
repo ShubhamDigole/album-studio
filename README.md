@@ -43,6 +43,27 @@ An older local database needs the files in `migrations/` run in order.
 
 For very large albums you can also build on your computer: `node tools/build-album.mjs <album-link>` reads `originals/<album-link>/` (ceremony folders, plus optional `cover.jpg`, `back.jpg` and `spreads/`). Then run `npm run build:site`.
 
+## Ways to add photos
+
+| From | Where in admin | Notes |
+|---|---|---|
+| **Computer** | Photos and pages, Photos card | Drop files or choose them; grouped by ceremony |
+| **PDF** | Photos and pages, Designed pages card | Turned into page images in the browser; the first page can become the cover |
+| **Google Drive** | Photos and pages, From Google Drive | Paste a folder or file link shared as "Anyone with the link"; import as photos or as designed pages/PDF |
+| **Cover and end page** | Details, Cover, end page and endpaper | A design, an image uploaded from the computer, or one of the album's photos |
+
+### Google Drive setup (once)
+
+1. In the [Google Cloud console](https://console.cloud.google.com/), create a project and enable the **Google Drive API**.
+2. Under **Credentials**, create an **API key**, then restrict it:
+   - API restrictions: **Google Drive API** only.
+   - Website restrictions: your site (for example `https://<project>.pages.dev/*`), and `http://127.0.0.1:8788/*` for local testing.
+3. Add it as `GOOGLE_API_KEY`:
+   - locally: in `.dev.vars`;
+   - online: `node tools/cf.mjs pages secret put GOOGLE_API_KEY --project-name wedding-album`.
+
+The key only reads files that are already shared publicly by link. Downloads go straight from Google to the studio's browser, which resizes them before upload.
+
 ## Deploy
 
 `.env` holds `CF_API_TOKEN` and `CF_ACCOUNT_ID`. Run wrangler through `node tools/cf.mjs …` so the keys are loaded without being printed.

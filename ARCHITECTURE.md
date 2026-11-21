@@ -69,10 +69,11 @@ favorites album_id, photo, visitor            views  album_id, day, count       
 ### 2. Making an album
 1. **New album:** pick the occasion, type the names, and choose a cover design. Every design previews the real names; empty details show sample text.
 2. **Details:** names, date, location, link, photographer credit, colour, music and download link, draft or published (`POST /api/admin/albums`).
-3. **Cover, end page and endpaper:** on the details page, each opens a picker with tabs. Choose a design per part (filtered by occasion), upload your own image, or put photos into a design's photo spots (`PUT /api/admin/albums/:id/design`, `POST …/upload kind=design`).
+3. **Cover, end page and endpaper:** on the details page, each opens a picker with tabs. Choose a design per part (filtered by occasion), upload your own image from the computer, use one of the album's photos (`PUT …/design {useMedia}`), or put photos into a design's photo spots (`PUT /api/admin/albums/:id/design`, `POST …/upload kind=design`).
 4. **Photos and pages**, any of:
    - **Photos:** dropped in the browser, resized to 2400 px with a 480 px thumbnail. Re-encoding removes EXIF and GPS. Upload goes to R2 (`kind=photo`, with a ceremony section). The album lays them out automatically: a title page, a divider per ceremony, landscape photos full-page, portraits in pairs, then a thank-you page.
    - **Designed pages:** images in file-name order, or **a PDF** that pdf.js turns into images in the browser (`kind=page`). Wide pages become two-page spreads. You can use the first page as the cover and the last as the end page.
+   - **Google Drive:** paste a folder or file link shared as "Anyone with the link". The browser lists and downloads the files through the Drive API (v3, using the `GOOGLE_API_KEY` browser key from `GET /api/admin/config`), then resizes and uploads them exactly like files from the computer.
    - **Local build (optional, larger albums):** `node tools/build-album.mjs <id>` reads `originals/<id>/` and writes `dist/albums/<id>/`. The photographer's own `cover.jpg`, `back.jpg`, `inside-*.jpg` and `spreads/` are used when present.
 5. **Publish:** guests open `/a/<id>` (the flipbook) or `/g/<id>` (the gallery).
 
@@ -107,6 +108,7 @@ Static build output under `/albums/<id>/` is served by Pages with long cache hea
 | `POST /api/admin/albums/:id/upload`, `PUT …/design`, `DELETE …/media/:mid` | owner, master | uploads and cover choices |
 | `GET /api/admin/guestbook/:id`, `PATCH/DELETE /api/admin/guestbook/:msg` | owner, master | moderation |
 | `GET/PUT /api/admin/studio`, `PUT /api/admin/account` | owner | studio profile, password |
+| `GET /api/admin/config` | owner, master | browser settings (the Google Drive API key) |
 | `GET /api/admin/master/studios`, `PATCH /api/admin/master/studios/:id` | master | approve or switch off studios |
 
 ## Security
@@ -124,7 +126,7 @@ npm install
 npx wrangler d1 execute album_db --local --file=schema.sql     # fresh database
 npm run dev                                                     # http://127.0.0.1:8788  (admin: /admin)
 ```
-`.dev.vars` (git-ignored): `ALBUM_SECRET`, `ADMIN_PASSWORD`, `MASTER_EMAIL`, optional `ALBUM_PASSWORD`.
+`.dev.vars` (git-ignored): `ALBUM_SECRET`, `ADMIN_PASSWORD`, `MASTER_EMAIL`, optional `ALBUM_PASSWORD` and `GOOGLE_API_KEY`.
 R2 and D1 are emulated locally by wrangler.
 
 ## Deploying to Cloudflare

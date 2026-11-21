@@ -19,6 +19,13 @@ export const onRequestPut = handle(async ({ request, env, params, data }) => {
     if (d.upload && b.keepUpload !== true) { removed.push(d.upload); delete d.upload; }   // picking a design replaces your own image
   }
   if (b.removeUpload && d.upload) { removed.push(d.upload); delete d.upload; }
+  if (b.useMedia) {
+    // use an album photo or page as this part, shown as-is (like your own upload)
+    const m = await env.DB.prepare("SELECT key FROM media WHERE id = ? AND album_id = ? AND kind IN ('photo', 'page')").bind(String(b.useMedia), row.id).first();
+    if (!m) throw new HttpError(404, 'That photo is not in this album.');
+    if (d.upload) removed.push(d.upload);
+    d.upload = m.key;
+  }
   if (Number.isInteger(b.setSlot) && b.setSlot >= 0 && b.setSlot <= 5 && b.mediaId) {
     // use a photo already uploaded to this album
     const m = await env.DB.prepare("SELECT key FROM media WHERE id = ? AND album_id = ? AND kind = 'photo'").bind(String(b.mediaId), row.id).first();

@@ -55,7 +55,8 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
     if (slot === null) { old = d.upload || ''; d.upload = key; }
     else { d.photos = Array.isArray(d.photos) ? d.photos : []; old = d.photos[slot] || ''; d.photos[slot] = key; }
     await env.DB.prepare('UPDATE albums SET design = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(design), Date.now(), row.id).run();
-    if (old && old.startsWith(`a/${row.id}/`)) await env.MEDIA.delete(old);
+    // only delete files uploaded for the design; an album photo used as the cover stays
+    if (old && old.startsWith(`a/${row.id}/design/`)) await env.MEDIA.delete(old);
     return json({ ok: true, part, slot, url: '/media/' + key }, 201);
   }
 
