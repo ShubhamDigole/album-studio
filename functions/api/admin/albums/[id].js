@@ -1,6 +1,6 @@
 // GET / PUT / DELETE /api/admin/albums/:id   (only the owning studio or the master)
 import { json, error, readJson, handle, HttpError } from '../../../../lib/http.js';
-import { rowToAlbum, validateAlbumInput, albumParams, getAlbumRow, getStaticAlbum, designUrls } from '../../../../lib/albums.js';
+import { rowToAlbum, validateAlbumInput, albumParams, getAlbumRow, getStaticAlbum, designUrls, cleanPageOptions } from '../../../../lib/albums.js';
 import { findManaged } from '../../../../lib/access.js';
 
 
@@ -42,9 +42,16 @@ export const onRequestPut = handle(async ({ request, env, params, data }) => {
     studioId = body.studioId ? String(body.studioId) : null;
     if (studioId && !(await env.DB.prepare('SELECT id FROM studios WHERE id = ?').bind(studioId).first())) throw new HttpError(400, 'That studio does not exist.');
   }
+  // extra pages (welcome, section pages, thank you, endpapers): replaced when sent, kept otherwise
+  let design = {};
+  try { design = JSON.parse(row.design || '{}'); } catch { /* reset */ }
+  if (body.pages !== undefined) {
+    const pages = cleanPageOptions(body.pages);
+    if (Object.keys(pages).length) design.pages = pages; else delete design.pages;
+  }
   await env.DB.prepare(`UPDATE albums SET type = ?, title = ?, names = ?, event_date = ?, location = ?, studio_name = ?, studio_phone = ?,
-      studio_url = ?, music = ?, download_url = ?, accent = ?, template = ?, status = ?, require_approval = ?, updated_at = ?, studio_id = ? WHERE id = ?`)
-    .bind(...albumParams(a), Date.now(), studioId, params.id).run();
+      studio_url = ?, music = ?, download_url = ?, accent = ?, template = ?, status = ?, require_approval = ?, updated_at = ?, studio_id = ?, design = ? WHERE id = ?`)
+    .bind(...albumParams(a), Date.now(), studioId, JSON.stringify(design), params.id).run();
   return json({ album: rowToAlbum(await getAlbumRow(env.DB, params.id)) });
 });
 

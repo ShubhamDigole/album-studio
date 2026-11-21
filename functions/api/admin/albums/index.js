@@ -2,7 +2,7 @@
 //                           plus (master only) built albums that have no details yet
 // POST /api/admin/albums -> create an album for the user's studio (master: for any studio, body.studioId)
 import { json, error, readJson, handle, HttpError } from '../../../../lib/http.js';
-import { rowToAlbum, validateAlbumInput, albumParams, getStaticAlbum, designUrls } from '../../../../lib/albums.js';
+import { rowToAlbum, validateAlbumInput, albumParams, getStaticAlbum, designUrls, cleanPageOptions } from '../../../../lib/albums.js';
 
 export const onRequestGet = handle(async ({ request, env, data }) => {
   const user = data.user;
@@ -70,12 +70,14 @@ export const onRequestPost = handle(async ({ request, env, data }) => {
   return json({ album: rowToAlbum(row), built: !!(await getStaticAlbum(env, request, a.id)) }, 201);
 });
 
-// Only template choices can be set when creating; uploads are attached later.
+// Only template choices and the extra-page ticks can be set when creating; uploads are attached later.
 function sanitizeDesign(d) {
   const out = {};
   for (const part of ['cover', 'back', 'endpaper']) {
     const t = d && d[part] && d[part].template;
     if (typeof t === 'string' && /^[a-z0-9][a-z0-9-]{0,39}$/.test(t)) out[part] = { template: t };
   }
+  const pages = cleanPageOptions(d && d.pages);
+  if (Object.keys(pages).length) out.pages = pages;
   return out;
 }

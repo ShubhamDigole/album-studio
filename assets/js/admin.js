@@ -59,6 +59,24 @@
     const data = Object.assign({}, a, { design, theme: M.theme(a) });
     return CT.render(kind, data, { ratio: ratioOf(a), placeholders: true, photo: photoOf(a) || PHOTO_PLACEHOLDER });
   }
+  // the extra pages the album adds around the photos; ticks are saved in design.pages (only the ones that differ from the default)
+  const EXTRA_PAGES = [
+    ['endpapers', 'Endpapers', 'inside-front', 'Patterned pages just inside the front and back cover'],
+    ['welcome', 'Welcome page', 'title', 'The names, place and date, before the first photo'],
+    ['sections', 'Section pages', 'divider', 'The ceremony name (Haldi, Mehendi…) before each section of photos'],
+    ['thanks', 'Thank-you page', 'closing', 'A closing page at the end of the album'],
+  ];
+  const isDesigned = (a) => !!(a.media && a.media.pages && a.media.pages.length);
+  // same defaults as lib/layout.js pageOptions(): designed albums only get endpapers unless ticked
+  const pageDefaults = (designed) => ({ endpapers: true, welcome: !designed, sections: !designed, thanks: !designed });
+  function pageChoices(a) {
+    const def = pageDefaults(isDesigned(a)), saved = (a.design && a.design.pages) || {};
+    return Object.fromEntries(Object.keys(def).map((k) => [k, typeof saved[k] === 'boolean' ? saved[k] : def[k]]));
+  }
+  function pageSvg(a, kind, text) {
+    const data = Object.assign({}, a, { design: Object.assign({}, a.designView || {}), theme: M.theme(a) });
+    return CT.render(kind, data, { ratio: ratioOf(a), placeholders: true, photo: photoOf(a) || PHOTO_PLACEHOLDER, text });
+  }
   function bookHtml(a, { kind = 'cover', cls = '', ribbon = false } = {}) {
     const r = ratioOf(a);
     return `<div class="book ${cls}" style="--ratio:${r}">${ribbon ? '<span class="ribbon" title="Draft"></span>' : ''}` +
@@ -318,6 +336,13 @@
                 <p class="hint">For a cover designed as one wide image: the left half becomes the back cover and the right half the front cover.</p>
               </div>
               ${isNew ? '<p class="hint">Uploaded images are saved with the album when you create it.</p>' : ''}</div></section>
+          <section class="sheet"><div><h2>Extra pages</h2><p class="why">Pages the album adds around your photos. Untick any you don't want.${isDesigned(a) ? ' This album uses your designed pages, so only the endpapers are on unless you tick more.' : ''}</p></div>
+            <div class="fields"><div class="extras" id="extras">${EXTRA_PAGES.map(([k, l, , hint]) => {
+              const off = k === 'sections' && isDesigned(a);
+              return `<label class="extra${off ? ' off' : ''}"><span class="extra-img" data-extra-img="${k}" style="--ratio:${ratioOf(a)}"></span>
+                <span class="extra-row"><input type="checkbox" name="pg_${k}"${pageChoices(a)[k] ? ' checked' : ''}${off ? ' disabled' : ''} /><b>${l}</b></span>
+                <small>${off ? 'Only for albums laid out from photos' : hint}</small></label>`;
+            }).join('')}</div></div></section>
           ${isNew ? `<section class="sheet"><div><h2>Album link</h2><p class="why">Guests open the album at this address. It cannot be changed later.</p></div>
             <div class="fields"><label class="field"><span>Link</span><input name="id" maxlength="64" value="${esc(a.id || '')}" ${a.idLocked ? 'readonly' : ''} /></label>
             <p class="hint" id="linkHint"></p></div></section>` : ''}
@@ -417,6 +442,11 @@
         status: form.querySelector('input[name="status"]:checked').value,
         requireApproval: f.requireApproval.checked,
         studioId: f.studioId ? f.studioId.value : undefined,
+        pages: (() => {
+          const def = pageDefaults(isDesigned(a)), out = {};
+          for (const k of Object.keys(def)) { const box = f['pg_' + k]; if (box && !box.disabled && box.checked !== def[k]) out[k] = box.checked; }
+          return out;
+        })(),
       };
     }
     // the preview album: what is typed, plus the chosen designs and photos
@@ -450,6 +480,8 @@
       if (isNew && $('#linkHint')) $('#linkHint').textContent = /^[a-z0-9][a-z0-9-]{1,63}$/.test(v.id) ? '' : 'Use lowercase letters, numbers and dashes.';
       if (isNew) Object.assign(state.draft, v, { names: v.names.length ? v.names : state.draft.names, studioId: v.studioId || '' });
       drawParts();
+      const sv = shown();
+      EXTRA_PAGES.forEach(([k, , kind]) => { const el = form.querySelector(`[data-extra-img="${k}"]`); if (el) el.innerHTML = pageSvg(sv, kind, 'Haldi'); });
     }
     $('#parts').addEventListener('click', async (e) => {
       const rm = e.target.closest('[data-part-remove]');
@@ -503,6 +535,7 @@
         if (isNew) {
           const design = {};
           for (const [k] of PARTS) { const t = state.draft.designView && state.draft.designView[k] && state.draft.designView[k].template; if (t) design[k] = { template: t }; }
+          if (Object.keys(v.pages).length) design.pages = v.pages;
           await api('albums', { method: 'POST', body: Object.assign({}, v, { template: state.draft.template || '', design }) });
           state.draft.saved = true;
           if (Object.keys(state.draft.pending || {}).length) {
