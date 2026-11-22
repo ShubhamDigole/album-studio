@@ -279,3 +279,5 @@
   .td-menu { position: fixed; left: 12px; right: 12px; top: auto; width: auto; }
   .td-bar-tools .btn { min-width: 0; }
 }
+
+.td-lib-acts { display: flex; flex-wrap: wrap; gap: 10px; }

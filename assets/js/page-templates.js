@@ -253,6 +253,17 @@
     }
     return { css: `background:${colorOf(bg.color, th, '#F7F3EE')};`, layer: '' };
   }
+  // a photo that fades into the page on one or more sides (CSS mask on the layer)
+  function fadeCss(fd) {
+    if (!fd || !fd.side) return '';
+    const z = Math.round(Math.min(0.9, Math.max(0.05, +fd.size || 0.3)) * 1000) / 10;
+    const lin = (dir) => `linear-gradient(${dir}, transparent 0, #000 ${z}%)`;
+    const both = (dir) => `linear-gradient(${dir}, transparent 0, #000 ${z / 2}%, #000 ${100 - z / 2}%, transparent 100%)`;
+    const m = { left: lin('to right'), right: lin('to left'), top: lin('to bottom'), bottom: lin('to top'), x: both('to right'), y: both('to bottom') }[fd.side];
+    if (m) return `-webkit-mask-image:${m};mask-image:${m};`;
+    if (fd.side === 'all') { const a = both('to right'), b = both('to bottom'); return `-webkit-mask-image:${a},${b};-webkit-mask-composite:source-in;mask-image:${a},${b};mask-composite:intersect;`; }
+    return '';
+  }
   function elementHtml(e, i, th, lookup, opts) {
     const box = boxCss(e, i);
     const edit = opts.editable ? ` data-el="${i}" tabindex="-1"` : '';
@@ -264,7 +275,7 @@
       const border = e.border && e.border.w ? `box-shadow:inset 0 0 0 ${+e.border.w}cqh ${colorOf(e.border.color, th, '#ffffff')};` : '';
       const img = src ? `<img alt="" ${opts.lazy ? 'data-src' : 'src'}="${esc(src)}" style="${cropStyle(e.c)};${filterCss(e.filter)}" draggable="false">`
         : `<span class="pt-empty">${opts.editable ? 'Drop a photo here' : ''}</span>`;
-      return `<div class="pe-el pe-photo${frame}" style="${box}${shadow}"${edit}><div class="pe-clip" style="${shapeCss(e.shape, e.radius)}">${img}<i class="pe-border" style="${shapeCss(e.shape, e.radius)}${border}"></i></div></div>`;
+      return `<div class="pe-el pe-photo${frame}" style="${box}${shadow}${fadeCss(e.fade)}"${edit}><div class="pe-clip" style="${shapeCss(e.shape, e.radius)}">${img}<i class="pe-border" style="${shapeCss(e.shape, e.radius)}${border}"></i></div></div>`;
     }
     if (e.type === 'text') {
       const value = (e.text != null && e.text !== '' ? e.text : autoText(e.role, opts.album) || (e.role === 'section' ? opts.section || '' : '')) || '';
@@ -299,7 +310,7 @@
     const bg = bgFreeCss(page.bg, th, lookup, opts);
     const els = (page.els || []).map((e, i) => elementHtml(e, i, th, lookup, Object.assign({ section: page.section }, opts))).join('');
     const spread = !!page.s;
-    return `<div class="pt-page pe-page"><div class="pt-canvas${spread ? ' pt-spread' : ''}${opts.half ? ' pt-half-' + opts.half : ''}" style="${bg.css}">${bg.layer}${els}</div></div>`;
+    return `<div class="pt-page pt-free"><div class="pt-canvas${spread ? ' pt-spread' : ''}${opts.half ? ' pt-half-' + opts.half : ''}" style="${bg.css}">${bg.layer}${els}</div></div>`;
   }
 
   // a template page (v1) as free layers, so the advanced editor can change anything on it
@@ -412,5 +423,5 @@
   }
 
   window.PageTemplates = { list, get, define, forget, render, renderFree, toElements, photoIds, autoLayout, autoText, BUILTIN, cropStyle, slotAR,
-    FONTS, FONT_NAMES, SHAPES, POLY, MASK, shapeCss };
+    FONTS, FONT_NAMES, SHAPES, POLY, MASK, shapeCss, fadeCss };
 })();

@@ -4,6 +4,10 @@
    pick a design, drag photos onto its spots, crop them (crop.js), add words, choose a background and reorder pages.
    Saved as albums.composed through PUT /api/admin/albums/:id/pages (format: lib/pages.js cleanComposed).
 
+   Pages can also be free-form designs (v: 2, page-templates.js renderFree), made in the advanced editor (free-editor.js):
+   "Edit freely" opens it on the selected page, "Designed page" / "Designed spread" add one, and the library's ready-made
+   designs are offered next to the page designs.
+
    PageEditor.mount(host, ctx)  ctx = { api, toast, esc, M, CT, PT, ratioOf, album, ... } (see admin.js editorContext) */
 (function () {
   'use strict';
@@ -15,6 +19,7 @@
     <symbol id="pe-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
     <symbol id="pe-copy" viewBox="0 0 24 24"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 00-1-1H5a1 1 0 00-1 1v10a1 1 0 001 1h3"/></symbol>
     <symbol id="pe-crop" viewBox="0 0 24 24"><path d="M6 2v14a2 2 0 002 2h14"/><path d="M18 22V8a2 2 0 00-2-2H2"/></symbol>
+    <symbol id="pe-wand" viewBox="0 0 24 24"><path d="M4 20L15 9M13.5 7.5l3 3"/><path d="M17 3v3M15.5 4.5h3M20 8v2M19 9h2M10 3v2M9 4h2"/></symbol>
     <symbol id="pe-out" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 01-1 1H5a1 1 0 01-1-1V7a1 1 0 011-1h5"/></symbol>
   </defs></svg>`;
   const ROLE_LABEL = { names: 'Names', date: 'Date', place: 'Place', title: 'Title', section: 'Section name', caption: 'Words', free: 'Words' };
@@ -43,20 +48,24 @@
     };
 
     /* ---------- helpers ---------- */
-    const tplOf = (pg) => (pg && !pg.gen ? PT.get(pg.t) || PT.get('full-mat') : null);
-    const isTwo = (pg) => !!(pg && !pg.gen && (tplOf(pg) || {}).spread);
+    const isFree = (pg) => !!(pg && pg.v === 2);
+    const tplOf = (pg) => (pg && !pg.gen && !isFree(pg) ? PT.get(pg.t) || PT.get('full-mat') : null);
+    const isTwo = (pg) => !!(pg && !pg.gen && (isFree(pg) ? pg.s : (tplOf(pg) || {}).spread));
+    const idsOf = (pg) => (pg && !pg.gen ? PT.photoIds(pg) : []);
+    const mediaOf = (mid) => { const m = mid && byId.get(mid); return m ? { src: m.url, thumb: m.thumb || m.url, zoom: m.full || m.url } : null; };
     const cur = () => (S.pages || [])[S.sel];
     const phOf = (mid) => { const m = mid && byId.get(mid); return m ? { src: m.url, thumb: m.thumb || m.url, zoom: m.full || m.url, w: m.width, h: m.height } : null; };
     const photosFor = (pg) => (pg.p || []).map((x) => phOf(x && x.m));
-    const clone = (o) => JSON.parse(JSON.stringify(o));
+    const clone = (o) => structuredClone(o);
     const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
     const ptRender = (pg, opts) => PT.render(pg, opts);
-    function pageHtml(pg, { small = false, editable = false, tpl } = {}) {
+    function pageHtml(pg, { small = false, editable = false, tpl, section } = {}) {
       if (pg.gen) return CT.render(pg.gen, view, { ratio, text: pg.text, placeholders: true });
+      if (isFree(pg)) return PT.renderFree(pg, { album: view, media: mediaOf, small, editable, section: section != null ? section : sectionFor(S.pages ? S.pages.indexOf(pg) : -1) });
       return ptRender(pg, { album: view, photos: photosFor(pg), small, editable, tpl });
     }
     function fitSlots(pg) {
-      if (!PT.get(pg.t)) return pg;   // a design that no longer exists: keep the photos as they are
+      if (isFree(pg) || !PT.get(pg.t)) return pg;   // a design that no longer exists: keep the photos as they are
       const n = PT.get(pg.t).slots.length;
       pg.p = (pg.p || []).slice(0, n);
       while (pg.p.length < n) pg.p.push({ m: null });
@@ -68,13 +77,14 @@
     }
     function usedCounts() {
       const n = new Map();
-      (S.pages || []).forEach((pg) => (pg.p || []).forEach((x) => { if (x && x.m) n.set(x.m, (n.get(x.m) || 0) + 1); }));
+      (S.pages || []).forEach((pg) => idsOf(pg).forEach((m) => n.set(m, (n.get(m) || 0) + 1)));
       return n;
     }
     // the section a page belongs to: the nearest section page before it, else its first photo's section
     function sectionFor(i) {
-      for (let k = i; k >= 0; k--) { const pg = S.pages[k]; if (pg.gen === 'divider') return pg.text || ''; }
-      const pg = S.pages[i]; const m = pg && (pg.p || []).map((x) => x.m && byId.get(x.m)).find(Boolean);
+      if (!S.pages || i < 0) return '';
+      for (let k = i; k >= 0; k--) { const pg = S.pages[k]; if (pg && pg.gen === 'divider') return pg.text || ''; }
+      const pg = S.pages[i]; const m = pg && idsOf(pg).map((id) => byId.get(id)).find(Boolean);
       return (m && m.section) || '';
     }
     const autoValue = (t) => PT.autoText(t.role, view) || t.text || '';
@@ -148,7 +158,7 @@
     // flow: placed by clicking; the next empty spot is then selected, so the next photo click fills it
     function place(mid, slot, { flow = false } = {}) {
       const pg = cur();
-      if (!pg || pg.gen) return;
+      if (!pg || pg.gen || isFree(pg)) return;
       edit(() => {
         fitSlots(pg);
         pg.p[slot] = { m: mid };
@@ -158,17 +168,17 @@
     }
     function swap(a, b) {
       const pg = cur();
-      if (!pg || a === b) return;
+      if (!pg || a === b || isFree(pg)) return;
       edit(() => { fitSlots(pg); const t = pg.p[a]; pg.p[a] = pg.p[b]; pg.p[b] = t; S.spot = b; });
     }
     function removePhoto(slot) {
       const pg = cur();
-      if (!pg || pg.gen || !pg.p[slot] || !pg.p[slot].m) return;
+      if (!pg || pg.gen || isFree(pg) || !pg.p[slot] || !pg.p[slot].m) return;
       edit(() => { pg.p[slot] = { m: null }; });
     }
     async function adjust(slot) {
       const pg = cur();
-      const x = pg && pg.p && pg.p[slot];
+      const x = pg && !isFree(pg) && pg.p && pg.p[slot];
       const m = x && x.m && byId.get(x.m);
       if (!m) return;
       const tpl = tplOf(pg), s = tpl.slots[slot];
@@ -185,6 +195,11 @@
       const tpl = PT.get(key);
       if (!pg || pg.gen || !tpl || pg.t === key) return;
       edit(() => {
+        if (isFree(pg)) {   // a free design back to a page design: its photos, in order
+          const ids = idsOf(pg);
+          ['v', 'els', 'bg', 's'].forEach((k) => delete pg[k]);
+          pg.p = ids.map((m) => ({ m }));
+        }
         // photos keep their order and their crop (the focus point and zoom still frame the same subject)
         const old = (pg.p || []).filter((x) => x && x.m);
         const n = tpl.slots.length;
@@ -200,7 +215,7 @@
     }
     function setBg(bg) {
       const pg = cur();
-      if (!pg || pg.gen) return;
+      if (!pg || pg.gen || isFree(pg)) return;
       const def = (tplOf(pg) || {}).bg || 'paper';
       edit(() => { if (bg === def) delete pg.bg; else pg.bg = bg; });
     }
@@ -231,7 +246,7 @@
     function deletePage() {
       const pg = cur();
       if (!pg) return;
-      const n = (pg.p || []).filter((x) => x && x.m).length;
+      const n = idsOf(pg).length;
       edit(() => { S.pages.splice(S.sel, 1); });
       toast(n ? `Page removed. Its ${plural(n, 'photo is', 'photos are')} back in the tray.` : 'Page removed');
     }
@@ -249,7 +264,7 @@
           run = [];
         };
         for (const pg of S.pages) {
-          if (pg.gen) { flush(); out.push(pg); continue; }
+          if (pg.gen || isFree(pg)) { flush(); out.push(pg); continue; }   // designed pages stay as they are
           (pg.p || []).forEach((x) => { const m = x && x.m && byId.get(x.m); if (m) run.push({ id: m.id, w: m.width, h: m.height, section: '' }); });
         }
         flush();
@@ -282,22 +297,73 @@
     }
     const cleanPages = () => S.pages.map((pg) => {
       if (pg.gen) return pg.text ? { gen: pg.gen, text: pg.text } : { gen: pg.gen };
+      if (isFree(pg)) return clone(pg);
       const out = { t: pg.t, p: (pg.p || []).map((x) => (x && x.c ? { m: x.m || null, c: x.c } : { m: (x && x.m) || null })) };
       if (Array.isArray(pg.tx) && pg.tx.some((s) => s)) out.tx = Array.from(pg.tx, (s) => s || '');
       if (pg.bg) out.bg = pg.bg;
       if (isTwo(pg)) out.s = 1;
       return out;
     });
-    async function save() {
-      if (S.saving || !S.pages) return;
-      if (!S.pages.length) { toast('Add at least one page before saving.'); return; }
+    // saves every page; throws when the server refuses (the advanced editor shows the reason)
+    async function persist() {
       S.saving = true; paintBar();
       try {
         await api(`albums/${q}/pages`, { method: 'PUT', body: { pages: cleanPages() } });
         S.dirty = false; S.saved = true; S.justSaved = true;
-        toast('Album pages saved');
-      } catch (err) { toast(err.message); }
-      S.saving = false; paintBar();
+      } finally { S.saving = false; paintBar(); }
+    }
+    async function save() {
+      if (S.saving || !S.pages) return;
+      if (!S.pages.length) { toast('Add at least one page before saving.'); return; }
+      try { await persist(); toast('Album pages saved'); } catch (err) { toast(err.message); }
+    }
+
+    /* ---------- the advanced editor (free-editor.js) ---------- */
+    const pool = () => { const used = usedCounts(); return [...all.filter((m) => !used.has(m.id)), ...all.filter((m) => used.has(m.id))].map((m) => m.id); };
+    // a free-form copy of a page: a v1 page becomes layers (PT.toElements), keeping its photos, crops and words
+    function asFree(pg) {
+      if (isFree(pg)) return clone(pg);
+      const out = PT.toElements(pg, { album: view });
+      return out;
+    }
+    function openFree({ index = -1, start = null, spread = false } = {}) {
+      if (!window.FreeEditor) { toast('The advanced editor could not be loaded. Reload the page.'); return; }
+      const isNew = index < 0;
+      const holder = { pg: isNew ? null : S.pages[index] };
+      const page = start || (isNew ? Object.assign({ v: 2, bg: { type: 'color', color: '#F7F3EE' }, els: [] }, spread ? { s: 1 } : {}) : asFree(S.pages[index]));
+      const at = isNew ? S.sel : index;
+      const usedHere = new Set(isNew ? [] : idsOf(S.pages[index]));
+      const used = [...usedCounts().keys()].filter((m) => !usedHere.has(m));
+      const leaf = !isNew && leafOf(index);
+      const where = isNew ? (spread ? 'New two-page spread' : 'New page') : leaf ? (leaf.two ? `Pages ${leaf.at} and ${leaf.at + 1}` : `Page ${leaf.at}`) : 'Page';
+      window.FreeEditor.open(Object.assign({}, ctx, {
+        mode: 'page', album, ratio, page, title: where, used, section: sectionFor(at),
+        onSave: async (pg) => {
+          const i = holder.pg ? S.pages.indexOf(holder.pg) : -1;
+          edit(() => {
+            if (i >= 0) S.pages[i] = pg;
+            else { const k = S.pages.length ? S.sel + 1 : 0; S.pages.splice(k, 0, pg); S.sel = k; }
+            if (i >= 0) S.sel = i;
+          });
+          holder.pg = pg;
+          await persist();
+          toast('Page saved');
+        },
+        onClose: () => { paint(); },
+      }));
+    }
+    // a library or studio design on the selected page, filled with its photos
+    function applyReady(d) {
+      const pg = cur();
+      if (!d || !window.FreeEditor) return;
+      const ids = pg && !pg.gen ? idsOf(pg) : [];
+      const page = window.FreeEditor.fill(d, { photos: ids, pool: pool() });
+      edit(() => {
+        if (!pg || pg.gen) { const k = S.pages.length ? S.sel + 1 : 0; S.pages.splice(k, 0, page); S.sel = k; }
+        else S.pages[S.sel] = page;
+      });
+      const empty = page.els.filter((e) => e.type === 'photo' && !e.m).length;
+      toast(empty ? `Design applied. Use “Edit freely” to fill ${empty === 1 ? 'its empty photo spot' : 'its ' + empty + ' empty photo spots'}.` : 'Design applied');
     }
     async function useAutomatic() {
       const msg = S.saved
@@ -370,11 +436,11 @@
               `<span class="pe-thumb">${contextSvg(l.kind)}</span></span>`;
           }
           const pg = S.pages[l.i];
-          const name = pg.gen ? GEN_NAME[pg.gen] + (pg.gen === 'divider' && pg.text ? ': ' + pg.text : '') : ((tplOf(pg) || {}).name || 'Page');
-          const empty = !pg.gen && !(pg.p || []).some((x) => x && x.m);
+          const name = pg.gen ? GEN_NAME[pg.gen] + (pg.gen === 'divider' && pg.text ? ': ' + pg.text : '') : isFree(pg) ? 'Designed page' : ((tplOf(pg) || {}).name || 'Page');
+          const empty = !pg.gen && (isFree(pg) ? !(pg.els || []).length : !(pg.p || []).some((x) => x && x.m));
           return `<button type="button" class="pe-leaf${l.two ? ' two' : l.at % 2 ? ' left' : ' right'}${l.i === S.sel ? ' on' : ''}${empty ? ' empty' : ''}" data-i="${l.i}" style="--w:${l.two ? 2 : 1}"` +
             ` aria-label="${l.two ? `Pages ${l.at} and ${l.at + 1}` : `Page ${l.at}`}: ${esc(name)}" ${l.i === S.sel ? 'aria-current="true"' : ''}>` +
-            `<span class="pe-thumb">${pageHtml(pg, { small: true })}</span></button>`;
+            `<span class="pe-thumb">${pageHtml(pg, { small: true, section: sectionFor(l.i) })}</span></button>`;
         }).join('');
         return `<div class="pe-sp${first.kind === 'cover' ? ' cover' : ''}"><div class="pe-sp-pages">${leaves}</div><span class="pe-sp-n">${label}</span></div>`;
       }).join('') + `<div class="pe-sp pe-sp-add"><button type="button" class="pe-add-tile" data-act="add-menu" aria-haspopup="true"><svg class="i"><use href="#i-plus"/></svg>Add a page</button><span class="pe-sp-n">&nbsp;</span></div>`;
@@ -397,7 +463,7 @@
       if (!pg) {
         pagebar.innerHTML = '<h3 class="pe-where">No pages</h3>';
         stage.innerHTML = `<div class="pe-none"><p>This album has no pages yet.</p><button type="button" class="btn" data-add="photo"><svg><use href="#i-plus"/></svg>Add a page</button></div>`;
-        body.querySelector('.pe-spotbar').innerHTML = '';
+        body.querySelector('.pe-spotbar').replaceChildren();
         return;
       }
       const l = leafOf(S.sel), two = l.two, side = two ? 'two' : l.at % 2 ? 'left' : 'right';
@@ -408,12 +474,17 @@
         <div class="pe-page-acts">
           <button type="button" class="icon-btn" data-act="earlier" ${S.sel === 0 ? 'disabled' : ''} title="Move this page earlier" aria-label="Move this page earlier"><svg><use href="#pe-left"/></svg></button>
           <button type="button" class="icon-btn" data-act="later" ${S.sel >= S.pages.length - 1 ? 'disabled' : ''} title="Move this page later" aria-label="Move this page later"><svg><use href="#pe-right"/></svg></button>
+          ${pg.gen ? '' : `<button type="button" class="btn sm pe-free-btn" data-act="free" title="Open the advanced editor: move, resize and rotate anything, add words, shapes and ornaments"><svg><use href="#pe-wand"/></svg>Edit freely</button>`}
           <button type="button" class="btn quiet sm" data-act="duplicate" title="Add a copy of this page after it"><svg><use href="#pe-copy"/></svg>Duplicate</button>
           <button type="button" class="btn quiet sm" data-act="delete" title="Remove this page; its photos go back to the tray"><svg><use href="#i-trash"/></svg>Delete</button>
           <button type="button" class="btn quiet sm" data-act="add-menu" aria-haspopup="true"><svg><use href="#i-plus"/></svg>Add page</button>
         </div>`;
-      stage.innerHTML = `<div class="pe-page ${side}${pg.gen ? ' gen' : ''}" style="--r:${two ? ratio * 2 : ratio}">${pageHtml(pg, { editable: true })}</div>`;
-      if (!pg.gen) {
+      stage.innerHTML = `<div class="pe-page ${side}${pg.gen ? ' gen' : ''}${isFree(pg) ? ' free' : ''}" style="--r:${two ? ratio * 2 : ratio}">${pageHtml(pg, { editable: true, section: sectionFor(S.sel) })}</div>`;
+      if (isFree(pg)) {
+        stage.querySelectorAll('[data-el]').forEach((el) => { el.removeAttribute('tabindex'); });
+        const box = stage.querySelector('.pe-page');
+        box.title = 'Double-click to edit this page freely';
+      } else if (!pg.gen) {
         const tpl = tplOf(pg);
         stage.querySelectorAll('.pt-slot').forEach((el) => {
           const i = +el.dataset.slot, x = (pg.p || [])[i], m = x && x.m && byId.get(x.m);
@@ -433,6 +504,11 @@
     function paintSpotbar() {
       const bar = body.querySelector('.pe-spotbar'), pg = cur();
       if (!bar || !pg) return;
+      if (isFree(pg)) {
+        const empty = (pg.els || []).filter((e) => e.type === 'photo' && !e.m).length;
+        bar.innerHTML = `<p class="pe-tip">${empty ? `<b>${empty === 1 ? 'One photo spot is' : empty + ' photo spots are'} empty.</b> Click photos in the tray to fill them, or drag one onto a photo to replace it.` : 'A page designed freely. Drag a photo from the tray onto a photo on the page to replace it, or double-click the page to edit it.'}</p>`;
+        return;
+      }
       if (pg.gen) {
         const what = pg.gen === 'divider' ? 'A section page: it opens a part of the album, such as Haldi or Wedding. Change its words on the right.'
           : pg.gen === 'title' ? 'The welcome page shows the names, place and date from the album details.'
@@ -493,7 +569,7 @@
       const insp = body.querySelector('.pe-insp');
       const pg = cur();
       const keep = insp.scrollTop;
-      if (!pg) { insp.innerHTML = ''; return; }
+      if (!pg) { insp.replaceChildren(); return; }
       if (pg.gen) {
         let html = `<section class="pe-sec"><h3>${GEN_NAME[pg.gen]}</h3>`;
         if (pg.gen === 'divider') {
@@ -506,10 +582,22 @@
         insp.innerHTML = html + '</section>';
         return;
       }
+      const ready = readyHtml(pg);
+      if (isFree(pg)) {
+        const n = (pg.els || []).length;
+        insp.innerHTML = `<section class="pe-sec pe-sec-free"><h3>Designed freely</h3>
+            <p class="hint">${n === 1 ? 'One item' : n + ' items'} placed freely${pg.s ? ' across two pages' : ''}. Change anything on it in the advanced editor.</p>
+            <button type="button" class="btn" data-act="free"><svg><use href="#pe-wand"/></svg>Edit freely</button></section>` +
+          ready + `<section class="pe-sec pe-sec-designs"><h3>Page designs</h3><p class="hint">Switching to one of these keeps the photos, in order, and drops the free layout.</p><div class="pe-designs">${designTiles(pg, idsOf(pg).length)}</div></section>`;
+        insp.scrollTop = keep;
+        return;
+      }
       const tpl = tplOf(pg);
       const bg = pg.bg || tpl.bg || 'paper';
       const th = M.theme(album);
-      let html = `<section class="pe-sec"><h3>Background</h3><div class="pe-bgs" role="radiogroup" aria-label="Background">${BGS.map(([k, label]) =>
+      let html = `<section class="pe-sec pe-sec-free"><h3>Design it yourself</h3><p class="hint">Move, resize and rotate anything, add words, shapes and ornaments, and change the background.</p>
+        <button type="button" class="btn quiet" data-act="free"><svg><use href="#pe-wand"/></svg>Edit freely</button></section>` + ready;
+      html += `<section class="pe-sec"><h3>Background</h3><div class="pe-bgs" role="radiogroup" aria-label="Background">${BGS.map(([k, label]) =>
         `<button type="button" role="radio" aria-checked="${bg === k}" data-bg="${k}" class="pe-bg"><span class="pe-sw sw-${k}" style="--r:${ratio}${k === 'silk' ? `;--silk-c:${th.silk}` : ''}"></span>${label}</button>`).join('')}</div></section>`;
       if ((tpl.texts || []).length) {
         html += `<section class="pe-sec"><h3>Words on this page</h3>${tpl.texts.map((t, i) => {
@@ -519,20 +607,35 @@
         }).join('')}<p class="hint">Leave a box empty to use the album details shown in grey.</p></section>`;
       }
       const n = tpl.slots.length;
-      const list = PT.list().slice();
-      if (!PT.list().includes(tpl)) list.unshift(tpl);
+      html += `<section class="pe-sec pe-sec-designs"><h3>Design <small>${esc(tpl.name || '')}</small></h3><p class="hint">Designs for ${plural(n, 'photo', 'photos')} come first. Photos keep their order when you switch.</p><div class="pe-designs">${designTiles(pg, n)}</div></section>`;
+      insp.innerHTML = html;
+      insp.scrollTop = keep;
+    }
+    // ready-made free-form designs (library and master), shown with this page's photos in them
+    function readyHtml(pg) {
+      const list = (S.ready || []).filter((d) => !(d.occasions || []).length || (d.occasions || []).includes(album.type));
+      if (!list.length) return '';
+      const ids = idsOf(pg), pl = pool();
+      return `<section class="pe-sec pe-sec-designs"><h3>Ready-made designs <small>${list.length}</small></h3><p class="hint">Finished pages with backgrounds, words and ornaments. Your photos go into them.</p><div class="pe-designs">${list.slice(0, 40).map((d) => {
+        const filled = window.FreeEditor.fill(d, { photos: ids, pool: pl });
+        return `<button type="button" class="pe-design${filled.s ? ' two' : ''}" data-ready="${esc(d.source + ':' + d.key)}" title="${esc(d.name || '')}">` +
+          `<span class="pe-dthumb" style="--r:${filled.s ? ratio * 2 : ratio}">${PT.renderFree(filled, { album: view, media: mediaOf, small: true })}</span>` +
+          `<span class="pe-dname">${esc(d.name || 'Design')}${filled.s ? ' <em>two pages</em>' : ''}</span></button>`;
+      }).join('')}</div></section>`;
+    }
+    function designTiles(pg, n) {
+      const tpl = tplOf(pg);
+      const list = PT.list().filter((t) => t.v !== 2);
+      if (tpl && !list.includes(tpl)) list.unshift(tpl);
       const order = list.map((t, k) => ({ t, k, d: Math.abs(t.slots.length - n) + (t.spread ? 0.5 : 0) })).sort((a, b) => a.d - b.d || a.k - b.k);
-      const compact = photosFor(pg).filter(Boolean);
-      const tiles = order.map(({ t }) => {
-        const on = t.key === pg.t;
-        const preview = { t: t.key, p: [], bg: pg.bg };
+      const compact = (isFree(pg) ? idsOf(pg).map(phOf) : photosFor(pg)).filter(Boolean);
+      return order.map(({ t }) => {
+        const on = !isFree(pg) && t.key === pg.t;
+        const preview = { t: t.key, p: [], bg: isFree(pg) ? undefined : pg.bg };
         return `<button type="button" class="pe-design${t.spread ? ' two' : ''}" data-t="${esc(t.key)}" aria-pressed="${on}" title="${esc(t.name)}">` +
           `<span class="pe-dthumb" style="--r:${t.spread ? ratio * 2 : ratio}">${ptRender(preview, { album: view, photos: compact, small: true, tpl: t })}</span>` +
           `<span class="pe-dname">${esc(t.name)}${t.spread ? ' <em>two pages</em>' : ''}<small>${plural(t.slots.length, 'photo', 'photos')}</small></span></button>`;
       }).join('');
-      html += `<section class="pe-sec pe-sec-designs"><h3>Design <small>${esc(tpl.name || '')}</small></h3><p class="hint">Designs for ${plural(n, 'photo', 'photos')} come first. Photos keep their order when you switch.</p><div class="pe-designs">${tiles}</div></section>`;
-      insp.innerHTML = html;
-      insp.scrollTop = keep;
     }
 
     function paintEmpty() {
@@ -606,6 +709,8 @@
       menu.className = 'pe-menu';
       menu.setAttribute('role', 'menu');
       menu.innerHTML = `<button type="button" role="menuitem" data-add="photo"><b>Page for photos</b><small>After this page; pick a design for it</small></button>
+        <button type="button" role="menuitem" data-add="free-spread"><b>Designed spread</b><small>Two pages designed as one, across the fold: hero photos, grids, panels</small></button>
+        <button type="button" role="menuitem" data-add="free"><b>Designed page</b><small>One page designed freely, or from a ready-made design</small></button>
         <button type="button" role="menuitem" data-add="divider"><b>Section page</b><small>Opens a part such as Haldi or Wedding</small></button>
         ${hasTitle ? '' : '<button type="button" role="menuitem" data-add="title"><b>Welcome page</b><small>At the start of the album</small></button>'}
         ${hasClosing ? '' : '<button type="button" role="menuitem" data-add="closing"><b>Thank-you page</b><small>At the end of the album</small></button>'}`;
@@ -632,7 +737,11 @@
       const t = e.target;
       if (!t.closest('.pe-menu') && !t.closest('[data-act="add-menu"]')) closeMenus();
       const add = t.closest('[data-add]');
-      if (add) { closeMenus(); addPage(add.dataset.add); return; }
+      if (add) {
+        closeMenus();
+        if (add.dataset.add === 'free' || add.dataset.add === 'free-spread') { openFree({ spread: add.dataset.add === 'free-spread' }); return; }
+        addPage(add.dataset.add); return;
+      }
       const act = t.closest('[data-act]');
       if (act) {
         const a = act.dataset.act;
@@ -651,6 +760,7 @@
         else if (a === 'adjust') adjust(S.spot);
         else if (a === 'remove') removePhoto(S.spot);
         else if (a === 'deselect') { S.spot = -1; paintCanvas(); }
+        else if (a === 'free') openFree({ index: S.sel });
         return;
       }
       const leaf = t.closest('.pe-leaf[data-i]');
@@ -659,6 +769,8 @@
       if (f) { S.filter = f.dataset.filter; paintTray(); return; }
       const ph = t.closest('.pe-ph');
       if (ph) { trayPick(ph.dataset.m); return; }
+      const rd = t.closest('[data-ready]');
+      if (rd) { const [src, key] = rd.dataset.ready.split(/:(.*)/); applyReady((S.ready || []).find((x) => x.source === src && x.key === key)); return; }
       const d = t.closest('.pe-design');
       if (d) { setDesign(d.dataset.t); return; }
       const b = t.closest('[data-bg]');
@@ -670,6 +782,7 @@
       if (t.closest('.pe-stage') && S.spot >= 0) { S.spot = -1; paintCanvas(); }
     });
     root.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.pe-stage .pe-page.free')) { openFree({ index: S.sel }); return; }
       const slot = e.target.closest('.pe-stage .pt-slot.pe-has');
       if (slot) adjust(+slot.dataset.slot);
     });
@@ -677,6 +790,12 @@
       const pg = cur();
       if (!pg) return;
       if (pg.gen) { toast('This page has no photo spots. Pick a photo page in the strip above.'); return; }
+      if (isFree(pg)) {
+        const k = (pg.els || []).findIndex((e) => e.type === 'photo' && !e.m);
+        if (k < 0) { toast('Every photo spot on this page has a photo. Use “Edit freely” to add more, or drag a photo onto one to replace it.'); return; }
+        edit(() => { pg.els[k].m = mid; delete pg.els[k].c; });
+        return;
+      }
       fitSlots(pg);
       let slot = S.spot;
       if (slot < 0) slot = pg.p.findIndex((x) => !x.m);
@@ -767,6 +886,9 @@
       if (d.kind === 'page') return markInsert(d);
       const slot = el && el.closest('.pe-stage .pt-slot');
       if (slot && !(d.kind === 'slot' && +slot.dataset.slot === d.i)) { slot.classList.add('pe-over'); d.target = { slot: +slot.dataset.slot }; return; }
+      const layer = d.kind === 'photo' && el && el.closest('.pe-stage .pe-page.free [data-el]');
+      const lp = layer && isFree(cur()) && cur().els[+layer.dataset.el];
+      if (lp && lp.type === 'photo') { layer.classList.add('pe-over'); d.target = { layer: +layer.dataset.el }; return; }
       const tray = el && el.closest('.pe-tray');
       if (tray && d.kind === 'slot') { tray.classList.add('pe-over'); d.target = { tray: true }; }
     }
@@ -817,6 +939,7 @@
       if (!tg) return;
       if (d.kind === 'page') { movePage(d.i, tg.to); return; }
       if (tg.tray && d.kind === 'slot') { removePhoto(d.i); toast('Photo taken off the page'); return; }
+      if (tg.layer !== undefined && d.kind === 'photo') { const pg = cur(); edit(() => { pg.els[tg.layer].m = d.m; delete pg.els[tg.layer].c; }); return; }
       if (tg.slot === undefined) return;
       if (d.kind === 'photo') place(d.m, tg.slot);
       else if (d.kind === 'slot') swap(d.i, tg.slot);
@@ -826,7 +949,8 @@
     function onKey(e) {
       if (!host.isConnected) { cleanup(); return; }
       const modal = document.getElementById('modal');
-      if (S.mode !== 'edit' || document.querySelector('.crop-overlay') || (modal && !modal.hidden)) return;
+      if (S.mode !== 'edit' || document.querySelector('.crop-overlay, .crop-dialog[open], dialog.fe[open]') || (modal && !modal.hidden)) return;
+      if (e.isComposing || e.keyCode === 229) return;
       const inField = e.target.closest && e.target.closest('input, textarea, select, [contenteditable]');
       const mod = e.ctrlKey || e.metaKey;
       if (mod && !e.altKey && e.key.toLowerCase() === 's') { e.preventDefault(); save(); return; }
@@ -907,12 +1031,19 @@
           api(`albums/${q}/pages`),
           api('page-templates').catch(() => ({ templates: [] })),
         ]);
-        (designs.templates || []).forEach((t) => PT.define(t));
+        (designs.templates || []).filter((t) => t.v !== 2).forEach((t) => PT.define(t));
+        if (window.FreeEditor) window.FreeEditor.designs(ctx, { kind: 'page' }).then((list) => { S.ready = list; if (S.mode === 'edit') paintInspector(); }).catch(() => {});
         Object.values(saved.templates || {}).forEach((t) => PT.define(t));
         if (saved.pages && saved.pages.length) {
           let gone = 0;
           S.pages = saved.pages.map((pg) => {
             if (pg.gen) return pg;
+            if (isFree(pg)) {
+              const out = clone(pg);
+              (out.els || []).forEach((e) => { if (e.type === 'photo' && e.m && !byId.has(e.m)) { gone++; e.m = null; } });
+              if (out.bg && out.bg.type === 'photo' && out.bg.m && !byId.has(out.bg.m)) { gone++; out.bg.m = null; }
+              return out;
+            }
             const p = (pg.p || []).map((x) => { if (x && x.m && !byId.has(x.m)) { gone++; return { m: null }; } return x || { m: null }; });
             return fitSlots(Object.assign({}, pg, { p }));
           });

@@ -4,6 +4,9 @@
    Saved designs go to /api/admin/master/page-templates and are offered to every studio's page editor.
    The data format and its limits are in assets/js/page-templates.js and lib/pages.js (cleanTemplate).
 
+   Free-form designs (v: 2, made in the advanced editor free-editor.js) are listed beside them: "New free-form design"
+   opens the editor in template mode; they are saved as { v: 2, name, kind: 'page'|'cover', occasions, bg, els, s? }.
+
    window.TemplateDesigner.mount(host, ctx), ctx = { api, toast, esc, M, CT, PT, user, ratioOf, prepareImage, typeLabel, closeModal } */
 (function () {
   'use strict';
@@ -114,6 +117,42 @@
       { tpl, album: sampleAlbum(), photos: samplePhotos(tpl.slots.length, offset), editable }));
   }
 
+  // a free-form design drawn with sample pictures in its photo spots
+  function renderFreeTpl(t, offset = 0) {
+    const els = (t.els || []).map((e, i) => (e.type === 'photo' ? Object.assign({}, e, { m: 's' + i }) : e));
+    const bg = t.bg && t.bg.type === 'photo' ? Object.assign({}, t.bg, { m: 's99' }) : t.bg;
+    const media = (id) => ({ src: SAMPLES[(+String(id).slice(1) + offset) % SAMPLES.length] });
+    const album = Object.assign(sampleAlbum(), (t.occasions || [])[0] && C.M.TYPES[t.occasions[0]] ? { theme: { silk: C.M.TYPES[t.occasions[0]].silk, accent: C.M.TYPES[t.occasions[0]].accent } } : {});
+    return C.PT.renderFree({ v: 2, s: t.s, bg, els }, { album, media, small: true, section: 'The wedding day' });
+  }
+  function openFree(t, { copy = false } = {}) {
+    if (!window.FreeEditor) { C.toast('The advanced editor could not be loaded. Reload the page.'); return; }
+    let key = t && !copy ? t.key : null;
+    const occ = (t && (t.occasions || [])[0]) || st.occasion;
+    const album = Object.assign(sampleAlbum(), C.M.TYPES[occ] ? { theme: { silk: C.M.TYPES[occ].silk, accent: C.M.TYPES[occ].accent } } : {});
+    window.FreeEditor.open(Object.assign({}, C, {
+      mode: 'template', album, ratio: 1.5, samples: SAMPLES,
+      page: t ? { v: 2, s: t.s, bg: t.bg, els: t.els } : { v: 2, s: 1, bg: { type: 'color', color: '#F7F3EE' }, els: [] },
+      title: t ? (copy ? 'Copy of ' + t.name : t.name) : 'New free-form design',
+      meta: { name: t ? (copy ? ('Copy of ' + t.name).slice(0, 60) : t.name) : '', kind: (t && t.kind) || 'page', occasions: (t && t.occasions) || [], hidden: !!(t && t.hidden && !copy) },
+      onSave: async (page, meta) => {
+        const body = Object.assign({ v: 2, name: meta.name, kind: meta.kind, occasions: meta.occasions }, { bg: page.bg, els: page.els }, page.s ? { s: 1 } : {});
+        let res;
+        if (key) res = await C.api('master/page-templates/' + encodeURIComponent(key), { method: 'PUT', body: Object.assign(body, { hidden: !!meta.hidden }) });
+        else {
+          res = await C.api('master/page-templates', { method: 'POST', body });
+          if (meta.hidden) res = await C.api('master/page-templates/' + encodeURIComponent(res.template.key), { method: 'PUT', body: { hidden: true } });
+        }
+        const saved = res.template;
+        key = saved.key;
+        const was = st.list.findIndex((x) => x.key === saved.key);
+        if (was >= 0) st.list[was] = saved; else st.list.unshift(saved);
+        C.toast(saved.hidden ? `Saved “${saved.name}”, hidden from studios` : `Saved “${saved.name}”. Studios can use it now.`);
+      },
+      onClose: () => { if (host && host.isConnected && st.view === 'library') paintLibrary(); },
+    }));
+  }
+
   /* ---------- mounting ---------- */
   function mount(h, ctx) {
     C = ctx; host = h;
@@ -167,13 +206,15 @@
     host.innerHTML = `<div class="td-lib"><header class="td-lib-head">
         <div><h1 class="display td-lib-title">Page designs</h1>
         <p class="td-lede">Draw a page once and every studio can use it in its albums. Photo spots take the studio’s photos; text boxes fill in each couple’s names, date and place.</p></div>
-        <button class="btn" type="button" data-act="new">${ic('plus')}New page design</button></header>
+        <div class="td-lib-acts"><button class="btn" type="button" data-act="new-free">${ic('edit')}New free-form design</button>
+        <button class="btn quiet" type="button" data-act="new">${ic('plus')}New page design</button></div></header>
         <div id="tdLib"><p class="hint">Loading designs…</p></div></div>`;
-    host.querySelector('[data-act="new"]').onclick = () => openEditor(blankDoc(), null, false);
+    host.querySelector('.td-lib-head [data-act="new"]').onclick = () => openEditor(blankDoc(), null, false);
+    host.querySelector('.td-lib-head [data-act="new-free"]').onclick = () => openFree(null);
     try {
       const d = await C.api('page-templates');
       st.list = d.templates || [];
-      st.list.forEach((t) => C.PT.define(t));
+      st.list.filter((t) => t.v !== 2).forEach((t) => C.PT.define(t));
       st.loaded = true;
     } catch (err) { C.toast(err.message); }
     if (!host.isConnected || st.view !== 'library') return;
@@ -183,8 +224,26 @@
   function paintLibrary() {
     const lib = host.querySelector('#tdLib');
     if (!lib) return;
-    const mine = st.list;
+    const mine = st.list.filter((t) => t.v !== 2);
+    const free = st.list.filter((t) => t.v === 2);
     const builtin = C.PT.list().filter((t) => !String(t.key).startsWith('c-'));
+    const freeCard = (t) => {
+      const occ = (t.occasions || []).map((o) => C.typeLabel(o)).join(', ');
+      const n = (t.els || []).length, ph = (t.els || []).filter((e) => e.type === 'photo').length;
+      return `<article class="td-card${t.s ? ' is-spread' : ''}${t.hidden ? ' is-hidden' : ''}" data-key="${C.esc(t.key)}" data-free="1">
+        <button type="button" class="td-thumb" data-act="edit" style="--ar:${1.5 * (t.s ? 2 : 1)}" aria-label="Edit ${C.esc(t.name)}">${renderFreeTpl(t)}</button>
+        <div class="td-card-text">
+          <h3>${C.esc(t.name)}</h3>
+          <p class="td-meta">${t.kind === 'cover' ? 'Cover' : t.s ? 'Two-page spread' : 'Page'}, ${plural(ph, 'photo', 'photos')}, ${plural(n, 'item', 'items')}${occ ? `<br>For ${C.esc(occ)}` : ''}</p>
+          <p class="td-status ${t.hidden ? 'off' : 'on'}">${t.hidden ? 'Hidden from studios' : 'Offered to studios'}</p>
+        </div>
+        <div class="td-card-actions">
+          <button type="button" class="td-act" data-act="edit">${ic('edit')}Edit</button>
+          <button type="button" class="td-act" data-act="dup">${ic('dup')}Duplicate</button>
+          <button type="button" class="td-act" data-act="toggle">${ic(t.hidden ? 'eye' : 'eyeoff')}${t.hidden ? 'Show to studios' : 'Hide'}</button>
+          <button type="button" class="td-act danger" data-act="delete">${ic('trash')}Delete</button></div>
+      </article>`;
+    };
     const card = (t, own) => {
       const ar = 1.5 * (t.spread ? 2 : 1);
       const occ = (t.occasions || []).map((o) => C.typeLabel(o)).join(', ');
@@ -205,7 +264,14 @@
     };
     lib.innerHTML = `
       <section class="td-sec">
-        <h2 class="td-sec-title">Your designs ${mine.length ? `<span class="td-count">${mine.length}</span>` : ''}</h2>
+        <h2 class="td-sec-title">Free-form designs ${free.length ? `<span class="td-count">${free.length}</span>` : ''}</h2>
+        <p class="hint td-sec-hint">Whole pages, spreads and covers with backgrounds, words and ornaments, made in the advanced editor. Studios find them under Ready-made designs.</p>
+        ${free.length ? `<div class="td-grid">${free.map(freeCard).join('')}</div>`
+          : `<div class="td-empty"><p><b>No free-form designs yet.</b> Design a spread the way the studio would: a hero photo, a grid of photos, a colour panel, a script title.</p>
+             <button class="btn quiet" type="button" data-act="new-free">${ic('edit')}New free-form design</button></div>`}
+      </section>
+      <section class="td-sec">
+        <h2 class="td-sec-title">Your page designs ${mine.length ? `<span class="td-count">${mine.length}</span>` : ''}</h2>
         ${mine.length ? `<div class="td-grid">${mine.map((t) => card(t, true)).join('')}</div>`
           : `<div class="td-empty"><p><b>No designs of your own yet.</b> Start with a blank page, or pick one of the ready-made designs below and change it.</p>
              <button class="btn quiet" type="button" data-act="new">${ic('plus')}New page design</button></div>`}
@@ -219,7 +285,16 @@
       const b = e.target.closest('[data-act]');
       if (!b) return;
       if (b.dataset.act === 'new') return openEditor(blankDoc(), null, false);
+      if (b.dataset.act === 'new-free') return openFree(null);
       const key = b.closest('[data-key]').dataset.key;
+      const fr = b.closest('[data-free]') && free.find((t) => t.key === key);
+      if (fr) {
+        if (b.dataset.act === 'edit') openFree(fr);
+        else if (b.dataset.act === 'dup') openFree(fr, { copy: true });
+        else if (b.dataset.act === 'toggle') setHidden(fr, !fr.hidden, b);
+        else if (b.dataset.act === 'delete') removeDesign(fr, b);
+        return;
+      }
       const own = mine.find((t) => t.key === key);
       const t = own || C.PT.get(key);
       if (!t) return;
@@ -234,7 +309,7 @@
     btn.disabled = true;
     try {
       const { template } = await C.api('master/page-templates/' + encodeURIComponent(t.key), { method: 'PUT', body: { hidden } });
-      C.PT.define(template);
+      if (template.v !== 2) C.PT.define(template);
       st.list = st.list.map((x) => (x.key === t.key ? template : x));
       C.toast(hidden ? `“${t.name}” is hidden from studios` : `“${t.name}” is offered to studios again`);
       paintLibrary();
@@ -257,7 +332,7 @@
      ====================================================================== */
   function blankDoc() { return { name: '', spread: false, bg: 'paper', slots: [], texts: [], auto: false, occasions: [], live: true }; }
   function docFrom(t) {
-    const clone = (o) => JSON.parse(JSON.stringify(o || []));
+    const clone = (o) => structuredClone(o || []);
     return { name: t.name || '', spread: !!t.spread, bg: t.bg || 'paper', slots: clone(t.slots), texts: clone(t.texts),
       auto: t.auto !== false && !(t.texts || []).length, occasions: (t.occasions || []).slice(), live: !t.hidden };
   }
@@ -676,7 +751,7 @@
     const name = $('#tdName');
     name.addEventListener('input', () => { st.doc.name = name.value; st.msg = ''; paintChrome(); });
     name.addEventListener('change', commit);
-    name.addEventListener('keydown', (e) => { if (e.key === 'Enter') name.blur(); });
+    name.addEventListener('keydown', (e) => { if (e.isComposing || e.keyCode === 229) return; if (e.key === 'Enter') name.blur(); });
 
     host.querySelector('.td-ed').addEventListener('click', (e) => {
       const b = e.target.closest('[data-act]');

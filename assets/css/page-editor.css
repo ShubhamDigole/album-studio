@@ -249,3 +249,13 @@ body.pe-dragging, body.pe-dragging * { cursor: grabbing !important; user-select:
   .pe-design.two { flex-basis: 272px; }
 }
 @media (prefers-reduced-motion: reduce) { .pe-dot.busy { animation: none; } }
+
+/* the advanced editor (free-editor.js) from the page editor */
+.pe-free-btn { background: var(--marigold); color: var(--kohl); }
+:root[data-theme="light"] .pe-free-btn { background: var(--active); color: #fff; }
+.pe-sec-free .btn { margin-top: 8px; }
+.pe-sec-free .btn svg, .pe-spotbar .btn svg, .pe-free-btn svg { fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.pe-page.free { cursor: zoom-in; }
+.pe-page.free [data-el] { cursor: inherit; }
+.pe-page.free .pe-over { outline: 3px solid var(--marigold); outline-offset: -3px; }
+.pe-design .pe-dname em { font-style: normal; padding: 0 5px; border-radius: 4px; background: var(--hover); font-size: 12px; }
