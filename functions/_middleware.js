@@ -6,7 +6,7 @@ import { getCookie } from '../lib/http.js';
 // Reachable without the guest password: the unlock call, fonts, and the admin area (it has its own sign-in).
 const OPEN_PATHS = [/^\/api\/unlock$/, /^\/assets\/fonts\//, /^\/robots\.txt$/, /^\/favicon/, /^\/admin(\.html)?$/, /^\/api\/admin\//,
   /^\/assets\/css\/(fonts|base|admin|page-templates|page-editor|template-designer)\.css$/,
-  /^\/assets\/js\/(admin|album-meta|cover-templates|cover-templates-more|qr|page-templates|page-editor|template-designer)\.js$/,
+  /^\/assets\/js\/(admin|album-meta|cover-templates|cover-templates-more|qr|crop|page-templates|page-editor|template-designer)\.js$/,
   /^\/assets\/js\/vendor\/(pdfjs\/|qrcode-)/];
 
 function withHeaders(res) {

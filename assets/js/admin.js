@@ -142,11 +142,12 @@
     $('#who').textContent = u.isMaster ? 'Master' : (u.studio && u.studio.name) || '';
     $('#navStudios').hidden = !u.isMaster;
     $('#navStudio').hidden = u.isMaster;
+    $('#navTemplates').hidden = !u.isMaster;
     const badge = $('#pendingBadge');
     badge.hidden = !state.pendingStudios;
     badge.textContent = state.pendingStudios;
     const cur = location.hash.replace(/^#/, '').split('/')[0];
-    document.querySelectorAll('#nav a').forEach((a) => a.toggleAttribute('aria-current', a.dataset.nav === (cur === 'studios' ? 'studios' : cur === 'studio' ? 'studio' : 'albums')));
+    document.querySelectorAll('#nav a').forEach((a) => a.toggleAttribute('aria-current', a.dataset.nav === (['studios', 'studio', 'templates'].includes(cur) ? cur : 'albums')));
   }
 
   /* ---------- routing ---------- */
@@ -162,6 +163,7 @@
     if (parts[0] === 'album') return albumPage(parts[1], parts[2] || 'details');
     if (parts[0] === 'studios' && state.user.isMaster) return studiosPage();
     if (parts[0] === 'studio') return studioPage();
+    if (parts[0] === 'templates' && state.user.isMaster) return templatesPage();
     return shelf();
   }
   addEventListener('hashchange', () => { if (state.user) route(); });
@@ -901,13 +903,29 @@
     view.innerHTML = `
       <div class="crumbs"><a href="#"><svg class="i"><use href="#i-back"/></svg>All albums</a></div>
       <section class="hero" id="hero"></section>
-      <nav class="tabs">${tabLink('details', 'Details')}${tabLink('photos', 'Photos and pages', n ? ` <span class="count soft">${n}</span>` : '')}${tabLink('blessings', 'Blessings', a._stats.pending ? ` <span class="count">${a._stats.pending} new</span>` : '')}</nav>
+      <nav class="tabs">${tabLink('details', 'Details')}${tabLink('photos', 'Photos and pages', n ? ` <span class="count soft">${n}</span>` : '')}${tabLink('pages', 'Album pages')}${tabLink('blessings', 'Blessings', a._stats.pending ? ` <span class="count">${a._stats.pending} new</span>` : '')}</nav>
       <div id="tabBody"></div>`;
     paintHero(a);
     const body = $('#tabBody');
     if (tab === 'photos') photosTab(body, a);
+    else if (tab === 'pages') pagesTab(body, a);
     else if (tab === 'blessings') blessingsTab(body, a);
     else mountEditor(body, a, { isNew: false });
+  }
+
+  /* ---------- album pages: the page editor (assets/js/page-editor.js) ---------- */
+  // Shared with the editor and the template designer: the admin API, notices, and album helpers.
+  const editorContext = () => ({ api, toast, esc, M, CT, PT: window.PageTemplates, user: state.user,
+    ratioOf, prepareImage, typeLabel, closeModal });
+  async function pagesTab(body, a) {
+    if (!window.PageEditor) { body.innerHTML = '<p class="hint">The page editor could not be loaded. Reload the page.</p>'; return; }
+    window.PageEditor.mount(body, Object.assign(editorContext(), { album: a, reload: () => albumPage(a.id, 'pages') }));
+  }
+  /* ---------- page designs for every studio (master only; assets/js/template-designer.js) ---------- */
+  function templatesPage() {
+    view.innerHTML = '<div id="designerHost"></div>';
+    if (!window.TemplateDesigner) { view.innerHTML = '<p class="hint">The design builder could not be loaded. Reload the page.</p>'; return; }
+    window.TemplateDesigner.mount($('#designerHost'), editorContext());
   }
 
   /* ---------- photos and pages ---------- */
