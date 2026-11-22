@@ -57,9 +57,15 @@
       </div>
       <div class="titlebar-right">
         <a class="studio" id="brand" target="_blank" rel="noopener"><img id="brandLogo" alt="" hidden /><span id="brandName"></span></a>
+        <button class="bless-pill" id="blessPill" data-action="bless" hidden><svg><use href="#i-bless"/></svg><span>Blessings</span></button>
         <button class="icon-btn" data-action="help" title="How to view this album"><svg><use href="#i-help"/></svg></button>
       </div>
     </header>
+    <div class="bless-nudge" id="blessNudge" role="dialog" aria-label="Write a blessing" hidden>
+      <svg class="nudge-icon" aria-hidden="true"><use href="#i-bless"/></svg>
+      <p>Enjoyed the album? Leave your blessings for <b id="nudgeNames"></b>.</p>
+      <div class="nudge-actions"><button class="btn" data-action="bless-write">Write a blessing</button><button class="btn quiet" data-action="nudge-close">Not now</button></div>
+    </div>
 
     <main class="stage" id="stage">
       <button class="side-nav prev" data-action="prev" aria-label="Previous page"><svg><use href="#i-chev-left"/></svg></button>

@@ -302,10 +302,28 @@
     idx = clamp(idx, 0, S.pages.length - 1);
     if (S.zoom) exitZoom(false);
     const target = visiblePages(idx)[0];
-    if (target === visiblePages()[0]) return;
+    const from = visiblePages()[0];
+    if (target === from) return;
     ensureLoaded(idx);
+    // A single page turn cannot show a closed book opening onto a far page (front cover to back cover, for example):
+    // the turning cover would show the wrong pages beside it. Fade to the page instead.
+    const closedAt = (i) => !S.portrait && visiblePages(i).length === 1;
+    if (Math.abs(target - from) > 2 && (closedAt(from) || closedAt(idx))) { jumpTo(idx); return; }
     applyShift(shiftFor(idx));              // move the book while the page turns
     S.pf.flip(idx);
+  }
+  function jumpTo(idx) {
+    if (S.jumping) return;
+    S.jumping = true;
+    el.shift.classList.add('fading');
+    setTimeout(() => {
+      S.pf.turnToPage(idx);
+      onPageChange(S.pf.getCurrentPageIndex());
+      applyShift(shiftFor(S.current), false);
+      updateThickness(false);
+      Sound.flip(true);
+      requestAnimationFrame(() => { el.shift.classList.remove('fading'); S.jumping = false; });
+    }, 200);
   }
   function next() {
     if (!S.pf) return;
@@ -341,6 +359,7 @@
     ensureLoaded(idx);
     applyShift(shiftFor(idx));
     updateThickness();
+    maybeNudge();
     updateUI();
     try { history.replaceState(null, '', '#p=' + (idx + 1)); } catch (e) { /* file:// in some browsers */ }
     if (S.autoplay) scheduleAutoplay();
@@ -749,7 +768,7 @@
   /* ------------------------------------------------------------------------
      Blessings (guestbook) – only when the album is served by the backend
      ------------------------------------------------------------------------ */
-  const blessEl = { panel: $('#blessPanel'), btn: $('#blessBtn') };
+  const blessEl = { panel: $('#blessPanel'), btn: $('#blessBtn'), pill: $('#blessPill'), nudge: $('#blessNudge') };
   let guestbook = null;
 
   function toggleBless(force) {
@@ -758,10 +777,30 @@
     if (open) { toggleThumbs(false); if (window.innerWidth < 900) togglePanel(false); stopAutoplay(); if (!guestbook.loaded) guestbook.load(); }
     blessEl.panel.classList.toggle('open', open);
     blessEl.btn.classList.toggle('active', open);
+    blessEl.pill.classList.toggle('active', open);
+    if (open) hideNudge(true);
+  }
+
+  // shown once per album on this device, when the guest reaches the last pages
+  const nudgeKey = () => 'albumviewer:blessNudge:' + S.album.id;
+  function maybeNudge() {
+    if (!guestbook || blessEl.nudge.hidden === false || blessEl.panel.classList.contains('open')) return;
+    const v = visiblePages();
+    if (v[v.length - 1] < S.pages.length - 3) return;
+    try { if (localStorage.getItem(nudgeKey())) return; } catch (e) { /* private mode: show it */ }
+    $('#nudgeNames').textContent = M.title(S.album);
+    blessEl.nudge.hidden = false;
+  }
+  function hideNudge(remember) {
+    blessEl.nudge.hidden = true;
+    if (remember) { try { localStorage.setItem(nudgeKey(), '1'); } catch (e) { /* ignore */ } }
   }
 
   function setupBlessings() {
     blessEl.btn.hidden = false;
+    blessEl.pill.hidden = false;
+    // Escape closes the panel even while typing (the form keeps other keys away from page shortcuts)
+    blessEl.panel.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.target.blur && e.target.blur(); toggleBless(false); } }, true);
     guestbook = window.Guestbook.mount({ albumId: S.album.id, list: $('#blessList'), form: $('#blessForm'), note: $('#blessNote'), more: $('#blessMore') });
   }
 
@@ -863,6 +902,8 @@
     thumbs: () => toggleThumbs(),
     toc: () => togglePanel(),
     bless: () => toggleBless(),
+    'bless-write': () => { toggleBless(true); setTimeout(() => { const f = $('#blessForm [name="name"]'); if (f) f.focus(); }, 350); },
+    'nudge-close': () => hideNudge(true),
     theme: () => applyMode(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'),
     'zoom-in': () => zoomStep(1),
     'zoom-out': () => zoomStep(-1),
