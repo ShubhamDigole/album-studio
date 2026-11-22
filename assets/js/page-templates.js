@@ -74,6 +74,7 @@
   function get(key) { return custom[key] || BUILTIN[key] || null; }
   function list({ includeHidden = false } = {}) { return [...T, ...Object.values(custom).filter((t) => includeHidden || !t.hidden)]; }
   function define(t) { if (t && t.key) custom[t.key] = Object.assign({ auto: false, bg: 'paper', texts: [], slots: [] }, t); }
+  function forget(key) { delete custom[key]; }
 
   // ---------- rendering ----------
   const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -231,5 +232,5 @@
     return out;
   }
 
-  window.PageTemplates = { list, get, define, render, autoLayout, autoText, BUILTIN, cropStyle, slotAR };
+  window.PageTemplates = { list, get, define, forget, render, autoLayout, autoText, BUILTIN, cropStyle, slotAR };
 })();

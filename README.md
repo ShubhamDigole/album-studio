@@ -64,6 +64,10 @@ For very large albums you can also build on your computer: `node tools/build-alb
 | **Extra pages** | Details, Extra pages | Tick or untick the endpapers, welcome page, section pages and thank-you page. Photo albums start with all four; designed albums with endpapers only |
 | **Full quality** | Photos and pages, "Keep full quality" (on by default) | A full-resolution copy (up to 8000 px) is kept for zooming in and downloads; guests flip through fast 2400 px copies. Location data is always removed |
 | **Background music** | Details, Extras | 8 built-in songs (Kevin MacLeod, CC BY 4.0, credited in the viewer) or your own mp3 link, with example links |
+| **Album pages (page editor)** | Album pages tab | Create pages from your photos in one click (fewer / balanced / more per page), then drag photos onto spots, swap, crop, change designs, backgrounds and words, reorder, shuffle, save. Saved pages replace the automatic layout |
+| **Page designs (master)** | Page designs (master menu) | Draw photo spots and text boxes on a page (frames, shapes, colours, two-page designs); every studio can use active designs |
+| **Crop in cover photo spots** | Details, cover popup, Adjust | Drag and zoom the photo inside the spot's own shape |
+| **Share** | Album viewer Share, admin "QR code" | Link, WhatsApp, email, and a QR code (PNG download for printing) |
 
 ### Google Drive setup (once)
 
