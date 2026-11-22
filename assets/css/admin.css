@@ -453,3 +453,6 @@ body.is-dragging, body.is-dragging * { cursor: grabbing !important; user-select:
 :root[data-theme="light"] .cover-img { box-shadow: 0 10px 24px rgba(110, 40, 55, .18); }
 @media (max-width: 900px) { .cover-tiles { grid-template-columns: 1fr; } }
 @media (max-width: 520px) { .cover-tile { grid-template-columns: 1fr; } }
+
+/* covers made in the advanced editor are HTML pages (page-templates.js) that fill their frame */
+.part-img, .current-img, .cover-img, .book .board, .tpl .frame, .extra-img { position: relative; }

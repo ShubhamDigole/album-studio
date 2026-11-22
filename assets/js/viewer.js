@@ -59,11 +59,13 @@
         pages.push({ gen: p.generated, text: p.text || '', title: p.title || '' });
       } else if (p.composed) {
         // a page from the page editor (page-templates.js); a two-page design becomes a left and a right half
-        const photos = (p.photos || []).map((x) => (x ? { src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h } : null));
+        const conv = (x) => (x ? { src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h } : null);
+        const photos = (p.photos || []).map(conv);
+        const media = p.media ? Object.fromEntries(Object.entries(p.media).map(([k, v]) => [k, conv(v)])) : null;   // free-form pages
         if (p.wide) {
-          pages.push({ composed: p.composed, photos, half: 'left', title: p.title || '' });
-          pages.push({ composed: p.composed, photos, half: 'right', title: '' });
-        } else pages.push({ composed: p.composed, photos, title: p.title || '' });
+          pages.push({ composed: p.composed, photos, media, half: 'left', title: p.title || '' });
+          pages.push({ composed: p.composed, photos, media, half: 'right', title: '' });
+        } else pages.push({ composed: p.composed, photos, media, title: p.title || '' });
       } else if (p.layout) {
         // a page laid out live from uploaded photos (full / pair / single)
         pages.push({ layout: p.layout, photos: (p.photos || []).map((x) => ({ src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h })), title: p.title || '' });
@@ -148,7 +150,7 @@
   }
   function composedHtml(p, { small, lazy, zoom, half } = {}) {
     if (!window.PageTemplates) return '';
-    return window.PageTemplates.render(p.composed, { album: S.album, photos: p.photos, half: half === undefined ? p.half : half, small, lazy, zoom });
+    return window.PageTemplates.render(p.composed, { album: S.album, photos: p.photos, media: p.media || {}, half: half === undefined ? p.half : half, small, lazy, zoom });
   }
   function pageVisual(p, cls) {
     if (p.composed) return '<span class="gen' + (cls ? ' ' + cls : '') + '">' + composedHtml(p, { small: true }) + '</span>';

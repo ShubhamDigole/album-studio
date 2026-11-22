@@ -3,7 +3,7 @@
 import { handle, error } from '../../lib/http.js';
 import { loadVisibleAlbum } from '../../lib/access.js';
 
-const KEY_RE = /^a\/([a-z0-9][a-z0-9-]{1,63})\/(photo|page|design)\/[a-z0-9]{6,20}(-[tf])?\.(jpg|webp|png)$/;   // -t thumbnail, -f full quality
+const KEY_RE = /^a\/([a-z0-9][a-z0-9-]{1,63})\/(photo|page|design|asset)\/[a-z0-9]{6,20}(-[tf])?\.(jpg|webp|png)$/;   // -t thumbnail, -f full quality
 
 export const onRequestGet = handle(async (ctx) => {
   const { request, env, params } = ctx;

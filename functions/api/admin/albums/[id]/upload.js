@@ -3,6 +3,7 @@
 //   kind=page    file, thumb, width, height, spread, position, name      -> a designed album page (image or PDF page)
 //   (photo and page may also send full = a full-resolution copy, kept for zooming in and downloads)
 //   kind=design  file, part=cover|back|endpaper [, slot=n]               -> your own cover / end page / endpaper, or a photo in a design's slot
+//   kind=asset   file                                                   -> a background or ornament for the editor (no album photo)
 // The browser resizes images before upload (which also removes EXIF/GPS); files are stored in R2.
 import { json, error, handle, HttpError } from '../../../../../lib/http.js';
 import { findManaged } from '../../../../../lib/access.js';
@@ -31,7 +32,7 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
   if (!row) return error(404, 'Album not found.');
   const form = await request.formData();
   const kind = String(form.get('kind') || '');
-  if (!['photo', 'page', 'design'].includes(kind)) throw new HttpError(400, 'Unknown upload kind.');
+  if (!['photo', 'page', 'design', 'asset'].includes(kind)) throw new HttpError(400, 'Unknown upload kind.');
   const file = form.get('file');
   checkFile(file, 'The image');
   const thumb = form.get('thumb');
@@ -46,6 +47,10 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
   const fullKey = full && typeof full !== 'string' ? `a/${row.id}/${kind}/${id}-f.${TYPES[full.type]}` : '';
   const put = (k, f) => env.MEDIA.put(k, f.stream(), { httpMetadata: { contentType: f.type, cacheControl: 'private, max-age=31536000, immutable' } });
 
+  if (kind === 'asset') {
+    await put(key, file);
+    return json({ ok: true, url: '/media/' + key }, 201);
+  }
   if (kind === 'design') {
     const part = String(form.get('part') || '');
     if (!['cover', 'back', 'endpaper'].includes(part)) throw new HttpError(400, 'Choose cover, end page or endpaper.');

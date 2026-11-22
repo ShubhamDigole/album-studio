@@ -1,0 +1,11 @@
+{
+  "about": "Design library for the advanced editor. Every file here must be free for commercial use (CC0 / public domain / OFL fonts); see LICENSES.md. Paths are site paths.",
+  "backgrounds": [],
+  "patterns": [],
+  "art": [],
+  "fonts": [
+    { "key": "display", "family": "Rozha One", "category": "display", "devanagari": true },
+    { "key": "ui", "family": "Mukta", "category": "sans", "devanagari": true }
+  ],
+  "designs": []
+}

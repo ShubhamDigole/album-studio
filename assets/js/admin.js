@@ -754,12 +754,14 @@
           <div class="current">
             <div class="current-img" style="--ratio:${ratioOf(p)}">${partSvg(p, PART_KIND[part])}</div>
             <div class="current-info">
-              <h3>${dv.upload ? 'Your own ' + label.toLowerCase() : esc(t.name || 'Design')}</h3>
+              <h3>${dv.upload ? 'Your own ' + label.toLowerCase() : dv.page ? 'Your design' : esc(t.name || 'Design')}</h3>
               <p class="hint">${dv.upload ? 'Shown exactly as uploaded. Pick a design below to go back to a design.' : esc(t.description || '')}</p>
               <div class="own-actions">
                 <label class="btn upload-btn"><svg><use href="#i-upload"/></svg>${dv.upload ? 'Replace with another image' : 'Upload your own ' + label.toLowerCase()}
                   <input type="file" accept="image/*" data-own hidden /></label>
                 ${!isDraft && hasMedia ? '<button type="button" class="btn quiet" data-choose-part><svg><use href="#i-photos"/></svg>Choose from album photos</button>' : ''}
+                ${!isDraft ? `<button type="button" class="btn quiet" data-free-edit><svg><use href="#i-book"/></svg>${dv.page ? 'Edit your design' : 'Design it yourself'}</button>` : ''}
+                ${dv.page ? '<button type="button" class="link" data-free-remove>Remove your design</button>' : ''}
                 ${dv.upload ? '<button type="button" class="link" data-remove>Remove your image</button>' : ''}
               </div>
               <p class="hint">${dv.upload ? '' : 'A custom design made by the studio, from your computer. JPG or PNG, ideally the same shape as the album pages. '}${isDraft ? 'It is saved when you create the album.' : hasMedia ? '' : 'Once the album has photos you can also pick one of them.'}</p>
@@ -804,6 +806,24 @@
           const b = ev.target.closest('[data-use]'); if (!b) return;
           try { await saveDesign({ part, useMedia: b.dataset.use }); draw(); onChange && onChange(); toast(`Photo set as the ${label}`); } catch (err) { toast(err.message); }
         };
+        return;
+      }
+      if (e.target.closest('[data-free-edit]')) {
+        // the advanced editor (free-editor.js) for this cover / back cover / endpaper
+        const p = preview ? Object.assign(preview(), { designView: a.designView, template: a.template }) : a;
+        const dvNow = (a.designView || {})[part] || {};
+        closeModal();
+        window.FreeEditor.open(Object.assign(editorContext(), {
+          mode: 'cover', part, album: a, ratio: ratioOf(p), page: dvNow.page || null,
+          title: PARTS.find((x) => x[0] === part)[1],
+          onSave: async (page) => { await saveDesign({ part, page }); onChange && onChange(); toast('Design saved'); },
+          onClose: () => openDesignModal(a, part, { isDraft, preview, onChange }),
+        }));
+        return;
+      }
+      if (e.target.closest('[data-free-remove]')) {
+        if (!confirm('Remove the design you made? The chosen design is used again.')) return;
+        try { await saveDesign({ part, page: null }); draw(); onChange && onChange(); toast('Your design was removed'); } catch (err) { toast(err.message); }
         return;
       }
       const adj = e.target.closest('[data-adjust]');

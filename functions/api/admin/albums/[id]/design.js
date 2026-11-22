@@ -3,6 +3,7 @@
 import { json, error, readJson, handle, HttpError } from '../../../../../lib/http.js';
 import { findManaged } from '../../../../../lib/access.js';
 import { designUrls } from '../../../../../lib/albums.js';
+import { cleanFreePage } from '../../../../../lib/pages.js';
 
 export const onRequestPut = handle(async ({ request, env, params, data }) => {
   const row = await findManaged(env, params.id, data.user);
@@ -39,6 +40,20 @@ export const onRequestPut = handle(async ({ request, env, params, data }) => {
     // a new photo in a spot starts uncropped
     const i = Number.isInteger(b.setSlot) ? b.setSlot : b.removeSlot;
     if (Array.isArray(d.crops)) d.crops[i] = null;
+  }
+  if (b.page !== undefined) {
+    // a cover / back cover / endpaper made in the editor (null goes back to the chosen design)
+    if (b.page === null) delete d.page;
+    else {
+      const page = cleanFreePage(b.page, { albumId: row.id });
+      const ids = [...page.els.filter((e) => e.type === 'photo' && e.m).map((e) => e.m), page.bg.m].filter(Boolean);
+      if (ids.length) {
+        const { results } = await env.DB.prepare(`SELECT id FROM media WHERE album_id = ? AND id IN (${ids.map(() => '?').join(',')})`).bind(row.id, ...ids).all();
+        if (results.length !== new Set(ids).size) throw new HttpError(409, 'A photo on this cover is not in the album any more.');
+      }
+      d.page = page;
+      if (d.upload) { removed.push(d.upload); delete d.upload; }
+    }
   }
   if (Number.isInteger(b.setCrop)) {
     if (b.setCrop < 0 || b.setCrop > 5) throw new HttpError(400, 'Unknown photo spot.');

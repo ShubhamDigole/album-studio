@@ -19,6 +19,24 @@
 .pt-text span { display: block; width: 100%; }
 .pt-text i { opacity: .45; font-style: normal; }
 
+/* free-form pages (v: 2) */
+.pe-el { position: absolute; box-sizing: border-box; }
+.pe-clip { position: absolute; inset: 0; overflow: hidden; background: color-mix(in srgb, currentColor 8%, #d9d2c6); }
+.pe-clip img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pe-border { position: absolute; inset: 0; pointer-events: none; }
+.pe-polaroid { background: #fff; padding: 4% 5% 18% 5%; }
+.pe-polaroid > .pe-clip { inset: 4% 5% 18% 5%; }
+.pe-mat > .pe-clip { outline: 1.1cqh solid #fff; }
+.pe-text { display: flex; overflow: hidden; overflow-wrap: anywhere; white-space: normal; }
+.pe-text span { display: block; width: 100%; }
+.pe-text i { opacity: .45; font-style: normal; }
+.pe-shape > i, .pe-art > i { position: absolute; inset: 0; display: block; }
+.pe-shape > .pe-line { inset: auto 0; top: 50%; transform: translateY(-50%); }
+.pe-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; }
+.pe-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; }
+.pe-bg-dim { position: absolute; inset: 0; z-index: 0; }
+.page .pe-clip img, .page .pe-bg-img, .page .pe-art img { opacity: 1; transition: none; }
+
 /* crop dialog (crop.js), used in the admin */
 .crop-overlay { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgba(8, 10, 12, .66); backdrop-filter: blur(3px); }
 .crop-card { width: min(780px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 20px 24px 22px; border-radius: var(--radius-l, 18px); background: var(--surface-raised, #1d2226); color: var(--ink, #f3eee6); box-shadow: 0 40px 100px rgba(0, 0, 0, .5); }

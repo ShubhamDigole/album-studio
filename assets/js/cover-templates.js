@@ -724,6 +724,13 @@
     const ratio = opts.ratio || (album.pageWidth && album.pageHeight ? album.pageWidth / album.pageHeight : 1.5);
     const H = 1000, W = Math.round(H * ratio);
     const part = kind === 'cover' ? 'cover' : kind === 'back' ? 'back' : 'endpaper';
+    // a cover, back cover or endpaper made in the advanced editor (free-form page, page-templates.js)
+    const own = !['title', 'divider', 'closing'].includes(kind) && album.design && album.design[part] && album.design[part].page;
+    if (own && root.PageTemplates && !(album.design[part].upload)) {
+      let media = album.design[part].media;
+      if (!media && album.media) media = Object.fromEntries([...(album.media.photos || []), ...(album.media.pages || [])].map((m) => [m.id, { src: m.url, thumb: m.thumb, zoom: m.full || m.url }]));
+      return root.PageTemplates.renderFree(own, { album, media: media || {}, small: opts.small });
+    }
     const pick = designFor(album, part);
     const tpl = TEMPLATES[pick.key];
     const th = { silk: (album.theme && album.theme.silk) || '#0F3D3E', accent: (album.theme && album.theme.accent) || '#C8255F' };
