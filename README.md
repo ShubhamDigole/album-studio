@@ -81,6 +81,14 @@ For very large albums you can also build on your computer: `node tools/build-alb
 
 The key only reads files that are already shared publicly by link. Downloads go straight from Google to the studio's browser, which resizes them before upload.
 
+## Designing pages and covers
+
+- **Album pages tab:** create pages from your photos, then "Edit freely" (or add a "Designed spread") to open the full editor: layers, photos in 15 shapes with crop, fade, frames and looks; 13 fonts incl. Devanagari; shapes, ornaments, backgrounds (textures, patterns, gradients, blurred photo, your own upload); smart guides, align, photo grid, layers panel, undo/redo, shortcuts (press ?).
+- **Covers:** Details → Front cover / Back cover / Endpaper → "Design it yourself" opens the same editor.
+- **Ready-made designs:** 56 designs in `assets/library/library.json` (18 covers, 38 pages incl. 20 two-page spreads; filter "Studio style" for designs in this studio's 12x36 style).
+- **Your own finished albums:** Photos and pages → Designed album pages → tick "Use the first page as the cover" and select every file of the folder (a wide first file is split into back and front cover; 3:1 spreads show across two pages).
+- **Master:** Page designs → "New free-form design" makes designs every studio can use.
+
 ## Deploy
 
 `.env` holds `CF_API_TOKEN` and `CF_ACCOUNT_ID`. Run wrangler through `node tools/cf.mjs …` so the keys are loaded without being printed.
@@ -90,3 +98,5 @@ The token permissions and the deploy commands are in [ARCHITECTURE.md](ARCHITECT
 
 - StPageFlip (MIT) and pdf.js (Apache-2.0): see `assets/js/vendor/`.
 - Rozha One and Mukta (SIL OFL): see `assets/fonts/OFL.txt`.
+- Design library (`assets/library/`): CC0 textures (ambientCG, Poly Haven, Wikimedia Commons), OFL fonts, and original ornaments, patterns and designs; every file is listed in `assets/library/LICENSES.md`. Generators: `tools/library/`.
+- Background music: Kevin MacLeod, CC BY 4.0 (`assets/music/LICENSES.md`); qrcode-generator 1.4.4 (MIT).

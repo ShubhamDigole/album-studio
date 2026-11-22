@@ -1,11 +1,7776 @@
 {
-  "about": "Design library for the advanced editor. Every file here must be free for commercial use (CC0 / public domain / OFL fonts); see LICENSES.md. Paths are site paths.",
-  "backgrounds": [],
-  "patterns": [],
-  "art": [],
-  "fonts": [
-    { "key": "display", "family": "Rozha One", "category": "display", "devanagari": true },
-    { "key": "ui", "family": "Mukta", "category": "sans", "devanagari": true }
-  ],
-  "designs": []
+ "about": "Design library for the advanced editor. Every file here must be free for commercial use (CC0 / public domain / OFL fonts); see LICENSES.md. Paths are site paths.",
+ "backgrounds": [
+  {
+   "key": "silk-maroon",
+   "name": "Maroon silk",
+   "src": "/assets/library/backgrounds/silk-maroon.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/silk-maroon.jpg",
+   "tags": [
+    "silk",
+    "maroon",
+    "red",
+    "royal",
+    "wedding"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric036"
+  },
+  {
+   "key": "silk-emerald",
+   "name": "Emerald silk",
+   "src": "/assets/library/backgrounds/silk-emerald.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/silk-emerald.jpg",
+   "tags": [
+    "silk",
+    "green",
+    "emerald",
+    "mehendi"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric036"
+  },
+  {
+   "key": "silk-royal-blue",
+   "name": "Royal blue silk",
+   "src": "/assets/library/backgrounds/silk-royal-blue.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/silk-royal-blue.jpg",
+   "tags": [
+    "silk",
+    "blue",
+    "royal"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric023"
+  },
+  {
+   "key": "silk-gold",
+   "name": "Gold silk",
+   "src": "/assets/library/backgrounds/silk-gold.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/silk-gold.jpg",
+   "tags": [
+    "silk",
+    "gold",
+    "festive"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric045"
+  },
+  {
+   "key": "dupion-rani-pink",
+   "name": "Rani pink dupion",
+   "src": "/assets/library/backgrounds/dupion-rani-pink.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/dupion-rani-pink.jpg",
+   "tags": [
+    "raw silk",
+    "dupion",
+    "pink",
+    "sangeet"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric023"
+  },
+  {
+   "key": "dupion-saffron",
+   "name": "Saffron dupion",
+   "src": "/assets/library/backgrounds/dupion-saffron.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/dupion-saffron.jpg",
+   "tags": [
+    "raw silk",
+    "dupion",
+    "orange",
+    "haldi"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric045"
+  },
+  {
+   "key": "raw-silk-ivory",
+   "name": "Ivory raw silk",
+   "src": "/assets/library/backgrounds/raw-silk-ivory.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/raw-silk-ivory.jpg",
+   "tags": [
+    "raw silk",
+    "ivory",
+    "cream",
+    "light"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric045"
+  },
+  {
+   "key": "satin-blush",
+   "name": "Blush satin",
+   "src": "/assets/library/backgrounds/satin-blush.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/satin-blush.jpg",
+   "tags": [
+    "satin",
+    "pink",
+    "blush",
+    "maternity",
+    "baby"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric032"
+  },
+  {
+   "key": "velvet-maroon",
+   "name": "Maroon velvet",
+   "src": "/assets/library/backgrounds/velvet-maroon.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/velvet-maroon.jpg",
+   "tags": [
+    "velvet",
+    "maroon",
+    "royal",
+    "wedding"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric028"
+  },
+  {
+   "key": "velvet-emerald",
+   "name": "Emerald velvet",
+   "src": "/assets/library/backgrounds/velvet-emerald.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/velvet-emerald.jpg",
+   "tags": [
+    "velvet",
+    "green",
+    "emerald",
+    "royal"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric028"
+  },
+  {
+   "key": "velvet-navy",
+   "name": "Navy velvet",
+   "src": "/assets/library/backgrounds/velvet-navy.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/velvet-navy.jpg",
+   "tags": [
+    "velvet",
+    "blue",
+    "navy",
+    "reception"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric022"
+  },
+  {
+   "key": "velvet-teal",
+   "name": "Teal velvet",
+   "src": "/assets/library/backgrounds/velvet-teal.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/velvet-teal.jpg",
+   "tags": [
+    "velvet",
+    "teal",
+    "blue",
+    "green"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric028"
+  },
+  {
+   "key": "velvet-aubergine",
+   "name": "Aubergine velvet",
+   "src": "/assets/library/backgrounds/velvet-aubergine.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/velvet-aubergine.jpg",
+   "tags": [
+    "velvet",
+    "purple",
+    "plum",
+    "sangeet"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric028"
+  },
+  {
+   "key": "brocade-maroon-gold",
+   "name": "Maroon and gold brocade",
+   "src": "/assets/library/backgrounds/brocade-maroon-gold.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/brocade-maroon-gold.jpg",
+   "tags": [
+    "brocade",
+    "jacquard",
+    "damask",
+    "maroon",
+    "gold"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/floral_jacquard"
+  },
+  {
+   "key": "brocade-ivory",
+   "name": "Ivory brocade",
+   "src": "/assets/library/backgrounds/brocade-ivory.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/brocade-ivory.jpg",
+   "tags": [
+    "brocade",
+    "jacquard",
+    "damask",
+    "ivory"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/floral_jacquard"
+  },
+  {
+   "key": "linen-cream",
+   "name": "Cream linen",
+   "src": "/assets/library/backgrounds/linen-cream.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/linen-cream.jpg",
+   "tags": [
+    "linen",
+    "cream",
+    "fabric",
+    "light"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/rough_linen"
+  },
+  {
+   "key": "linen-natural",
+   "name": "Natural linen",
+   "src": "/assets/library/backgrounds/linen-natural.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/linen-natural.jpg",
+   "tags": [
+    "linen",
+    "beige",
+    "fabric"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric066"
+  },
+  {
+   "key": "jute-hessian",
+   "name": "Jute",
+   "src": "/assets/library/backgrounds/jute-hessian.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/jute-hessian.jpg",
+   "tags": [
+    "jute",
+    "hessian",
+    "rustic"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/hessian_230"
+  },
+  {
+   "key": "paper-cotton-white",
+   "name": "Cotton paper",
+   "src": "/assets/library/backgrounds/paper-cotton-white.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/paper-cotton-white.jpg",
+   "tags": [
+    "paper",
+    "white",
+    "light"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Paper001"
+  },
+  {
+   "key": "paper-handmade-ivory",
+   "name": "Handmade paper",
+   "src": "/assets/library/backgrounds/paper-handmade-ivory.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/paper-handmade-ivory.jpg",
+   "tags": [
+    "paper",
+    "handmade",
+    "ivory"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Plaster002"
+  },
+  {
+   "key": "paper-deckle-cream",
+   "name": "Cream deckle paper",
+   "src": "/assets/library/backgrounds/paper-deckle-cream.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/paper-deckle-cream.jpg",
+   "tags": [
+    "paper",
+    "cream",
+    "antique"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Plaster001"
+  },
+  {
+   "key": "paper-kraft",
+   "name": "Kraft paper",
+   "src": "/assets/library/backgrounds/paper-kraft.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/paper-kraft.jpg",
+   "tags": [
+    "paper",
+    "kraft",
+    "brown",
+    "rustic"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Paper006"
+  },
+  {
+   "key": "marble-white",
+   "name": "White marble",
+   "src": "/assets/library/backgrounds/marble-white.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marble-white.jpg",
+   "tags": [
+    "marble",
+    "white",
+    "stone",
+    "light"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Marble019"
+  },
+  {
+   "key": "marble-calacatta",
+   "name": "Calacatta marble",
+   "src": "/assets/library/backgrounds/marble-calacatta.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marble-calacatta.jpg",
+   "tags": [
+    "marble",
+    "white",
+    "stone"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Marble001"
+  },
+  {
+   "key": "marble-black",
+   "name": "Black marble",
+   "src": "/assets/library/backgrounds/marble-black.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marble-black.jpg",
+   "tags": [
+    "marble",
+    "black",
+    "stone",
+    "dark"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Marble017"
+  },
+  {
+   "key": "marble-nero-gold",
+   "name": "Black and gold marble",
+   "src": "/assets/library/backgrounds/marble-nero-gold.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marble-nero-gold.jpg",
+   "tags": [
+    "marble",
+    "black",
+    "gold",
+    "reception"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Marble016"
+  },
+  {
+   "key": "marble-green",
+   "name": "Green marble",
+   "src": "/assets/library/backgrounds/marble-green.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marble-green.jpg",
+   "tags": [
+    "marble",
+    "green",
+    "stone"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Marble017"
+  },
+  {
+   "key": "onyx-ivory",
+   "name": "Ivory onyx",
+   "src": "/assets/library/backgrounds/onyx-ivory.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/onyx-ivory.jpg",
+   "tags": [
+    "onyx",
+    "marble",
+    "ivory",
+    "waves"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Onyx015"
+  },
+  {
+   "key": "gold-leaf",
+   "name": "Gold leaf",
+   "src": "/assets/library/backgrounds/gold-leaf.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/gold-leaf.jpg",
+   "tags": [
+    "gold",
+    "foil",
+    "leaf",
+    "luxury"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Metal048C"
+  },
+  {
+   "key": "gold-foil-antique",
+   "name": "Antique gold foil",
+   "src": "/assets/library/backgrounds/gold-foil-antique.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/gold-foil-antique.jpg",
+   "tags": [
+    "gold",
+    "foil",
+    "antique"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Metal042B"
+  },
+  {
+   "key": "champagne-shimmer",
+   "name": "Champagne",
+   "src": "/assets/library/backgrounds/champagne-shimmer.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/champagne-shimmer.jpg",
+   "tags": [
+    "champagne",
+    "beige",
+    "light",
+    "anniversary"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Fabric062"
+  },
+  {
+   "key": "leather-oxblood",
+   "name": "Oxblood leather",
+   "src": "/assets/library/backgrounds/leather-oxblood.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/leather-oxblood.jpg",
+   "tags": [
+    "leather",
+    "maroon",
+    "classic"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Leather005"
+  },
+  {
+   "key": "leather-tan",
+   "name": "Tan leather",
+   "src": "/assets/library/backgrounds/leather-tan.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/leather-tan.jpg",
+   "tags": [
+    "leather",
+    "brown",
+    "classic"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://polyhaven.com/a/leather_red_02"
+  },
+  {
+   "key": "wood-walnut",
+   "name": "Walnut wood",
+   "src": "/assets/library/backgrounds/wood-walnut.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/wood-walnut.jpg",
+   "tags": [
+    "wood",
+    "brown",
+    "dark"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Wood028"
+  },
+  {
+   "key": "wood-whitewashed",
+   "name": "Whitewashed wood",
+   "src": "/assets/library/backgrounds/wood-whitewashed.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/wood-whitewashed.jpg",
+   "tags": [
+    "wood",
+    "white",
+    "rustic"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://ambientcg.com/a/Wood094"
+  },
+  {
+   "key": "rose-petals",
+   "name": "Rose petals",
+   "src": "/assets/library/backgrounds/rose-petals.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/rose-petals.jpg",
+   "tags": [
+    "flowers",
+    "petals",
+    "rose",
+    "photo"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Dried_rose_petals.jpg"
+  },
+  {
+   "key": "marigold-petals",
+   "name": "Marigold petals",
+   "src": "/assets/library/backgrounds/marigold-petals.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/marigold-petals.jpg",
+   "tags": [
+    "flowers",
+    "petals",
+    "marigold",
+    "haldi",
+    "photo"
+   ],
+   "tone": "light",
+   "license": "CC0 1.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Orange_marigold_flower_petals.jpg"
+  },
+  {
+   "key": "rangoli-diyas",
+   "name": "Rangoli and diyas",
+   "src": "/assets/library/backgrounds/rangoli-diyas.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/rangoli-diyas.jpg",
+   "tags": [
+    "rangoli",
+    "diya",
+    "diwali",
+    "festive",
+    "photo"
+   ],
+   "tone": "dark",
+   "license": "CC0 1.0",
+   "source": "https://commons.wikimedia.org/wiki/File:Rangoli_and_Diyas.jpg"
+  },
+  {
+   "key": "watercolour-blush",
+   "name": "Blush watercolour",
+   "src": "/assets/library/backgrounds/watercolour-blush.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/watercolour-blush.jpg",
+   "tags": [
+    "watercolour",
+    "pink",
+    "soft",
+    "light"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "watercolour-lilac",
+   "name": "Lilac watercolour",
+   "src": "/assets/library/backgrounds/watercolour-lilac.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/watercolour-lilac.jpg",
+   "tags": [
+    "watercolour",
+    "lilac",
+    "purple",
+    "soft"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "watercolour-sage",
+   "name": "Sage watercolour",
+   "src": "/assets/library/backgrounds/watercolour-sage.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/watercolour-sage.jpg",
+   "tags": [
+    "watercolour",
+    "green",
+    "sage",
+    "soft"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "watercolour-sky",
+   "name": "Sky watercolour",
+   "src": "/assets/library/backgrounds/watercolour-sky.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/watercolour-sky.jpg",
+   "tags": [
+    "watercolour",
+    "blue",
+    "soft",
+    "baby"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "watercolour-peach",
+   "name": "Peach watercolour",
+   "src": "/assets/library/backgrounds/watercolour-peach.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/watercolour-peach.jpg",
+   "tags": [
+    "watercolour",
+    "peach",
+    "orange",
+    "haldi"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "bokeh-gold",
+   "name": "Gold bokeh",
+   "src": "/assets/library/backgrounds/bokeh-gold.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/bokeh-gold.jpg",
+   "tags": [
+    "bokeh",
+    "lights",
+    "gold",
+    "night",
+    "sangeet"
+   ],
+   "tone": "dark",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "bokeh-rose",
+   "name": "Rose bokeh",
+   "src": "/assets/library/backgrounds/bokeh-rose.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/bokeh-rose.jpg",
+   "tags": [
+    "bokeh",
+    "lights",
+    "pink",
+    "birthday"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "fairy-lights",
+   "name": "Fairy lights",
+   "src": "/assets/library/backgrounds/fairy-lights.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/fairy-lights.jpg",
+   "tags": [
+    "lights",
+    "night",
+    "string lights",
+    "sangeet"
+   ],
+   "tone": "dark",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "gradient-dusk",
+   "name": "Dusk gradient",
+   "src": "/assets/library/backgrounds/gradient-dusk.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/gradient-dusk.jpg",
+   "tags": [
+    "gradient",
+    "peach",
+    "pink",
+    "soft"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "gradient-midnight",
+   "name": "Midnight gradient",
+   "src": "/assets/library/backgrounds/gradient-midnight.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/gradient-midnight.jpg",
+   "tags": [
+    "gradient",
+    "navy",
+    "plum",
+    "night"
+   ],
+   "tone": "dark",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  },
+  {
+   "key": "gradient-mint",
+   "name": "Mint gradient",
+   "src": "/assets/library/backgrounds/gradient-mint.jpg",
+   "thumb": "/assets/library/backgrounds/thumbs/gradient-mint.jpg",
+   "tags": [
+    "gradient",
+    "mint",
+    "green",
+    "soft"
+   ],
+   "tone": "light",
+   "license": "Original work (this project)",
+   "source": "generated for this library"
+  }
+ ],
+ "patterns": [
+  {
+   "key": "paisley-buta",
+   "name": "Paisley buta",
+   "src": "/assets/library/patterns/paisley-buta.svg",
+   "tint": true,
+   "scale": 14,
+   "ratio": 1,
+   "tags": [
+    "paisley",
+    "mehendi"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/paisley-buta--gold.svg",
+    "ivory": "/assets/library/patterns/paisley-buta--ivory.svg",
+    "ink": "/assets/library/patterns/paisley-buta--ink.svg",
+    "rose": "/assets/library/patterns/paisley-buta--rose.svg"
+   }
+  },
+  {
+   "key": "mandala-lattice",
+   "name": "Mandala lattice",
+   "src": "/assets/library/patterns/mandala-lattice.svg",
+   "tint": true,
+   "scale": 16,
+   "ratio": 1,
+   "tags": [
+    "mandala",
+    "lattice"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/mandala-lattice--gold.svg",
+    "ivory": "/assets/library/patterns/mandala-lattice--ivory.svg",
+    "ink": "/assets/library/patterns/mandala-lattice--ink.svg",
+    "rose": "/assets/library/patterns/mandala-lattice--rose.svg"
+   }
+  },
+  {
+   "key": "jaali-ogee",
+   "name": "Jaali ogee",
+   "src": "/assets/library/patterns/jaali-ogee.svg",
+   "tint": true,
+   "scale": 18,
+   "ratio": 1,
+   "tags": [
+    "jaali",
+    "mughal",
+    "lattice"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/jaali-ogee--gold.svg",
+    "ivory": "/assets/library/patterns/jaali-ogee--ivory.svg",
+    "ink": "/assets/library/patterns/jaali-ogee--ink.svg",
+    "rose": "/assets/library/patterns/jaali-ogee--rose.svg"
+   }
+  },
+  {
+   "key": "bandhani",
+   "name": "Bandhani dots",
+   "src": "/assets/library/patterns/bandhani.svg",
+   "tint": true,
+   "scale": 9,
+   "ratio": 1,
+   "tags": [
+    "bandhani",
+    "dots",
+    "rajasthani"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/bandhani--gold.svg",
+    "ivory": "/assets/library/patterns/bandhani--ivory.svg",
+    "ink": "/assets/library/patterns/bandhani--ink.svg",
+    "rose": "/assets/library/patterns/bandhani--rose.svg"
+   }
+  },
+  {
+   "key": "leheriya",
+   "name": "Leheriya waves",
+   "src": "/assets/library/patterns/leheriya.svg",
+   "tint": true,
+   "scale": 14,
+   "ratio": 1,
+   "tags": [
+    "leheriya",
+    "waves",
+    "rajasthani",
+    "stripes"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/leheriya--gold.svg",
+    "ivory": "/assets/library/patterns/leheriya--ivory.svg",
+    "ink": "/assets/library/patterns/leheriya--ink.svg",
+    "rose": "/assets/library/patterns/leheriya--rose.svg"
+   }
+  },
+  {
+   "key": "lotus-tile",
+   "name": "Lotus tile",
+   "src": "/assets/library/patterns/lotus-tile.svg",
+   "tint": true,
+   "scale": 16,
+   "ratio": 1,
+   "tags": [
+    "lotus",
+    "floral"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/lotus-tile--gold.svg",
+    "ivory": "/assets/library/patterns/lotus-tile--ivory.svg",
+    "ink": "/assets/library/patterns/lotus-tile--ink.svg",
+    "rose": "/assets/library/patterns/lotus-tile--rose.svg"
+   }
+  },
+  {
+   "key": "damask",
+   "name": "Damask",
+   "src": "/assets/library/patterns/damask.svg",
+   "tint": true,
+   "scale": 22,
+   "ratio": 0.833,
+   "tags": [
+    "damask",
+    "classic",
+    "wallpaper"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/damask--gold.svg",
+    "ivory": "/assets/library/patterns/damask--ivory.svg",
+    "ink": "/assets/library/patterns/damask--ink.svg",
+    "rose": "/assets/library/patterns/damask--rose.svg"
+   }
+  },
+  {
+   "key": "quatrefoil",
+   "name": "Moroccan quatrefoil",
+   "src": "/assets/library/patterns/quatrefoil.svg",
+   "tint": true,
+   "scale": 16,
+   "ratio": 1,
+   "tags": [
+    "moroccan",
+    "quatrefoil",
+    "geometric",
+    "tile"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/quatrefoil--gold.svg",
+    "ivory": "/assets/library/patterns/quatrefoil--ivory.svg",
+    "ink": "/assets/library/patterns/quatrefoil--ink.svg",
+    "rose": "/assets/library/patterns/quatrefoil--rose.svg"
+   }
+  },
+  {
+   "key": "ikat",
+   "name": "Ikat diamonds",
+   "src": "/assets/library/patterns/ikat.svg",
+   "tint": true,
+   "scale": 12,
+   "ratio": 1,
+   "tags": [
+    "ikat",
+    "geometric",
+    "handwoven"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/ikat--gold.svg",
+    "ivory": "/assets/library/patterns/ikat--ivory.svg",
+    "ink": "/assets/library/patterns/ikat--ink.svg",
+    "rose": "/assets/library/patterns/ikat--rose.svg"
+   }
+  },
+  {
+   "key": "polka",
+   "name": "Polka dots",
+   "src": "/assets/library/patterns/polka.svg",
+   "tint": true,
+   "scale": 6,
+   "ratio": 1,
+   "tags": [
+    "dots",
+    "polka",
+    "playful",
+    "baby",
+    "birthday"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/polka--gold.svg",
+    "ivory": "/assets/library/patterns/polka--ivory.svg",
+    "ink": "/assets/library/patterns/polka--ink.svg",
+    "rose": "/assets/library/patterns/polka--rose.svg"
+   }
+  },
+  {
+   "key": "pinstripe",
+   "name": "Pin stripes",
+   "src": "/assets/library/patterns/pinstripe.svg",
+   "tint": true,
+   "scale": 5,
+   "ratio": 1,
+   "tags": [
+    "stripes",
+    "minimal",
+    "classic"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/pinstripe--gold.svg",
+    "ivory": "/assets/library/patterns/pinstripe--ivory.svg",
+    "ink": "/assets/library/patterns/pinstripe--ink.svg",
+    "rose": "/assets/library/patterns/pinstripe--rose.svg"
+   }
+  },
+  {
+   "key": "chevron",
+   "name": "Chevron",
+   "src": "/assets/library/patterns/chevron.svg",
+   "tint": true,
+   "scale": 5,
+   "ratio": 2,
+   "tags": [
+    "chevron",
+    "zigzag",
+    "geometric",
+    "playful"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/chevron--gold.svg",
+    "ivory": "/assets/library/patterns/chevron--ivory.svg",
+    "ink": "/assets/library/patterns/chevron--ink.svg",
+    "rose": "/assets/library/patterns/chevron--rose.svg"
+   }
+  },
+  {
+   "key": "scallop-scales",
+   "name": "Scallop scales",
+   "src": "/assets/library/patterns/scallop-scales.svg",
+   "tint": true,
+   "scale": 6,
+   "ratio": 1,
+   "tags": [
+    "scallop",
+    "scales",
+    "art deco"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/scallop-scales--gold.svg",
+    "ivory": "/assets/library/patterns/scallop-scales--ivory.svg",
+    "ink": "/assets/library/patterns/scallop-scales--ink.svg",
+    "rose": "/assets/library/patterns/scallop-scales--rose.svg"
+   }
+  },
+  {
+   "key": "buti",
+   "name": "Floral buti",
+   "src": "/assets/library/patterns/buti.svg",
+   "tint": true,
+   "scale": 12,
+   "ratio": 1,
+   "tags": [
+    "buti",
+    "floral",
+    "scatter",
+    "mehendi"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/buti--gold.svg",
+    "ivory": "/assets/library/patterns/buti--ivory.svg",
+    "ink": "/assets/library/patterns/buti--ink.svg",
+    "rose": "/assets/library/patterns/buti--rose.svg"
+   }
+  },
+  {
+   "key": "trellis",
+   "name": "Trellis",
+   "src": "/assets/library/patterns/trellis.svg",
+   "tint": true,
+   "scale": 8,
+   "ratio": 1,
+   "tags": [
+    "trellis",
+    "lattice",
+    "geometric"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/trellis--gold.svg",
+    "ivory": "/assets/library/patterns/trellis--ivory.svg",
+    "ink": "/assets/library/patterns/trellis--ink.svg",
+    "rose": "/assets/library/patterns/trellis--rose.svg"
+   }
+  },
+  {
+   "key": "stars-moons",
+   "name": "Stars and moons",
+   "src": "/assets/library/patterns/stars-moons.svg",
+   "tint": true,
+   "scale": 14,
+   "ratio": 1,
+   "tags": [
+    "stars",
+    "moon",
+    "baby",
+    "night"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/stars-moons--gold.svg",
+    "ivory": "/assets/library/patterns/stars-moons--ivory.svg",
+    "ink": "/assets/library/patterns/stars-moons--ink.svg",
+    "rose": "/assets/library/patterns/stars-moons--rose.svg"
+   }
+  },
+  {
+   "key": "hearts",
+   "name": "Little hearts",
+   "src": "/assets/library/patterns/hearts.svg",
+   "tint": true,
+   "scale": 8,
+   "ratio": 1,
+   "tags": [
+    "hearts",
+    "love",
+    "anniversary",
+    "playful"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/hearts--gold.svg",
+    "ivory": "/assets/library/patterns/hearts--ivory.svg",
+    "ink": "/assets/library/patterns/hearts--ink.svg",
+    "rose": "/assets/library/patterns/hearts--rose.svg"
+   }
+  },
+  {
+   "key": "rangoli-dots",
+   "name": "Rangoli dot grid",
+   "src": "/assets/library/patterns/rangoli-dots.svg",
+   "tint": true,
+   "scale": 8,
+   "ratio": 1,
+   "tags": [
+    "rangoli",
+    "kolam",
+    "dots",
+    "festive"
+   ],
+   "colorways": {
+    "gold": "/assets/library/patterns/rangoli-dots--gold.svg",
+    "ivory": "/assets/library/patterns/rangoli-dots--ivory.svg",
+    "ink": "/assets/library/patterns/rangoli-dots--ink.svg",
+    "rose": "/assets/library/patterns/rangoli-dots--rose.svg"
+   }
+  }
+ ],
+ "art": [
+  {
+   "key": "corner-deco",
+   "name": "Deco fan corner",
+   "src": "/assets/library/art/corner-deco.svg",
+   "tags": [
+    "corner",
+    "deco",
+    "modern",
+    "lines"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-floral",
+   "name": "Floral corner",
+   "src": "/assets/library/art/corner-floral.svg",
+   "tags": [
+    "corner",
+    "flowers",
+    "leaves"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-line",
+   "name": "Double line corner",
+   "src": "/assets/library/art/corner-line.svg",
+   "tags": [
+    "corner",
+    "lines",
+    "minimal",
+    "frame"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-lotus",
+   "name": "Lotus corner",
+   "src": "/assets/library/art/corner-lotus.svg",
+   "tags": [
+    "corner",
+    "lotus"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-mandala-quarter",
+   "name": "Quarter mandala corner",
+   "src": "/assets/library/art/corner-mandala-quarter.svg",
+   "tags": [
+    "corner",
+    "mandala"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-paisley",
+   "name": "Paisley corner",
+   "src": "/assets/library/art/corner-paisley.svg",
+   "tags": [
+    "corner",
+    "paisley",
+    "mehendi"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-scroll",
+   "name": "Scroll corner",
+   "src": "/assets/library/art/corner-scroll.svg",
+   "tags": [
+    "corner",
+    "flourish",
+    "classic"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "corner-sprig",
+   "name": "Leafy sprig corner",
+   "src": "/assets/library/art/corner-sprig.svg",
+   "tags": [
+    "corner",
+    "botanical",
+    "leaves",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "corners",
+   "ratio": 1
+  },
+  {
+   "key": "border-jaali",
+   "name": "Jaali lattice band",
+   "src": "/assets/library/art/border-jaali.svg",
+   "tags": [
+    "border",
+    "band",
+    "jaali",
+    "geometric"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 10
+  },
+  {
+   "key": "border-lotus",
+   "name": "Lotus band",
+   "src": "/assets/library/art/border-lotus.svg",
+   "tags": [
+    "border",
+    "band",
+    "lotus"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 8.889
+  },
+  {
+   "key": "border-marigold",
+   "name": "Marigold garland band",
+   "src": "/assets/library/art/border-marigold.svg",
+   "tags": [
+    "border",
+    "band",
+    "marigold",
+    "garland",
+    "haldi"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 11.429
+  },
+  {
+   "key": "border-paisley",
+   "name": "Paisley band",
+   "src": "/assets/library/art/border-paisley.svg",
+   "tags": [
+    "border",
+    "band",
+    "paisley"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 8
+  },
+  {
+   "key": "border-scallop-lace",
+   "name": "Scallop lace edge",
+   "src": "/assets/library/art/border-scallop-lace.svg",
+   "tags": [
+    "border",
+    "lace",
+    "scallop",
+    "edge"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 13.333
+  },
+  {
+   "key": "toran-marigold",
+   "name": "Marigold toran",
+   "src": "/assets/library/art/toran-marigold.svg",
+   "tags": [
+    "toran",
+    "marigold",
+    "garland",
+    "haldi",
+    "mehendi",
+    "top"
+   ],
+   "tint": true,
+   "category": "borders",
+   "ratio": 2.727
+  },
+  {
+   "key": "divider-beads",
+   "name": "Bead string divider",
+   "src": "/assets/library/art/divider-beads.svg",
+   "tags": [
+    "divider",
+    "beads",
+    "pearls",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 15
+  },
+  {
+   "key": "divider-diamond",
+   "name": "Diamond and dots divider",
+   "src": "/assets/library/art/divider-diamond.svg",
+   "tags": [
+    "divider",
+    "minimal",
+    "line"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 15
+  },
+  {
+   "key": "divider-lotus",
+   "name": "Lotus divider",
+   "src": "/assets/library/art/divider-lotus.svg",
+   "tags": [
+    "divider",
+    "lotus",
+    "line"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 6.667
+  },
+  {
+   "key": "divider-marigold",
+   "name": "Marigold divider",
+   "src": "/assets/library/art/divider-marigold.svg",
+   "tags": [
+    "divider",
+    "marigold",
+    "haldi"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 6.667
+  },
+  {
+   "key": "divider-paisley",
+   "name": "Paisley pair divider",
+   "src": "/assets/library/art/divider-paisley.svg",
+   "tags": [
+    "divider",
+    "paisley",
+    "mehendi"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 5
+  },
+  {
+   "key": "divider-scroll",
+   "name": "Scroll divider",
+   "src": "/assets/library/art/divider-scroll.svg",
+   "tags": [
+    "divider",
+    "flourish",
+    "classic"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 5.455
+  },
+  {
+   "key": "divider-vine",
+   "name": "Leaf vine divider",
+   "src": "/assets/library/art/divider-vine.svg",
+   "tags": [
+    "divider",
+    "leaves",
+    "botanical"
+   ],
+   "tint": true,
+   "category": "dividers",
+   "ratio": 7.5
+  },
+  {
+   "key": "frame-arch-double",
+   "name": "Double line arch",
+   "src": "/assets/library/art/frame-arch-double.svg",
+   "tags": [
+    "frame",
+    "arch",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-corners-ornate",
+   "name": "Frame with scroll corners",
+   "src": "/assets/library/art/frame-corners-ornate.svg",
+   "tags": [
+    "frame",
+    "rectangle",
+    "classic",
+    "flourish"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-double-line",
+   "name": "Double line frame",
+   "src": "/assets/library/art/frame-double-line.svg",
+   "tags": [
+    "frame",
+    "rectangle",
+    "lines",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-hexagon",
+   "name": "Hexagon line frame",
+   "src": "/assets/library/art/frame-hexagon.svg",
+   "tags": [
+    "frame",
+    "hexagon",
+    "geometric",
+    "modern"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 1
+  },
+  {
+   "key": "frame-jharokha",
+   "name": "Jharokha arch frame",
+   "src": "/assets/library/art/frame-jharokha.svg",
+   "tags": [
+    "frame",
+    "arch",
+    "jharokha",
+    "mughal",
+    "window"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-mandala-ring",
+   "name": "Mandala ring frame",
+   "src": "/assets/library/art/frame-mandala-ring.svg",
+   "tags": [
+    "frame",
+    "round",
+    "mandala"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 1
+  },
+  {
+   "key": "frame-multifoil",
+   "name": "Cusped arch frame",
+   "src": "/assets/library/art/frame-multifoil.svg",
+   "tags": [
+    "frame",
+    "arch",
+    "mughal",
+    "palace"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-oval-pearl",
+   "name": "Pearl oval frame",
+   "src": "/assets/library/art/frame-oval-pearl.svg",
+   "tags": [
+    "frame",
+    "oval",
+    "pearls",
+    "classic"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 0.75
+  },
+  {
+   "key": "frame-round-ornate",
+   "name": "Ornate round frame",
+   "src": "/assets/library/art/frame-round-ornate.svg",
+   "tags": [
+    "frame",
+    "round",
+    "circle",
+    "classic"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 1
+  },
+  {
+   "key": "frame-scalloped",
+   "name": "Scalloped circle frame",
+   "src": "/assets/library/art/frame-scalloped.svg",
+   "tags": [
+    "frame",
+    "round",
+    "scallop",
+    "lace"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 1
+  },
+  {
+   "key": "frame-wreath",
+   "name": "Leaf wreath",
+   "src": "/assets/library/art/frame-wreath.svg",
+   "tags": [
+    "frame",
+    "wreath",
+    "leaves",
+    "botanical",
+    "round"
+   ],
+   "tint": true,
+   "category": "frames",
+   "ratio": 1
+  },
+  {
+   "key": "branch-curved",
+   "name": "Curved leafy branch",
+   "src": "/assets/library/art/branch-curved.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "branch",
+    "corner"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1.5
+  },
+  {
+   "key": "floral-cluster",
+   "name": "Floral cluster",
+   "src": "/assets/library/art/floral-cluster.svg",
+   "tags": [
+    "flowers",
+    "bouquet",
+    "corner"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1
+  },
+  {
+   "key": "leaf-pair",
+   "name": "Pair of leaves",
+   "src": "/assets/library/art/leaf-pair.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1.429
+  },
+  {
+   "key": "lotus",
+   "name": "Lotus",
+   "src": "/assets/library/art/lotus.svg",
+   "tags": [
+    "lotus",
+    "kamal",
+    "flower"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1.25
+  },
+  {
+   "key": "lotus-colour",
+   "name": "Lotus (colour)",
+   "src": "/assets/library/art/lotus-colour.svg",
+   "tags": [
+    "lotus",
+    "flower",
+    "colour"
+   ],
+   "tint": false,
+   "category": "florals",
+   "ratio": 1.25
+  },
+  {
+   "key": "marigold",
+   "name": "Marigold",
+   "src": "/assets/library/art/marigold.svg",
+   "tags": [
+    "marigold",
+    "genda",
+    "flower",
+    "haldi",
+    "mehendi"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1
+  },
+  {
+   "key": "marigold-strand",
+   "name": "Marigold strand",
+   "src": "/assets/library/art/marigold-strand.svg",
+   "tags": [
+    "marigold",
+    "garland",
+    "haldi",
+    "mehendi",
+    "hanging"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 0.15
+  },
+  {
+   "key": "rose",
+   "name": "Rose",
+   "src": "/assets/library/art/rose.svg",
+   "tags": [
+    "rose",
+    "gulab",
+    "flower",
+    "romance"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1
+  },
+  {
+   "key": "rose-line",
+   "name": "Rose outline",
+   "src": "/assets/library/art/rose-line.svg",
+   "tags": [
+    "rose",
+    "flower",
+    "line"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1
+  },
+  {
+   "key": "rosette",
+   "name": "Rosette flower",
+   "src": "/assets/library/art/rosette.svg",
+   "tags": [
+    "flower",
+    "rose",
+    "round"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1
+  },
+  {
+   "key": "sprig-berries",
+   "name": "Berry sprig",
+   "src": "/assets/library/art/sprig-berries.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "berries"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 0.583
+  },
+  {
+   "key": "sprig-eucalyptus",
+   "name": "Eucalyptus sprig",
+   "src": "/assets/library/art/sprig-eucalyptus.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "sprig"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 0.583
+  },
+  {
+   "key": "sprig-fern",
+   "name": "Fern",
+   "src": "/assets/library/art/sprig-fern.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "fern"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 0.583
+  },
+  {
+   "key": "sprig-olive",
+   "name": "Olive sprig",
+   "src": "/assets/library/art/sprig-olive.svg",
+   "tags": [
+    "leaves",
+    "botanical",
+    "sprig",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 0.5
+  },
+  {
+   "key": "toran-marigold-colour",
+   "name": "Marigold toran (colour)",
+   "src": "/assets/library/art/toran-marigold-colour.svg",
+   "tags": [
+    "toran",
+    "marigold",
+    "garland",
+    "haldi",
+    "mehendi",
+    "colour"
+   ],
+   "tint": false,
+   "category": "florals",
+   "ratio": 3.75
+  },
+  {
+   "key": "vine-swirl",
+   "name": "Vine swirl",
+   "src": "/assets/library/art/vine-swirl.svg",
+   "tags": [
+    "vine",
+    "leaves",
+    "flourish"
+   ],
+   "tint": true,
+   "category": "florals",
+   "ratio": 1.857
+  },
+  {
+   "key": "mandala-jaali",
+   "name": "Jaali mandala",
+   "src": "/assets/library/art/mandala-jaali.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "mandala-lotus",
+   "name": "Lotus mandala",
+   "src": "/assets/library/art/mandala-lotus.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "mandala-marigold",
+   "name": "Marigold mandala",
+   "src": "/assets/library/art/mandala-marigold.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "mandala-petal-burst",
+   "name": "Petal burst mandala",
+   "src": "/assets/library/art/mandala-petal-burst.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "mandala-star",
+   "name": "Star mandala",
+   "src": "/assets/library/art/mandala-star.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "mandala-sun",
+   "name": "Sun mandala",
+   "src": "/assets/library/art/mandala-sun.svg",
+   "tags": [
+    "mandala",
+    "round",
+    "rangoli"
+   ],
+   "tint": true,
+   "category": "mandalas",
+   "ratio": 1
+  },
+  {
+   "key": "diya",
+   "name": "Diya",
+   "src": "/assets/library/art/diya.svg",
+   "tags": [
+    "diya",
+    "lamp",
+    "diwali",
+    "festive"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1.25
+  },
+  {
+   "key": "diya-colour",
+   "name": "Diya (colour)",
+   "src": "/assets/library/art/diya-colour.svg",
+   "tags": [
+    "diya",
+    "lamp",
+    "diwali",
+    "colour"
+   ],
+   "tint": false,
+   "category": "motifs",
+   "ratio": 1.25
+  },
+  {
+   "key": "heart-ornate",
+   "name": "Ornate heart",
+   "src": "/assets/library/art/heart-ornate.svg",
+   "tags": [
+    "heart",
+    "love",
+    "flourish"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1
+  },
+  {
+   "key": "heart-outline",
+   "name": "Heart outline",
+   "src": "/assets/library/art/heart-outline.svg",
+   "tags": [
+    "heart",
+    "love",
+    "romance",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1.053
+  },
+  {
+   "key": "jhumka",
+   "name": "Jhumka earring",
+   "src": "/assets/library/art/jhumka.svg",
+   "tags": [
+    "jhumka",
+    "jewellery",
+    "bride"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1
+  },
+  {
+   "key": "kalash",
+   "name": "Kalash",
+   "src": "/assets/library/art/kalash.svg",
+   "tags": [
+    "kalash",
+    "pot",
+    "ceremony",
+    "griha pravesh"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 0.769
+  },
+  {
+   "key": "kalash-colour",
+   "name": "Kalash (colour)",
+   "src": "/assets/library/art/kalash-colour.svg",
+   "tags": [
+    "kalash",
+    "pot",
+    "ceremony",
+    "colour"
+   ],
+   "tint": false,
+   "category": "motifs",
+   "ratio": 0.769
+  },
+  {
+   "key": "lantern",
+   "name": "Hanging lantern",
+   "src": "/assets/library/art/lantern.svg",
+   "tags": [
+    "lantern",
+    "kandil",
+    "diwali",
+    "sangeet",
+    "lights"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 0.8
+  },
+  {
+   "key": "love-birds",
+   "name": "Love birds",
+   "src": "/assets/library/art/love-birds.svg",
+   "tags": [
+    "birds",
+    "love",
+    "couple",
+    "romance"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1.529
+  },
+  {
+   "key": "mango-leaves",
+   "name": "Mango leaves",
+   "src": "/assets/library/art/mango-leaves.svg",
+   "tags": [
+    "mango leaves",
+    "toran",
+    "auspicious"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 2.5
+  },
+  {
+   "key": "paisley",
+   "name": "Paisley",
+   "src": "/assets/library/art/paisley.svg",
+   "tags": [
+    "paisley",
+    "kairi",
+    "mehendi",
+    "buta"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 0.833
+  },
+  {
+   "key": "paisley-simple",
+   "name": "Paisley outline",
+   "src": "/assets/library/art/paisley-simple.svg",
+   "tags": [
+    "paisley",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 0.833
+  },
+  {
+   "key": "peacock-feather",
+   "name": "Peacock feather",
+   "src": "/assets/library/art/peacock-feather.svg",
+   "tags": [
+    "peacock",
+    "feather",
+    "mor pankh"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 0.5
+  },
+  {
+   "key": "peacock-feather-colour",
+   "name": "Peacock feather (colour)",
+   "src": "/assets/library/art/peacock-feather-colour.svg",
+   "tags": [
+    "peacock",
+    "feather",
+    "colour"
+   ],
+   "tint": false,
+   "category": "motifs",
+   "ratio": 0.5
+  },
+  {
+   "key": "rings",
+   "name": "Wedding rings",
+   "src": "/assets/library/art/rings.svg",
+   "tags": [
+    "rings",
+    "engagement",
+    "ring ceremony",
+    "wedding"
+   ],
+   "tint": true,
+   "category": "motifs",
+   "ratio": 1
+  },
+  {
+   "key": "balloons",
+   "name": "Balloons",
+   "src": "/assets/library/art/balloons.svg",
+   "tags": [
+    "balloons",
+    "birthday",
+    "party"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 0.769
+  },
+  {
+   "key": "balloons-colour",
+   "name": "Balloons (colour)",
+   "src": "/assets/library/art/balloons-colour.svg",
+   "tags": [
+    "balloons",
+    "birthday",
+    "party",
+    "colour"
+   ],
+   "tint": false,
+   "category": "celebration",
+   "ratio": 0.769
+  },
+  {
+   "key": "bunting",
+   "name": "Bunting flags",
+   "src": "/assets/library/art/bunting.svg",
+   "tags": [
+    "bunting",
+    "flags",
+    "party",
+    "birthday"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 3.636
+  },
+  {
+   "key": "cake",
+   "name": "Cake",
+   "src": "/assets/library/art/cake.svg",
+   "tags": [
+    "cake",
+    "birthday",
+    "anniversary"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 0.8
+  },
+  {
+   "key": "confetti",
+   "name": "Confetti",
+   "src": "/assets/library/art/confetti.svg",
+   "tags": [
+    "confetti",
+    "party",
+    "birthday",
+    "sangeet"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 2
+  },
+  {
+   "key": "gift",
+   "name": "Gift box",
+   "src": "/assets/library/art/gift.svg",
+   "tags": [
+    "gift",
+    "birthday",
+    "present"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 0.909
+  },
+  {
+   "key": "hearts-trio",
+   "name": "Three hearts",
+   "src": "/assets/library/art/hearts-trio.svg",
+   "tags": [
+    "hearts",
+    "love",
+    "anniversary"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 2
+  },
+  {
+   "key": "sparkle",
+   "name": "Sparkle",
+   "src": "/assets/library/art/sparkle.svg",
+   "tags": [
+    "sparkle",
+    "star",
+    "shine"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 1
+  },
+  {
+   "key": "sparkles",
+   "name": "Sparkle cluster",
+   "src": "/assets/library/art/sparkles.svg",
+   "tags": [
+    "sparkles",
+    "stars",
+    "shine"
+   ],
+   "tint": true,
+   "category": "celebration",
+   "ratio": 1
+  },
+  {
+   "key": "baby-feet",
+   "name": "Baby feet",
+   "src": "/assets/library/art/baby-feet.svg",
+   "tags": [
+    "feet",
+    "baby",
+    "newborn",
+    "baby shower"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1
+  },
+  {
+   "key": "cloud",
+   "name": "Cloud",
+   "src": "/assets/library/art/cloud.svg",
+   "tags": [
+    "cloud",
+    "baby",
+    "sky"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1.714
+  },
+  {
+   "key": "hot-air-balloon",
+   "name": "Hot air balloon",
+   "src": "/assets/library/art/hot-air-balloon.svg",
+   "tags": [
+    "balloon",
+    "baby",
+    "adventure",
+    "birthday"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 0.727
+  },
+  {
+   "key": "moon-stars",
+   "name": "Moon and stars",
+   "src": "/assets/library/art/moon-stars.svg",
+   "tags": [
+    "moon",
+    "stars",
+    "baby",
+    "night",
+    "naming"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1.1
+  },
+  {
+   "key": "pram",
+   "name": "Baby pram",
+   "src": "/assets/library/art/pram.svg",
+   "tags": [
+    "pram",
+    "baby",
+    "baby shower"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1.053
+  },
+  {
+   "key": "rattle",
+   "name": "Rattle",
+   "src": "/assets/library/art/rattle.svg",
+   "tags": [
+    "rattle",
+    "baby",
+    "toy"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1
+  },
+  {
+   "key": "star",
+   "name": "Star",
+   "src": "/assets/library/art/star.svg",
+   "tags": [
+    "star",
+    "baby",
+    "birthday"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1
+  },
+  {
+   "key": "teddy",
+   "name": "Teddy bear",
+   "src": "/assets/library/art/teddy.svg",
+   "tags": [
+    "teddy",
+    "baby",
+    "toy"
+   ],
+   "tint": true,
+   "category": "baby",
+   "ratio": 1.053
+  },
+  {
+   "key": "label-arch",
+   "name": "Arch plaque",
+   "src": "/assets/library/art/label-arch.svg",
+   "tags": [
+    "label",
+    "arch",
+    "plaque",
+    "title"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1.111
+  },
+  {
+   "key": "label-oval",
+   "name": "Oval cartouche",
+   "src": "/assets/library/art/label-oval.svg",
+   "tags": [
+    "label",
+    "oval",
+    "cartouche",
+    "title"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1.667
+  },
+  {
+   "key": "label-scroll",
+   "name": "Scroll label",
+   "src": "/assets/library/art/label-scroll.svg",
+   "tags": [
+    "scroll",
+    "label",
+    "title",
+    "classic"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 2.857
+  },
+  {
+   "key": "monogram-dot",
+   "name": "Monogram dot",
+   "src": "/assets/library/art/monogram-dot.svg",
+   "tags": [
+    "monogram",
+    "dot",
+    "circle"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1
+  },
+  {
+   "key": "monogram-ring",
+   "name": "Monogram ring",
+   "src": "/assets/library/art/monogram-ring.svg",
+   "tags": [
+    "monogram",
+    "initials",
+    "circle",
+    "minimal"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1
+  },
+  {
+   "key": "monogram-wreath",
+   "name": "Monogram wreath",
+   "src": "/assets/library/art/monogram-wreath.svg",
+   "tags": [
+    "monogram",
+    "initials",
+    "wreath",
+    "leaves"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1
+  },
+  {
+   "key": "ribbon-banner",
+   "name": "Ribbon banner",
+   "src": "/assets/library/art/ribbon-banner.svg",
+   "tags": [
+    "ribbon",
+    "banner",
+    "label",
+    "title"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 3.333
+  },
+  {
+   "key": "ribbon-bow",
+   "name": "Ribbon bow",
+   "src": "/assets/library/art/ribbon-bow.svg",
+   "tags": [
+    "bow",
+    "ribbon",
+    "gift"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1.25
+  },
+  {
+   "key": "stamp-scallop",
+   "name": "Scalloped badge",
+   "src": "/assets/library/art/stamp-scallop.svg",
+   "tags": [
+    "badge",
+    "stamp",
+    "scallop"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1
+  },
+  {
+   "key": "wax-seal",
+   "name": "Wax seal",
+   "src": "/assets/library/art/wax-seal.svg",
+   "tags": [
+    "seal",
+    "stamp",
+    "monogram",
+    "classic"
+   ],
+   "tint": true,
+   "category": "stickers",
+   "ratio": 1
+  },
+  {
+   "key": "brush-stroke",
+   "name": "Brush stroke",
+   "src": "/assets/library/art/brush-stroke.svg",
+   "tags": [
+    "brush",
+    "paint",
+    "swash",
+    "background"
+   ],
+   "tint": true,
+   "category": "edges",
+   "ratio": 3.75
+  },
+  {
+   "key": "deckle-edge",
+   "name": "Deckle paper edge",
+   "src": "/assets/library/art/deckle-edge.svg",
+   "tags": [
+    "deckle",
+    "paper",
+    "edge"
+   ],
+   "tint": true,
+   "category": "edges",
+   "ratio": 20
+  },
+  {
+   "key": "fade-bottom",
+   "name": "Fade from bottom",
+   "src": "/assets/library/art/fade-bottom.svg",
+   "tags": [
+    "fade",
+    "gradient",
+    "blend",
+    "caption"
+   ],
+   "tint": true,
+   "category": "edges",
+   "stretch": true
+  },
+  {
+   "key": "fade-left",
+   "name": "Fade from left",
+   "src": "/assets/library/art/fade-left.svg",
+   "tags": [
+    "fade",
+    "gradient",
+    "blend",
+    "studio"
+   ],
+   "tint": true,
+   "category": "edges",
+   "stretch": true
+  },
+  {
+   "key": "torn-edge",
+   "name": "Torn paper edge",
+   "src": "/assets/library/art/torn-edge.svg",
+   "tags": [
+    "torn",
+    "paper",
+    "edge",
+    "studio"
+   ],
+   "tint": true,
+   "category": "edges",
+   "ratio": 10
+  },
+  {
+   "key": "torn-edge-rough",
+   "name": "Rough torn edge",
+   "src": "/assets/library/art/torn-edge-rough.svg",
+   "tags": [
+    "torn",
+    "paper",
+    "edge",
+    "studio"
+   ],
+   "tint": true,
+   "category": "edges",
+   "ratio": 7.5
+  },
+  {
+   "key": "vignette",
+   "name": "Soft vignette",
+   "src": "/assets/library/art/vignette.svg",
+   "tags": [
+    "vignette",
+    "gradient",
+    "blend"
+   ],
+   "tint": true,
+   "category": "edges",
+   "stretch": true
+  }
+ ],
+ "fonts": [
+  {
+   "key": "display",
+   "family": "Rozha One",
+   "category": "display",
+   "devanagari": true,
+   "sample": "शुभ विवाह"
+  },
+  {
+   "key": "ui",
+   "family": "Mukta",
+   "category": "sans",
+   "devanagari": true,
+   "sample": "Mehendi night, 14 February"
+  },
+  {
+   "key": "playfair",
+   "family": "Playfair Display",
+   "category": "serif",
+   "devanagari": false,
+   "sample": "Aarav & Meera"
+  },
+  {
+   "key": "cormorant",
+   "family": "Cormorant Garamond",
+   "category": "serif",
+   "devanagari": false,
+   "sample": "A day to remember"
+  },
+  {
+   "key": "cinzel",
+   "family": "Cinzel",
+   "category": "display",
+   "devanagari": false,
+   "sample": "THE RECEPTION"
+  },
+  {
+   "key": "marcellus",
+   "family": "Marcellus",
+   "category": "serif",
+   "devanagari": false,
+   "sample": "Engagement Ceremony"
+  },
+  {
+   "key": "greatvibes",
+   "family": "Great Vibes",
+   "category": "script",
+   "devanagari": false,
+   "sample": "Happily ever after"
+  },
+  {
+   "key": "parisienne",
+   "family": "Parisienne",
+   "category": "script",
+   "devanagari": false,
+   "sample": "Forever starts here"
+  },
+  {
+   "key": "dancing",
+   "family": "Dancing Script",
+   "category": "script",
+   "devanagari": false,
+   "sample": "Sangeet night"
+  },
+  {
+   "key": "montserrat",
+   "family": "Montserrat",
+   "category": "sans",
+   "devanagari": false,
+   "sample": "Save the date"
+  },
+  {
+   "key": "poppins",
+   "family": "Poppins",
+   "category": "sans",
+   "devanagari": true,
+   "sample": "जन्मदिन मुबारक, Happy birthday"
+  },
+  {
+   "key": "yatra",
+   "family": "Yatra One",
+   "category": "display",
+   "devanagari": true,
+   "sample": "हल्दी की रस्म"
+  },
+  {
+   "key": "tiro",
+   "family": "Tiro Devanagari Hindi",
+   "category": "serif",
+   "devanagari": true,
+   "sample": "आपका स्वागत है"
+  }
+ ],
+ "designs": [
+  {
+   "key": "cover-maroon-jharokha",
+   "name": "Maroon silk jharokha",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "reception"
+   ],
+   "tags": [
+    "royal",
+    "silk",
+    "gold",
+    "arch",
+    "classic"
+   ],
+   "thumb": "/assets/library/designs/cover-maroon-jharokha.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/silk-maroon.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.0225,
+      "y": 0.03,
+      "w": 0.15,
+      "h": 0.2,
+      "src": "/assets/library/art/corner-scroll.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.9
+     },
+     {
+      "type": "art",
+      "x": 0.8275,
+      "y": 0.03,
+      "w": 0.15,
+      "h": 0.2,
+      "src": "/assets/library/art/corner-scroll.svg",
+      "tint": "#D9B66A",
+      "flipX": true,
+      "opacity": 0.9
+     },
+     {
+      "type": "art",
+      "x": 0.0225,
+      "y": 0.77,
+      "w": 0.15,
+      "h": 0.2,
+      "src": "/assets/library/art/corner-scroll.svg",
+      "tint": "#D9B66A",
+      "flipY": true,
+      "opacity": 0.9
+     },
+     {
+      "type": "art",
+      "x": 0.8275,
+      "y": 0.77,
+      "w": 0.15,
+      "h": 0.2,
+      "src": "/assets/library/art/corner-scroll.svg",
+      "tint": "#D9B66A",
+      "flipX": true,
+      "flipY": true,
+      "opacity": 0.9
+     },
+     {
+      "type": "photo",
+      "x": 0.3596,
+      "y": 0.2228,
+      "w": 0.2808,
+      "h": 0.4932,
+      "m": null,
+      "shape": "arch",
+      "shadow": "strong"
+     },
+     {
+      "type": "art",
+      "x": 0.2975,
+      "y": 0.05,
+      "w": 0.405,
+      "h": 0.72,
+      "src": "/assets/library/art/frame-jharokha.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.775,
+      "w": 0.8,
+      "h": 0.12,
+      "text": "",
+      "font": "greatvibes",
+      "size": 9,
+      "color": "#D9B66A",
+      "align": "center",
+      "role": "names",
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.36,
+      "y": 0.895,
+      "w": 0.28,
+      "h": 0.0187,
+      "src": "/assets/library/art/divider-diamond.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.915,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "cinzel",
+      "size": 2.3,
+      "color": "#EAD3A0",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.28,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-emerald-mandala",
+   "name": "Emerald mandala",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "mehendi",
+    "engagement"
+   ],
+   "tags": [
+    "velvet",
+    "mandala",
+    "gold",
+    "circle"
+   ],
+   "thumb": "/assets/library/designs/cover-emerald-mandala.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/velvet-emerald.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.06,
+      "y": 0.12,
+      "w": 0.57,
+      "h": 0.76,
+      "src": "/assets/library/art/mandala-lotus.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.35
+     },
+     {
+      "type": "photo",
+      "x": 0.135,
+      "y": 0.22,
+      "w": 0.42,
+      "h": 0.56,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.5,
+       "color": "#D9B66A"
+      },
+      "shadow": "strong"
+     },
+     {
+      "type": "text",
+      "x": 0.62,
+      "y": 0.3,
+      "w": 0.35,
+      "h": 0.3,
+      "text": "",
+      "font": "cormorant",
+      "size": 8,
+      "color": "#F3E3BC",
+      "align": "center",
+      "role": "names",
+      "italic": true,
+      "line": 1.05
+     },
+     {
+      "type": "art",
+      "x": 0.635,
+      "y": 0.6,
+      "w": 0.32,
+      "h": 0.048,
+      "src": "/assets/library/art/divider-lotus.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "text",
+      "x": 0.62,
+      "y": 0.66,
+      "w": 0.35,
+      "h": 0.06,
+      "text": "",
+      "font": "cinzel",
+      "size": 2.2,
+      "color": "#D9B66A",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.25,
+      "upper": true
+     },
+     {
+      "type": "text",
+      "x": 0.62,
+      "y": 0.72,
+      "w": 0.35,
+      "h": 0.05,
+      "text": "",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#CFE0D2",
+      "align": "center",
+      "role": "place",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-ivory-brocade",
+   "name": "Ivory brocade",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "anniversary",
+    "reception"
+   ],
+   "tags": [
+    "brocade",
+    "ivory",
+    "paisley",
+    "classic"
+   ],
+   "thumb": "/assets/library/designs/cover-ivory-brocade.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/brocade-ivory.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.035,
+      "w": 1,
+      "h": 0.1667,
+      "src": "/assets/library/art/border-paisley.svg",
+      "tint": "#A47E33"
+     },
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.7983,
+      "w": 1,
+      "h": 0.1667,
+      "src": "/assets/library/art/border-paisley.svg",
+      "tint": "#A47E33",
+      "flipY": true
+     },
+     {
+      "type": "shape",
+      "x": 0.24,
+      "y": 0.2,
+      "w": 0.52,
+      "h": 0.44,
+      "shape": "rect",
+      "fill": "#FFFDF7"
+     },
+     {
+      "type": "photo",
+      "x": 0.255,
+      "y": 0.22,
+      "w": 0.49,
+      "h": 0.4,
+      "m": null,
+      "shape": "rect",
+      "shadow": "soft"
+     },
+     {
+      "type": "shape",
+      "x": 0.225,
+      "y": 0.18,
+      "w": 0.55,
+      "h": 0.48,
+      "shape": "rect",
+      "stroke": "#A47E33",
+      "strokeW": 0.18
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.665,
+      "w": 0.8,
+      "h": 0.08,
+      "text": "",
+      "font": "playfair",
+      "size": 5.4,
+      "color": "#5B3B14",
+      "align": "center",
+      "role": "names"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.745,
+      "w": 0.6,
+      "h": 0.04,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.9,
+      "color": "#8A6A3A",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-engagement-blush",
+   "name": "Blush engagement",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "engagement",
+    "ring-ceremony",
+    "pre-wedding"
+   ],
+   "tags": [
+    "watercolour",
+    "blush",
+    "polaroid",
+    "rings"
+   ],
+   "thumb": "/assets/library/designs/cover-engagement-blush.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/watercolour-blush.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.12,
+      "y": 0.13,
+      "w": 0.42,
+      "h": 0.68,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -4,
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.66,
+      "y": 0.16,
+      "w": 0.12,
+      "h": 0.16,
+      "src": "/assets/library/art/rings.svg",
+      "tint": "#B4475E"
+     },
+     {
+      "type": "text",
+      "x": 0.56,
+      "y": 0.36,
+      "w": 0.4,
+      "h": 0.07,
+      "text": "The Engagement",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#8C4A55",
+      "align": "center",
+      "spacing": 0.3,
+      "upper": true
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.43,
+      "w": 0.42,
+      "h": 0.22,
+      "text": "",
+      "font": "parisienne",
+      "size": 7.5,
+      "color": "#7A2F3E",
+      "align": "center",
+      "role": "names",
+      "line": 1.1
+     },
+     {
+      "type": "art",
+      "x": 0.86,
+      "y": 0.62,
+      "w": 0.1125,
+      "h": 0.3,
+      "src": "/assets/library/art/sprig-olive.svg",
+      "tint": "#9AA88C",
+      "rot": 20
+     },
+     {
+      "type": "text",
+      "x": 0.56,
+      "y": 0.68,
+      "w": 0.4,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.9,
+      "color": "#8C4A55",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.3,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-haldi-marigold",
+   "name": "Haldi marigold",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "haldi"
+   ],
+   "tags": [
+    "marigold",
+    "saffron",
+    "toran",
+    "festive"
+   ],
+   "thumb": "/assets/library/designs/cover-haldi-marigold.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/dupion-saffron.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": -0.02,
+      "y": 0,
+      "w": 1.04,
+      "h": 0.3698,
+      "src": "/assets/library/art/toran-marigold-colour.svg"
+     },
+     {
+      "type": "photo",
+      "x": 0.3275,
+      "y": 0.25,
+      "w": 0.345,
+      "h": 0.46,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.7,
+       "color": "#FFF3C4"
+      },
+      "shadow": "strong"
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.725,
+      "w": 0.8,
+      "h": 0.13,
+      "text": "Haldi",
+      "font": "greatvibes",
+      "size": 10,
+      "color": "#FFF6D8",
+      "align": "center",
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.86,
+      "w": 0.7,
+      "h": 0.06,
+      "text": "",
+      "font": "cinzel",
+      "size": 2.6,
+      "color": "#5A2A04",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.2,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-mehendi-paisley",
+   "name": "Mehendi paisley",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "mehendi"
+   ],
+   "tags": [
+    "paisley",
+    "green",
+    "pattern",
+    "arch"
+   ],
+   "thumb": "/assets/library/designs/cover-mehendi-paisley.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/patterns/paisley-buta--gold.svg",
+     "repeat": true,
+     "scale": 16,
+     "color": "#1E4A33"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.29,
+      "y": 0.06,
+      "w": 0.42,
+      "h": 0.88,
+      "shape": "arch",
+      "fill": "#F6EFDD"
+     },
+     {
+      "type": "photo",
+      "x": 0.32,
+      "y": 0.1,
+      "w": 0.36,
+      "h": 0.52,
+      "m": null,
+      "shape": "arch"
+     },
+     {
+      "type": "art",
+      "x": 0.37,
+      "y": 0.632,
+      "w": 0.26,
+      "h": 0.0693,
+      "src": "/assets/library/art/divider-paisley.svg",
+      "tint": "#2F6B45"
+     },
+     {
+      "type": "text",
+      "x": 0.3,
+      "y": 0.705,
+      "w": 0.4,
+      "h": 0.1,
+      "text": "Mehendi",
+      "font": "greatvibes",
+      "size": 8,
+      "color": "#1E4A33",
+      "align": "center"
+     },
+     {
+      "type": "text",
+      "x": 0.3,
+      "y": 0.81,
+      "w": 0.4,
+      "h": 0.05,
+      "text": "",
+      "font": "marcellus",
+      "size": 2.4,
+      "color": "#7A5A2A",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.18,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-sangeet-lights",
+   "name": "Sangeet night",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "sangeet",
+    "cocktail",
+    "reception"
+   ],
+   "tags": [
+    "night",
+    "lights",
+    "party",
+    "glow"
+   ],
+   "thumb": "/assets/library/designs/cover-sangeet-lights.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/fairy-lights.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.3125,
+      "y": 0.24,
+      "w": 0.375,
+      "h": 0.5,
+      "m": null,
+      "shape": "hexagon",
+      "shadow": "glow"
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.76,
+      "w": 0.8,
+      "h": 0.1,
+      "text": "",
+      "font": "dancing",
+      "size": 6.5,
+      "color": "#FFE3A8",
+      "align": "center",
+      "role": "names",
+      "weight": 700,
+      "shadow": "glow"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.865,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "Sangeet Night",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#F3C98B",
+      "align": "center",
+      "spacing": 0.45,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-reception-nero",
+   "name": "Nero marble reception",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "reception",
+    "wedding",
+    "cocktail"
+   ],
+   "tags": [
+    "marble",
+    "black",
+    "gold",
+    "modern"
+   ],
+   "thumb": "/assets/library/designs/cover-reception-nero.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/marble-nero-gold.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.52,
+      "y": 0,
+      "w": 0.48,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0.52,
+      "y": 0,
+      "w": 0.12,
+      "h": 1,
+      "src": "/assets/library/art/fade-left.svg",
+      "tint": "#0E0C0E"
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.3,
+      "w": 0.44,
+      "h": 0.07,
+      "text": "The Reception",
+      "font": "cinzel",
+      "size": 2.4,
+      "color": "#D9B66A",
+      "align": "left",
+      "spacing": 0.4,
+      "upper": true
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.38,
+      "w": 0.46,
+      "h": 0.24,
+      "text": "",
+      "font": "playfair",
+      "size": 7.5,
+      "color": "#F5EBD6",
+      "align": "left",
+      "role": "names",
+      "line": 1.05
+     },
+     {
+      "type": "shape",
+      "x": 0.06,
+      "y": 0.64,
+      "w": 0.14,
+      "h": 0.01,
+      "shape": "line",
+      "stroke": "#D9B66A",
+      "strokeW": 0.3
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.67,
+      "w": 0.44,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.9,
+      "color": "#CDB68A",
+      "align": "left",
+      "role": "date",
+      "spacing": 0.3,
+      "upper": true
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.72,
+      "w": 0.44,
+      "h": 0.05,
+      "text": "",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#CDB68A",
+      "align": "left",
+      "role": "place",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-anniversary-pearl",
+   "name": "Pearl anniversary",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "anniversary",
+    "wedding"
+   ],
+   "tags": [
+    "pearl",
+    "oval",
+    "champagne",
+    "classic"
+   ],
+   "thumb": "/assets/library/designs/cover-anniversary-pearl.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/champagne-shimmer.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.3425,
+      "y": 0.099,
+      "w": 0.315,
+      "h": 0.602,
+      "m": null,
+      "shape": "circle"
+     },
+     {
+      "type": "art",
+      "x": 0.3031,
+      "y": 0.05,
+      "w": 0.3937,
+      "h": 0.7,
+      "src": "/assets/library/art/frame-oval-pearl.svg",
+      "tint": "#B8955A"
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.77,
+      "w": 0.7,
+      "h": 0.1,
+      "text": "Happy Anniversary",
+      "font": "greatvibes",
+      "size": 6.5,
+      "color": "#7A5A2E",
+      "align": "center"
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.87,
+      "w": 0.7,
+      "h": 0.05,
+      "text": "",
+      "font": "cormorant",
+      "size": 2.8,
+      "color": "#5E4628",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.15,
+      "upper": true,
+      "weight": 600
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-birthday-balloons",
+   "name": "Birthday balloons",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "birthday"
+   ],
+   "tags": [
+    "balloons",
+    "pink",
+    "party",
+    "playful"
+   ],
+   "thumb": "/assets/library/designs/cover-birthday-balloons.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/bokeh-rose.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.68,
+      "y": 0.1,
+      "w": 0.3577,
+      "h": 0.62,
+      "src": "/assets/library/art/balloons-colour.svg"
+     },
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.14,
+      "w": 0.42,
+      "h": 0.56,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.8,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.73,
+      "w": 0.6,
+      "h": 0.12,
+      "text": "Happy Birthday",
+      "font": "greatvibes",
+      "size": 8,
+      "color": "#9C3550",
+      "align": "left"
+     },
+     {
+      "type": "text",
+      "x": 0.08,
+      "y": 0.85,
+      "w": 0.6,
+      "h": 0.06,
+      "text": "",
+      "font": "poppins",
+      "size": 2.6,
+      "color": "#6E3A48",
+      "align": "left",
+      "role": "title",
+      "weight": 600,
+      "spacing": 0.12,
+      "upper": true
+     },
+     {
+      "type": "art",
+      "x": 0.5,
+      "y": 0.78,
+      "w": 0.45,
+      "h": 0.3,
+      "src": "/assets/library/art/confetti.svg",
+      "tint": "#D98BA0",
+      "opacity": 0.8
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-baby-shower-moon",
+   "name": "Baby shower moon",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "baby-shower",
+    "naming",
+    "baby"
+   ],
+   "tags": [
+    "moon",
+    "stars",
+    "watercolour",
+    "soft"
+   ],
+   "thumb": "/assets/library/designs/cover-baby-shower-moon.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/watercolour-sky.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.34,
+      "y": 0.08,
+      "w": 0.32,
+      "h": 0.6,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "type": "art",
+      "x": 0.6,
+      "y": 0.06,
+      "w": 0.165,
+      "h": 0.2,
+      "src": "/assets/library/art/moon-stars.svg",
+      "tint": "#C9A45A"
+     },
+     {
+      "type": "art",
+      "x": 0.2,
+      "y": 0.52,
+      "w": 0.1543,
+      "h": 0.12,
+      "src": "/assets/library/art/cloud.svg",
+      "tint": "#FFFFFF",
+      "opacity": 0.9
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.71,
+      "w": 0.7,
+      "h": 0.12,
+      "text": "Baby Shower",
+      "font": "parisienne",
+      "size": 7.5,
+      "color": "#4E5E86",
+      "align": "center"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.83,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#6F7EA3",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.3,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-maternity-satin",
+   "name": "Maternity satin",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "maternity",
+    "baby-shower"
+   ],
+   "tags": [
+    "satin",
+    "blush",
+    "arch",
+    "botanical"
+   ],
+   "thumb": "/assets/library/designs/cover-maternity-satin.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/satin-blush.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.08,
+      "w": 0.38,
+      "h": 0.84,
+      "m": null,
+      "shape": "arch",
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.02,
+      "y": 0.56,
+      "w": 0.1838,
+      "h": 0.42,
+      "src": "/assets/library/art/sprig-eucalyptus.svg",
+      "tint": "#8C9B82",
+      "rot": -16
+     },
+     {
+      "type": "text",
+      "x": 0.52,
+      "y": 0.28,
+      "w": 0.3,
+      "h": 0.24,
+      "text": "Waiting for you",
+      "font": "cormorant",
+      "size": 9,
+      "color": "#7D4B52",
+      "align": "left",
+      "italic": true,
+      "line": 1
+     },
+     {
+      "type": "shape",
+      "x": 0.53,
+      "y": 0.55,
+      "w": 0.1,
+      "h": 0.01,
+      "shape": "line",
+      "stroke": "#B88A8E",
+      "strokeW": 0.25
+     },
+     {
+      "type": "text",
+      "x": 0.52,
+      "y": 0.58,
+      "w": 0.42,
+      "h": 0.06,
+      "text": "",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#8A5E63",
+      "align": "left",
+      "role": "names",
+      "spacing": 0.25,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-prewedding-film",
+   "name": "Pre-wedding full photo",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "pre-wedding",
+    "engagement",
+    "couple"
+   ],
+   "tags": [
+    "full bleed",
+    "modern",
+    "minimal"
+   ],
+   "thumb": "/assets/library/designs/cover-prewedding-film.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "photo",
+     "m": null,
+     "dim": 0.12,
+     "dimColor": "#000000"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.5,
+      "w": 1,
+      "h": 0.5,
+      "src": "/assets/library/art/fade-bottom.svg",
+      "tint": "#1A1416"
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.64,
+      "w": 0.6,
+      "h": 0.06,
+      "text": "Save the date",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#F4E7D4",
+      "align": "left",
+      "spacing": 0.4,
+      "upper": true
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.7,
+      "w": 0.8,
+      "h": 0.16,
+      "text": "",
+      "font": "playfair",
+      "size": 8.5,
+      "color": "#FFFFFF",
+      "align": "left",
+      "role": "names",
+      "italic": true
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.86,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#E9D8BE",
+      "align": "left",
+      "role": "date",
+      "spacing": 0.25,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-navy-gold",
+   "name": "Navy and gold",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "reception",
+    "anniversary"
+   ],
+   "tags": [
+    "velvet",
+    "navy",
+    "gold",
+    "frame"
+   ],
+   "thumb": "/assets/library/designs/cover-navy-gold.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/velvet-navy.jpg"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.035,
+      "y": 0.05,
+      "w": 0.93,
+      "h": 0.9,
+      "shape": "rect",
+      "stroke": "#D9B66A",
+      "strokeW": 0.35
+     },
+     {
+      "type": "shape",
+      "x": 0.05,
+      "y": 0.07,
+      "w": 0.9,
+      "h": 0.86,
+      "shape": "rect",
+      "stroke": "#D9B66A",
+      "strokeW": 0.12
+     },
+     {
+      "type": "art",
+      "x": 0.29,
+      "y": 0.1,
+      "w": 0.42,
+      "h": 0.56,
+      "src": "/assets/library/art/frame-round-ornate.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "photo",
+      "x": 0.3275,
+      "y": 0.15,
+      "w": 0.345,
+      "h": 0.46,
+      "m": null,
+      "shape": "circle"
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.7,
+      "w": 0.8,
+      "h": 0.1,
+      "text": "",
+      "font": "cinzel",
+      "size": 4.6,
+      "color": "#F1DFB4",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.08
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.8,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "cormorant",
+      "size": 2.8,
+      "color": "#D9B66A",
+      "align": "center",
+      "role": "date",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-studio-teal-arch",
+   "name": "Teal velvet arch",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "reception"
+   ],
+   "tags": [
+    "studio-style",
+    "velvet",
+    "teal",
+    "arch",
+    "gold"
+   ],
+   "thumb": "/assets/library/designs/cover-studio-teal-arch.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/velvet-teal.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.31,
+      "y": 0.08,
+      "w": 0.38,
+      "h": 0.62,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.45,
+       "color": "#D9B66A"
+      }
+     },
+     {
+      "type": "shape",
+      "x": 0.295,
+      "y": 0.06,
+      "w": 0.41,
+      "h": 0.66,
+      "shape": "rect",
+      "stroke": "#D9B66A",
+      "strokeW": 0.12
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.74,
+      "w": 0.8,
+      "h": 0.12,
+      "text": "",
+      "font": "greatvibes",
+      "size": 8,
+      "color": "#D9B66A",
+      "align": "center",
+      "role": "names",
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.86,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#E3CF9E",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.2,
+      "upper": true
+     },
+     {
+      "type": "art",
+      "x": 0.71,
+      "y": 0.5,
+      "w": 0.0825,
+      "h": 0.22,
+      "src": "/assets/library/art/sprig-olive.svg",
+      "tint": "#D9B66A",
+      "rot": 24,
+      "opacity": 0.8
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-studio-lilac",
+   "name": "Lilac watercolour",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "anniversary"
+   ],
+   "tags": [
+    "studio-style",
+    "watercolour",
+    "lilac",
+    "frame"
+   ],
+   "thumb": "/assets/library/designs/cover-studio-lilac.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/watercolour-lilac.jpg"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.27,
+      "y": 0.1,
+      "w": 0.46,
+      "h": 0.6,
+      "shape": "rect",
+      "fill": "#FFFFFF"
+     },
+     {
+      "type": "photo",
+      "x": 0.29,
+      "y": 0.125,
+      "w": 0.42,
+      "h": 0.55,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "shape",
+      "x": 0.255,
+      "y": 0.08,
+      "w": 0.49,
+      "h": 0.64,
+      "shape": "rect",
+      "stroke": "#8E78A8",
+      "strokeW": 0.12
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.74,
+      "w": 0.8,
+      "h": 0.12,
+      "text": "",
+      "font": "parisienne",
+      "size": 7.5,
+      "color": "#5D4A78",
+      "align": "center",
+      "role": "names"
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.86,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.9,
+      "color": "#7E6C98",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-studio-bw-portrait",
+   "name": "Faded portrait and circle",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "pre-wedding",
+    "engagement"
+   ],
+   "tags": [
+    "studio-style",
+    "black and white",
+    "circle",
+    "leaves"
+   ],
+   "thumb": "/assets/library/designs/cover-studio-bw-portrait.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "color",
+     "color": "#F5F1EA"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.62,
+      "h": 1,
+      "m": null,
+      "shape": "rect",
+      "opacity": 0.35,
+      "filter": {
+       "grayscale": 1
+      }
+     },
+     {
+      "type": "art",
+      "x": 0.38,
+      "y": 0,
+      "w": 0.26,
+      "h": 1,
+      "src": "/assets/library/art/fade-left.svg",
+      "tint": "#F5F1EA",
+      "flipX": true
+     },
+     {
+      "type": "photo",
+      "x": 0.58,
+      "y": 0.16,
+      "w": 0.3,
+      "h": 0.4,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.45,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.52,
+      "y": 0.5,
+      "w": 0.225,
+      "h": 0.2,
+      "src": "/assets/library/art/branch-curved.svg",
+      "tint": "#7C8A6A"
+     },
+     {
+      "type": "text",
+      "x": 0.5,
+      "y": 0.66,
+      "w": 0.46,
+      "h": 0.12,
+      "text": "",
+      "font": "greatvibes",
+      "size": 7,
+      "color": "#3E3A34",
+      "align": "center",
+      "role": "names"
+     },
+     {
+      "type": "text",
+      "x": 0.5,
+      "y": 0.78,
+      "w": 0.46,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.8,
+      "color": "#6E675C",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "cover-studio-linen-polaroid",
+   "name": "Linen and print",
+   "kind": "cover",
+   "ratio": 1.333,
+   "occasions": [
+    "wedding",
+    "pre-wedding",
+    "anniversary",
+    "birthday"
+   ],
+   "tags": [
+    "studio-style",
+    "linen",
+    "polaroid",
+    "botanical"
+   ],
+   "thumb": "/assets/library/designs/cover-studio-linen-polaroid.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/linen-cream.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.3,
+      "y": 0.08,
+      "w": 0.4,
+      "h": 0.64,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": 2,
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.12,
+      "y": 0.34,
+      "w": 0.175,
+      "h": 0.4,
+      "src": "/assets/library/art/sprig-eucalyptus.svg",
+      "tint": "#7E8C70",
+      "rot": -22
+     },
+     {
+      "type": "art",
+      "x": 0.76,
+      "y": 0.12,
+      "w": 0.1488,
+      "h": 0.34,
+      "src": "/assets/library/art/sprig-fern.svg",
+      "tint": "#9AA58A",
+      "rot": 16
+     },
+     {
+      "type": "text",
+      "x": 0.1,
+      "y": 0.76,
+      "w": 0.8,
+      "h": 0.1,
+      "text": "",
+      "font": "playfair",
+      "size": 6,
+      "color": "#4A3F33",
+      "align": "center",
+      "role": "names",
+      "italic": true
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.86,
+      "w": 0.6,
+      "h": 0.05,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.8,
+      "color": "#7A6B57",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-hero-caption",
+   "name": "Hero photo with caption",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "any"
+   ],
+   "tags": [
+    "hero",
+    "full bleed",
+    "caption"
+   ],
+   "thumb": "/assets/library/designs/page-hero-caption.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "color",
+     "color": "#1A1416"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 1,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.62,
+      "w": 1,
+      "h": 0.38,
+      "src": "/assets/library/art/fade-bottom.svg",
+      "tint": "#140F10"
+     },
+     {
+      "type": "text",
+      "x": 0.06,
+      "y": 0.8,
+      "w": 0.6,
+      "h": 0.1,
+      "text": "The moment it all began",
+      "font": "cormorant",
+      "size": 5,
+      "color": "#FBF3E4",
+      "align": "left",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-section-haldi",
+   "name": "Haldi opener",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "haldi"
+   ],
+   "tags": [
+    "section",
+    "marigold",
+    "opener"
+   ],
+   "thumb": "/assets/library/designs/page-section-haldi.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/dupion-saffron.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.06,
+      "y": 0,
+      "w": 0.075,
+      "h": 0.75,
+      "src": "/assets/library/art/marigold-strand.svg",
+      "tint": "#FFE08A"
+     },
+     {
+      "type": "art",
+      "x": 0.14,
+      "y": 0,
+      "w": 0.055,
+      "h": 0.55,
+      "src": "/assets/library/art/marigold-strand.svg",
+      "tint": "#FFF1C2"
+     },
+     {
+      "type": "art",
+      "x": 0.865,
+      "y": 0,
+      "w": 0.075,
+      "h": 0.75,
+      "src": "/assets/library/art/marigold-strand.svg",
+      "tint": "#FFE08A"
+     },
+     {
+      "type": "art",
+      "x": 0.805,
+      "y": 0,
+      "w": 0.055,
+      "h": 0.55,
+      "src": "/assets/library/art/marigold-strand.svg",
+      "tint": "#FFF1C2"
+     },
+     {
+      "type": "photo",
+      "x": 0.36,
+      "y": 0.14,
+      "w": 0.28,
+      "h": 0.5,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.5,
+       "color": "#FFF3C4"
+      }
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.67,
+      "w": 0.6,
+      "h": 0.14,
+      "text": "",
+      "font": "greatvibes",
+      "size": 9,
+      "color": "#FFF6D8",
+      "align": "center",
+      "role": "section",
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.25,
+      "y": 0.81,
+      "w": 0.5,
+      "h": 0.06,
+      "text": "Turmeric, laughter and a lot of yellow",
+      "font": "cormorant",
+      "size": 3.2,
+      "color": "#FFF1D0",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-section-mehendi",
+   "name": "Mehendi opener",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "mehendi"
+   ],
+   "tags": [
+    "section",
+    "paisley",
+    "pattern",
+    "opener"
+   ],
+   "thumb": "/assets/library/designs/page-section-mehendi.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/patterns/paisley-buta--gold.svg",
+     "repeat": true,
+     "scale": 14,
+     "color": "#1E4A33"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.25,
+      "y": 0.12,
+      "w": 0.5,
+      "h": 0.76,
+      "shape": "rect",
+      "fill": "#F6EFDD"
+     },
+     {
+      "type": "shape",
+      "x": 0.265,
+      "y": 0.14,
+      "w": 0.47,
+      "h": 0.72,
+      "shape": "rect",
+      "stroke": "#2F6B45",
+      "strokeW": 0.15
+     },
+     {
+      "type": "art",
+      "x": 0.4167,
+      "y": 0.2,
+      "w": 0.1667,
+      "h": 0.3,
+      "src": "/assets/library/art/paisley.svg",
+      "tint": "#2F6B45"
+     },
+     {
+      "type": "text",
+      "x": 0.28,
+      "y": 0.52,
+      "w": 0.44,
+      "h": 0.14,
+      "text": "",
+      "font": "greatvibes",
+      "size": 9,
+      "color": "#1E4A33",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.3,
+      "y": 0.68,
+      "w": 0.4,
+      "h": 0.08,
+      "text": "Henna, songs and stories",
+      "font": "cormorant",
+      "size": 3.2,
+      "color": "#5E6B4A",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-section-sangeet",
+   "name": "Sangeet opener",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "sangeet",
+    "cocktail"
+   ],
+   "tags": [
+    "section",
+    "night",
+    "lanterns",
+    "opener"
+   ],
+   "thumb": "/assets/library/designs/page-section-sangeet.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/gradient-midnight.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.12,
+      "y": 0,
+      "w": 0.224,
+      "h": 0.42,
+      "src": "/assets/library/art/lantern.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "art",
+      "x": 0.2,
+      "y": 0,
+      "w": 0.1493,
+      "h": 0.28,
+      "src": "/assets/library/art/lantern.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.7
+     },
+     {
+      "type": "art",
+      "x": 0.656,
+      "y": 0,
+      "w": 0.224,
+      "h": 0.42,
+      "src": "/assets/library/art/lantern.svg",
+      "tint": "#D9B66A"
+     },
+     {
+      "type": "art",
+      "x": 0.6507,
+      "y": 0,
+      "w": 0.1493,
+      "h": 0.28,
+      "src": "/assets/library/art/lantern.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.7
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.42,
+      "w": 0.7,
+      "h": 0.18,
+      "text": "",
+      "font": "dancing",
+      "size": 11,
+      "color": "#FFE3A8",
+      "align": "center",
+      "role": "section",
+      "weight": 700,
+      "shadow": "glow"
+     },
+     {
+      "type": "text",
+      "x": 0.25,
+      "y": 0.62,
+      "w": 0.5,
+      "h": 0.06,
+      "text": "Music, dance and family",
+      "font": "montserrat",
+      "size": 2,
+      "color": "#D9C3E8",
+      "align": "center",
+      "role": "caption",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-quote-paper",
+   "name": "Quote on handmade paper",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "quote",
+    "words",
+    "paper",
+    "minimal"
+   ],
+   "thumb": "/assets/library/designs/page-quote-paper.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-handmade-ivory.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.3,
+      "y": 0.22,
+      "w": 0.4,
+      "h": 0.11,
+      "src": "/assets/library/art/divider-scroll.svg",
+      "tint": "#9C7A3C"
+     },
+     {
+      "type": "text",
+      "x": 0.25,
+      "y": 0.36,
+      "w": 0.5,
+      "h": 0.26,
+      "text": "Whatever our souls are made of, his and mine are the same.",
+      "font": "cormorant",
+      "size": 5.4,
+      "color": "#4A3A28",
+      "align": "center",
+      "role": "caption",
+      "italic": true,
+      "line": 1.3
+     },
+     {
+      "type": "art",
+      "x": 0.3,
+      "y": 0.66,
+      "w": 0.4,
+      "h": 0.11,
+      "src": "/assets/library/art/divider-scroll.svg",
+      "tint": "#9C7A3C",
+      "flipY": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-three-prints",
+   "name": "Three prints on kraft",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "polaroid",
+    "collage",
+    "kraft",
+    "playful"
+   ],
+   "thumb": "/assets/library/designs/page-three-prints.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-kraft.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.05,
+      "y": 0.14,
+      "w": 0.3,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -5,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.35,
+      "y": 0.22,
+      "w": 0.3,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": 3,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.65,
+      "y": 0.1,
+      "w": 0.3,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -2,
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.9,
+      "y": 0.62,
+      "w": 0.1,
+      "h": 0.3,
+      "src": "/assets/library/art/sprig-olive.svg",
+      "tint": "#5E5030",
+      "rot": 30
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-grid-four-linen",
+   "name": "Four on linen",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "grid",
+    "linen",
+    "collage"
+   ],
+   "thumb": "/assets/library/designs/page-grid-four-linen.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/linen-cream.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.06,
+      "y": 0.08,
+      "w": 0.435,
+      "h": 0.405,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.505,
+      "y": 0.08,
+      "w": 0.435,
+      "h": 0.405,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.06,
+      "y": 0.515,
+      "w": 0.435,
+      "h": 0.405,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.505,
+      "y": 0.515,
+      "w": 0.435,
+      "h": 0.405,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-feature-trio",
+   "name": "One large, two small with words",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "feature",
+    "collage",
+    "caption"
+   ],
+   "thumb": "/assets/library/designs/page-feature-trio.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-cotton-white.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.05,
+      "y": 0.07,
+      "w": 0.56,
+      "h": 0.86,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.64,
+      "y": 0.07,
+      "w": 0.31,
+      "h": 0.38,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.64,
+      "y": 0.48,
+      "w": 0.31,
+      "h": 0.3,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.64,
+      "y": 0.8,
+      "w": 0.31,
+      "h": 0.12,
+      "text": "Little things we never want to forget",
+      "font": "cormorant",
+      "size": 3.4,
+      "color": "#4A4038",
+      "align": "left",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-circles-mandala",
+   "name": "Three circles on a mandala",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "mehendi",
+    "sangeet"
+   ],
+   "tags": [
+    "circle",
+    "mandala",
+    "trio"
+   ],
+   "thumb": "/assets/library/designs/page-circles-mandala.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/silk-maroon.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.1333,
+      "y": -0.05,
+      "w": 0.7333,
+      "h": 1.1,
+      "src": "/assets/library/art/mandala-jaali.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.18
+     },
+     {
+      "type": "photo",
+      "x": 0.06,
+      "y": 0.32,
+      "w": 0.24,
+      "h": 0.36,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.4,
+       "color": "#D9B66A"
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.3467,
+      "y": 0.27,
+      "w": 0.3067,
+      "h": 0.46,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.5,
+       "color": "#D9B66A"
+      },
+      "shadow": "strong"
+     },
+     {
+      "type": "photo",
+      "x": 0.7,
+      "y": 0.32,
+      "w": 0.24,
+      "h": 0.36,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.4,
+       "color": "#D9B66A"
+      }
+     },
+     {
+      "type": "text",
+      "x": 0.2,
+      "y": 0.82,
+      "w": 0.6,
+      "h": 0.08,
+      "text": "Seven vows, one promise",
+      "font": "cormorant",
+      "size": 3.6,
+      "color": "#F0DDB0",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-arch-trio",
+   "name": "Three arches",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "pre-wedding",
+    "any"
+   ],
+   "tags": [
+    "arch",
+    "trio",
+    "ivory",
+    "botanical"
+   ],
+   "thumb": "/assets/library/designs/page-arch-trio.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/raw-silk-ivory.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.14,
+      "w": 0.25,
+      "h": 0.64,
+      "m": null,
+      "shape": "arch"
+     },
+     {
+      "type": "photo",
+      "x": 0.375,
+      "y": 0.08,
+      "w": 0.25,
+      "h": 0.7,
+      "m": null,
+      "shape": "arch"
+     },
+     {
+      "type": "photo",
+      "x": 0.67,
+      "y": 0.14,
+      "w": 0.25,
+      "h": 0.64,
+      "m": null,
+      "shape": "arch"
+     },
+     {
+      "type": "art",
+      "x": 0.3,
+      "y": 0.83,
+      "w": 0.4,
+      "h": 0.08,
+      "src": "/assets/library/art/divider-vine.svg",
+      "tint": "#8A7A55"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-torn-story",
+   "name": "Torn paper story",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "torn paper",
+    "story",
+    "caption"
+   ],
+   "thumb": "/assets/library/designs/page-torn-story.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "color",
+     "color": "#FBF8F2"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 1,
+      "h": 0.66,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.56,
+      "w": 1,
+      "h": 0.15,
+      "src": "/assets/library/art/torn-edge.svg",
+      "tint": "#FBF8F2"
+     },
+     {
+      "type": "text",
+      "x": 0.08,
+      "y": 0.72,
+      "w": 0.84,
+      "h": 0.1,
+      "text": "",
+      "font": "playfair",
+      "size": 6,
+      "color": "#3E352E",
+      "align": "center",
+      "role": "section",
+      "italic": true
+     },
+     {
+      "type": "text",
+      "x": 0.15,
+      "y": 0.83,
+      "w": 0.7,
+      "h": 0.08,
+      "text": "Write a few lines about this day",
+      "font": "cormorant",
+      "size": 3.2,
+      "color": "#6E6255",
+      "align": "center",
+      "role": "caption"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-pearl-pair",
+   "name": "Two portraits in pearls",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "anniversary"
+   ],
+   "tags": [
+    "portrait",
+    "pearl",
+    "pair",
+    "classic"
+   ],
+   "thumb": "/assets/library/designs/page-pearl-pair.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/onyx-ivory.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.157,
+      "y": 0.1818,
+      "w": 0.296,
+      "h": 0.6364,
+      "m": null,
+      "shape": "circle"
+     },
+     {
+      "type": "art",
+      "x": 0.12,
+      "y": 0.13,
+      "w": 0.37,
+      "h": 0.74,
+      "src": "/assets/library/art/frame-oval-pearl.svg",
+      "tint": "#B8955A"
+     },
+     {
+      "type": "photo",
+      "x": 0.547,
+      "y": 0.1818,
+      "w": 0.296,
+      "h": 0.6364,
+      "m": null,
+      "shape": "circle"
+     },
+     {
+      "type": "art",
+      "x": 0.51,
+      "y": 0.13,
+      "w": 0.37,
+      "h": 0.74,
+      "src": "/assets/library/art/frame-oval-pearl.svg",
+      "tint": "#B8955A"
+     },
+     {
+      "type": "art",
+      "x": 0.4286,
+      "y": 0.42,
+      "w": 0.1427,
+      "h": 0.14,
+      "src": "/assets/library/art/love-birds.svg",
+      "tint": "#9C7A3C"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-thank-you",
+   "name": "Thank you",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "thank you",
+    "closing",
+    "monogram"
+   ],
+   "thumb": "/assets/library/designs/page-thank-you.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-deckle-cream.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.12,
+      "w": 0.42,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.8,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.67,
+      "y": 0.18,
+      "w": 0.12,
+      "h": 0.18,
+      "src": "/assets/library/art/monogram-ring.svg",
+      "tint": "#9C7A3C"
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.42,
+      "w": 0.36,
+      "h": 0.16,
+      "text": "Thank you",
+      "font": "greatvibes",
+      "size": 9,
+      "color": "#5B3B14",
+      "align": "center"
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.58,
+      "w": 0.36,
+      "h": 0.14,
+      "text": "for being part of our story",
+      "font": "cormorant",
+      "size": 3.4,
+      "color": "#7A5E3A",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.74,
+      "w": 0.36,
+      "h": 0.06,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.9,
+      "color": "#8A6A3A",
+      "align": "center",
+      "role": "names",
+      "spacing": 0.3,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-family-six",
+   "name": "Family six",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "family",
+    "grid",
+    "title"
+   ],
+   "thumb": "/assets/library/designs/page-family-six.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-cotton-white.jpg"
+    },
+    "els": [
+     {
+      "type": "text",
+      "x": 0.05,
+      "y": 0.05,
+      "w": 0.9,
+      "h": 0.1,
+      "text": "",
+      "font": "playfair",
+      "size": 5.5,
+      "color": "#3E352E",
+      "align": "center",
+      "role": "section",
+      "italic": true
+     },
+     {
+      "type": "photo",
+      "x": 0.05,
+      "y": 0.18,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.05,
+      "y": 0.57,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.357,
+      "y": 0.18,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.357,
+      "y": 0.57,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.664,
+      "y": 0.18,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.664,
+      "y": 0.57,
+      "w": 0.29,
+      "h": 0.37,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-details-five",
+   "name": "Details mosaic",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "mehendi"
+   ],
+   "tags": [
+    "details",
+    "mosaic",
+    "grid"
+   ],
+   "thumb": "/assets/library/designs/page-details-five.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/marble-white.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.06,
+      "w": 0.48,
+      "h": 0.88,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.54,
+      "y": 0.06,
+      "w": 0.205,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.775,
+      "y": 0.06,
+      "w": 0.205,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.54,
+      "y": 0.51,
+      "w": 0.205,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.775,
+      "y": 0.51,
+      "w": 0.205,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-heart-letter",
+   "name": "Love letter",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "anniversary",
+    "engagement",
+    "pre-wedding"
+   ],
+   "tags": [
+    "heart",
+    "romance",
+    "words"
+   ],
+   "thumb": "/assets/library/designs/page-heart-letter.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/watercolour-blush.jpg"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.12,
+      "w": 0.5573,
+      "h": 0.76,
+      "m": null,
+      "shape": "heart"
+     },
+     {
+      "type": "text",
+      "x": 0.58,
+      "y": 0.28,
+      "w": 0.36,
+      "h": 0.12,
+      "text": "Always",
+      "font": "greatvibes",
+      "size": 9,
+      "color": "#9C3550",
+      "align": "center"
+     },
+     {
+      "type": "text",
+      "x": 0.58,
+      "y": 0.42,
+      "w": 0.36,
+      "h": 0.3,
+      "text": "You are my today and all of my tomorrows.",
+      "font": "cormorant",
+      "size": 4,
+      "color": "#6E3A48",
+      "align": "center",
+      "role": "caption",
+      "italic": true,
+      "line": 1.3
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-gold-mat",
+   "name": "Gold leaf mat",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "wedding",
+    "reception",
+    "anniversary"
+   ],
+   "tags": [
+    "gold",
+    "framed",
+    "luxury"
+   ],
+   "thumb": "/assets/library/designs/page-gold-mat.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/gold-leaf.jpg"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.12,
+      "y": 0.1,
+      "w": 0.76,
+      "h": 0.8,
+      "shape": "rect",
+      "fill": "#FFFDF6"
+     },
+     {
+      "type": "photo",
+      "x": 0.14,
+      "y": 0.13,
+      "w": 0.72,
+      "h": 0.74,
+      "m": null,
+      "shape": "rect",
+      "shadow": "soft"
+     },
+     {
+      "type": "art",
+      "x": 0.0333,
+      "y": 0.05,
+      "w": 0.0933,
+      "h": 0.14,
+      "src": "/assets/library/art/corner-line.svg",
+      "tint": "#7A5A22"
+     },
+     {
+      "type": "art",
+      "x": 0.8733,
+      "y": 0.05,
+      "w": 0.0933,
+      "h": 0.14,
+      "src": "/assets/library/art/corner-line.svg",
+      "tint": "#7A5A22",
+      "flipX": true
+     },
+     {
+      "type": "art",
+      "x": 0.0333,
+      "y": 0.81,
+      "w": 0.0933,
+      "h": 0.14,
+      "src": "/assets/library/art/corner-line.svg",
+      "tint": "#7A5A22",
+      "flipY": true
+     },
+     {
+      "type": "art",
+      "x": 0.8733,
+      "y": 0.81,
+      "w": 0.0933,
+      "h": 0.14,
+      "src": "/assets/library/art/corner-line.svg",
+      "tint": "#7A5A22",
+      "flipX": true,
+      "flipY": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "page-baby-stars",
+   "name": "Baby stars",
+   "kind": "page",
+   "ratio": 1.5,
+   "occasions": [
+    "baby",
+    "baby-shower",
+    "birthday",
+    "naming"
+   ],
+   "tags": [
+    "baby",
+    "stars",
+    "pattern",
+    "playful"
+   ],
+   "thumb": "/assets/library/designs/page-baby-stars.jpg",
+   "page": {
+    "v": 2,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/patterns/stars-moons--gold.svg",
+     "repeat": true,
+     "scale": 12,
+     "color": "#2F3B63"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.1,
+      "y": 0.12,
+      "w": 0.38,
+      "h": 0.76,
+      "m": null,
+      "shape": "rounded",
+      "radius": 0.06,
+      "border": {
+       "w": 0.7,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "type": "art",
+      "x": 0.56,
+      "y": 0.18,
+      "w": 0.1829,
+      "h": 0.16,
+      "src": "/assets/library/art/cloud.svg",
+      "tint": "#FFFFFF",
+      "opacity": 0.9
+     },
+     {
+      "type": "text",
+      "x": 0.54,
+      "y": 0.4,
+      "w": 0.4,
+      "h": 0.16,
+      "text": "Little star",
+      "font": "parisienne",
+      "size": 8,
+      "color": "#FFE9B0",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.54,
+      "y": 0.58,
+      "w": 0.4,
+      "h": 0.1,
+      "text": "Ten tiny fingers, ten tiny toes",
+      "font": "cormorant",
+      "size": 3.2,
+      "color": "#D6DEF2",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "spread-panorama-title",
+   "name": "Panorama with title",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "panorama",
+    "full bleed"
+   ],
+   "thumb": "/assets/library/designs/spread-panorama-title.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#1A1416"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 1,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0,
+      "y": 0.6,
+      "w": 0.5,
+      "h": 0.4,
+      "src": "/assets/library/art/fade-bottom.svg",
+      "tint": "#140F10",
+      "opacity": 0.8
+     },
+     {
+      "type": "text",
+      "x": 0.04,
+      "y": 0.78,
+      "w": 0.4,
+      "h": 0.14,
+      "text": "",
+      "font": "playfair",
+      "size": 7,
+      "color": "#FFFFFF",
+      "align": "left",
+      "role": "section",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "spread-feature-grid",
+   "name": "Feature and four",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "feature",
+    "grid"
+   ],
+   "thumb": "/assets/library/designs/spread-feature-grid.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#FBF8F2"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.06,
+      "w": 0.215,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.755,
+      "y": 0.06,
+      "w": 0.215,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.51,
+      "w": 0.215,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.755,
+      "y": 0.51,
+      "w": 0.215,
+      "h": 0.43,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-hero-fade-grid",
+   "name": "Hero fade and six",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "hero",
+    "fade",
+    "grid",
+    "ivory"
+   ],
+   "thumb": "/assets/library/designs/studio-hero-fade-grid.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#F7F3EE"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.36,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0.27,
+      "y": 0,
+      "w": 0.1,
+      "h": 1,
+      "src": "/assets/library/art/fade-left.svg",
+      "tint": "#F7F3EE",
+      "flipX": true
+     },
+     {
+      "type": "text",
+      "x": 0.37,
+      "y": 0.08,
+      "w": 0.12,
+      "h": 0.12,
+      "text": "",
+      "font": "greatvibes",
+      "size": 6,
+      "color": "#7A6650",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.37,
+      "y": 0.2,
+      "w": 0.12,
+      "h": 0.06,
+      "text": "a day to remember",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#8E8070",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "photo",
+      "x": 0.535,
+      "y": 0.1,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.6777,
+      "y": 0.1,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.8203,
+      "y": 0.1,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.535,
+      "y": 0.504,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.6777,
+      "y": 0.504,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.8203,
+      "y": 0.504,
+      "w": 0.1347,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-sage-grid-hero",
+   "name": "Sage grid and hero",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "sage",
+    "grid",
+    "hero",
+    "fade"
+   ],
+   "thumb": "/assets/library/designs/studio-sage-grid-hero.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#A7AE95"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.02,
+      "y": 0.05,
+      "w": 0.46,
+      "h": 0.9,
+      "shape": "rect",
+      "stroke": "#FFFFFF",
+      "strokeW": 0.15
+     },
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.1,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.254,
+      "y": 0.1,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.254,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.62,
+      "y": 0,
+      "w": 0.38,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0.6,
+      "y": 0,
+      "w": 0.12,
+      "h": 1,
+      "src": "/assets/library/art/fade-left.svg",
+      "tint": "#A7AE95"
+     },
+     {
+      "type": "text",
+      "x": 0.5,
+      "y": 0.36,
+      "w": 0.11,
+      "h": 0.14,
+      "text": "Better together",
+      "font": "greatvibes",
+      "size": 5.2,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "section",
+      "line": 1
+     },
+     {
+      "type": "text",
+      "x": 0.5,
+      "y": 0.52,
+      "w": 0.11,
+      "h": 0.08,
+      "text": "two hearts, one story",
+      "font": "cormorant",
+      "size": 2.2,
+      "color": "#F1F1E6",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-mauve-dense",
+   "name": "Mauve dense grid",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "mauve",
+    "grid",
+    "dense",
+    "vertical title"
+   ],
+   "thumb": "/assets/library/designs/studio-mauve-dense.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#C9A9B7"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.015,
+      "y": 0.045,
+      "w": 0.97,
+      "h": 0.91,
+      "shape": "rect",
+      "stroke": "#FFFFFF",
+      "strokeW": 0.15
+     },
+     {
+      "type": "photo",
+      "x": 0.06,
+      "y": 0.09,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.2735,
+      "y": 0.09,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.06,
+      "y": 0.5035,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.2735,
+      "y": 0.5035,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.52,
+      "y": 0.09,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.7335,
+      "y": 0.09,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.52,
+      "y": 0.5035,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.7335,
+      "y": 0.5035,
+      "w": 0.2065,
+      "h": 0.4065,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": -0.03,
+      "y": 0.46,
+      "w": 0.12,
+      "h": 0.08,
+      "text": "Moments",
+      "font": "greatvibes",
+      "size": 4.8,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "section",
+      "rot": -90
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-plum-memories",
+   "name": "Plum sweet memories",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "reception",
+    "sangeet"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "plum",
+    "grid",
+    "title",
+    "gold"
+   ],
+   "thumb": "/assets/library/designs/studio-plum-memories.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#5E2B4F"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.03,
+      "y": 0.08,
+      "w": 0.1515,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.1885,
+      "y": 0.08,
+      "w": 0.1515,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.03,
+      "y": 0.5035,
+      "w": 0.1515,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.1885,
+      "y": 0.5035,
+      "w": 0.1515,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.36,
+      "y": 0.08,
+      "w": 0.12,
+      "h": 0.84,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.52,
+      "y": 0.08,
+      "w": 0.2,
+      "h": 0.14,
+      "text": "Sweet Memories",
+      "font": "greatvibes",
+      "size": 6,
+      "color": "#D9B66A",
+      "align": "left",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.52,
+      "y": 0.22,
+      "w": 0.2,
+      "h": 0.06,
+      "text": "moments we will cherish forever",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#E7CFE0",
+      "align": "left",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "photo",
+      "x": 0.52,
+      "y": 0.32,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.6723,
+      "y": 0.32,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.8247,
+      "y": 0.32,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.52,
+      "y": 0.6235,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.6723,
+      "y": 0.6235,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.8247,
+      "y": 0.6235,
+      "w": 0.1453,
+      "h": 0.2965,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-olive-block",
+   "name": "Olive colour block",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "olive",
+    "colour block",
+    "overlap"
+   ],
+   "thumb": "/assets/library/designs/studio-olive-block.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#F7F3EE"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0,
+      "y": 0,
+      "w": 0.2,
+      "h": 1,
+      "shape": "rect",
+      "fill": "#8B8B3E"
+     },
+     {
+      "type": "photo",
+      "x": 0.07,
+      "y": 0.12,
+      "w": 0.2,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.3,
+      "y": 0.12,
+      "w": 0.17,
+      "h": 0.36,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.3,
+      "y": 0.52,
+      "w": 0.17,
+      "h": 0.36,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.08,
+      "w": 0.27,
+      "h": 0.84,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.83,
+      "y": 0.3,
+      "w": 0.15,
+      "h": 0.14,
+      "text": "Engagement Ceremony",
+      "font": "cormorant",
+      "size": 4.2,
+      "color": "#5C5C28",
+      "align": "left",
+      "role": "section",
+      "italic": true,
+      "line": 1.05
+     },
+     {
+      "type": "shape",
+      "x": 0.83,
+      "y": 0.47,
+      "w": 0.05,
+      "h": 0.01,
+      "shape": "line",
+      "stroke": "#8B8B3E",
+      "strokeW": 0.3
+     },
+     {
+      "type": "text",
+      "x": 0.83,
+      "y": 0.49,
+      "w": 0.14,
+      "h": 0.12,
+      "text": "the day we said yes",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#7A7A4A",
+      "align": "left",
+      "role": "caption"
+     },
+     {
+      "type": "photo",
+      "x": 0.83,
+      "y": 0.64,
+      "w": 0.13,
+      "h": 0.28,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-mustard-steps",
+   "name": "Mustard steps",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "haldi",
+    "mehendi",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "mustard",
+    "colour block",
+    "haldi"
+   ],
+   "thumb": "/assets/library/designs/studio-mustard-steps.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#FFFDF7"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.62,
+      "y": 0,
+      "w": 0.38,
+      "h": 1,
+      "shape": "rect",
+      "fill": "#E9B92F"
+     },
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.1,
+      "w": 0.27,
+      "h": 0.8,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.33,
+      "y": 0.1,
+      "w": 0.14,
+      "h": 0.38,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.33,
+      "y": 0.52,
+      "w": 0.14,
+      "h": 0.38,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.54,
+      "y": 0.14,
+      "w": 0.2,
+      "h": 0.72,
+      "m": null,
+      "shape": "rect",
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.77,
+      "y": 0.14,
+      "w": 0.2,
+      "h": 0.34,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.77,
+      "y": 0.52,
+      "w": 0.2,
+      "h": 0.34,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.5,
+      "y": 0.88,
+      "w": 0.12,
+      "h": 0.08,
+      "text": "Haldi",
+      "font": "greatvibes",
+      "size": 5,
+      "color": "#8A6410",
+      "align": "center",
+      "role": "section"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-bw-ghost",
+   "name": "Faded portrait behind",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "pre-wedding",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "black and white",
+    "faded",
+    "portrait",
+    "grid"
+   ],
+   "thumb": "/assets/library/designs/studio-bw-ghost.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#F5F1EA"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect",
+      "opacity": 0.35,
+      "filter": {
+       "grayscale": 1
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.23,
+      "y": 0.18,
+      "w": 0.12,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.36,
+      "y": 0.3,
+      "w": 0.11,
+      "h": 0.5,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.1,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.744,
+      "y": 0.1,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.744,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.396,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.03,
+      "y": 0.82,
+      "w": 0.18,
+      "h": 0.1,
+      "text": "Most Beautiful Day",
+      "font": "greatvibes",
+      "size": 4.6,
+      "color": "#3E3A34",
+      "align": "left",
+      "role": "section"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-blush-arches",
+   "name": "Blush arches and print",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "blush",
+    "arch",
+    "polaroid",
+    "border"
+   ],
+   "thumb": "/assets/library/designs/studio-blush-arches.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#EED7D3"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.4,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.19,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.4,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.34,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.4,
+       "color": "#FFFFFF"
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.56,
+      "y": 0.1,
+      "w": 0.17,
+      "h": 0.8,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -3,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.76,
+      "y": 0.08,
+      "w": 0.2,
+      "h": 0.5,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.76,
+      "y": 0.62,
+      "w": 0.2,
+      "h": 0.12,
+      "text": "Forever starts here",
+      "font": "parisienne",
+      "size": 4.6,
+      "color": "#8C4A55",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "art",
+      "x": 0.92,
+      "y": 0.66,
+      "w": 0.05,
+      "h": 0.3,
+      "src": "/assets/library/art/sprig-olive.svg",
+      "tint": "#A27A80",
+      "rot": 30
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-torn-haldi",
+   "name": "Torn paper title",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "haldi",
+    "mehendi",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "torn paper",
+    "title",
+    "white"
+   ],
+   "thumb": "/assets/library/designs/studio-torn-haldi.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#FFFFFF"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.5,
+      "y": 0,
+      "w": 0.5,
+      "h": 0.58,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0.5,
+      "y": 0.5,
+      "w": 0.5,
+      "h": 0.15,
+      "src": "/assets/library/art/torn-edge.svg",
+      "tint": "#FFFFFF"
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.66,
+      "w": 0.4,
+      "h": 0.14,
+      "text": "Haldi",
+      "font": "greatvibes",
+      "size": 8,
+      "color": "#B07A10",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.58,
+      "y": 0.8,
+      "w": 0.34,
+      "h": 0.08,
+      "text": "colours of love and turmeric",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#7A6650",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "art",
+      "x": 0.93,
+      "y": 0.66,
+      "w": 0.0544,
+      "h": 0.28,
+      "src": "/assets/library/art/sprig-berries.svg",
+      "tint": "#C9A227"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-slate-vertical",
+   "name": "Slate with vertical title",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "reception",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "slate",
+    "blue",
+    "grid",
+    "vertical title"
+   ],
+   "thumb": "/assets/library/designs/studio-slate-vertical.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#2F4A6B"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.08,
+      "w": 0.206,
+      "h": 0.416,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.254,
+      "y": 0.08,
+      "w": 0.206,
+      "h": 0.416,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.416,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.254,
+      "y": 0.504,
+      "w": 0.206,
+      "h": 0.416,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.54,
+      "y": 0.08,
+      "w": 0.36,
+      "h": 0.84,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.895,
+      "y": 0.46,
+      "w": 0.12,
+      "h": 0.08,
+      "text": "Better together",
+      "font": "greatvibes",
+      "size": 4.4,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "section",
+      "rot": -90
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-ivory-portraits",
+   "name": "Ivory portraits and sprigs",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "engagement",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "ivory",
+    "botanical",
+    "portrait",
+    "border"
+   ],
+   "thumb": "/assets/library/designs/studio-ivory-portraits.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "image",
+     "src": "/assets/library/backgrounds/paper-cotton-white.jpg"
+    },
+    "els": [
+     {
+      "type": "art",
+      "x": 0.01,
+      "y": 0.6,
+      "w": 0.0778,
+      "h": 0.4,
+      "src": "/assets/library/art/sprig-eucalyptus.svg",
+      "tint": "#8C9B82",
+      "rot": -20
+     },
+     {
+      "type": "photo",
+      "x": 0.1,
+      "y": 0.1,
+      "w": 0.17,
+      "h": 0.8,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.3,
+      "y": 0.18,
+      "w": 0.17,
+      "h": 0.64,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.55,
+      "y": 0.36,
+      "w": 0.38,
+      "h": 0.16,
+      "text": "Most Beautiful Day",
+      "font": "greatvibes",
+      "size": 6,
+      "color": "#4A4038",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "shape",
+      "x": 0.69,
+      "y": 0.54,
+      "w": 0.1,
+      "h": 0.01,
+      "shape": "line",
+      "stroke": "#B8A07A",
+      "strokeW": 0.2
+     },
+     {
+      "type": "text",
+      "x": 0.58,
+      "y": 0.57,
+      "w": 0.32,
+      "h": 0.08,
+      "text": "the beginning of forever",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#7A6A58",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "art",
+      "x": 0.725,
+      "y": 0.22,
+      "w": 0.02,
+      "h": 0.06,
+      "src": "/assets/library/art/monogram-dot.svg",
+      "tint": "#B8A07A"
+     },
+     {
+      "type": "art",
+      "x": 0.93,
+      "y": 0.04,
+      "w": 0.07,
+      "h": 0.36,
+      "src": "/assets/library/art/sprig-fern.svg",
+      "tint": "#9AA58A",
+      "rot": 160
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-opener-monogram",
+   "name": "Section opener with monogram",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "engagement",
+    "wedding",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "opener",
+    "monogram",
+    "minimal"
+   ],
+   "thumb": "/assets/library/designs/studio-opener-monogram.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#F7F3EE"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "art",
+      "x": 0.7233,
+      "y": 0.22,
+      "w": 0.0533,
+      "h": 0.16,
+      "src": "/assets/library/art/monogram-ring.svg",
+      "tint": "#A08A64"
+     },
+     {
+      "type": "text",
+      "x": 0.58,
+      "y": 0.42,
+      "w": 0.34,
+      "h": 0.14,
+      "text": "Engagement Ceremony",
+      "font": "cormorant",
+      "size": 5.4,
+      "color": "#3E352E",
+      "align": "center",
+      "role": "section",
+      "italic": true
+     },
+     {
+      "type": "text",
+      "x": 0.6,
+      "y": 0.57,
+      "w": 0.3,
+      "h": 0.06,
+      "text": "",
+      "font": "montserrat",
+      "size": 1.8,
+      "color": "#8A7A64",
+      "align": "center",
+      "role": "date",
+      "spacing": 0.35,
+      "upper": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-mauve-stack-hero",
+   "name": "Mauve stack and hero",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "mauve",
+    "hero",
+    "stack"
+   ],
+   "thumb": "/assets/library/designs/studio-mauve-stack-hero.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#C9A9B7"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.08,
+      "w": 0.36,
+      "h": 0.26,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.37,
+      "w": 0.36,
+      "h": 0.26,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.08,
+      "y": 0.66,
+      "w": 0.36,
+      "h": 0.26,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": -0.035,
+      "y": 0.47,
+      "w": 0.14,
+      "h": 0.06,
+      "text": "our favourite frames",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "caption",
+      "italic": true,
+      "rot": -90
+     },
+     {
+      "type": "photo",
+      "x": 0.5,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-sage-polaroids",
+   "name": "Sage prints",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any",
+    "pre-wedding"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "sage",
+    "polaroid",
+    "scatter",
+    "playful"
+   ],
+   "thumb": "/assets/library/designs/studio-sage-polaroids.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#A7AE95"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.16,
+      "w": 0.14,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -6,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.19,
+      "y": 0.22,
+      "w": 0.14,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": 4,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.34,
+      "y": 0.12,
+      "w": 0.14,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -2,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.18,
+      "w": 0.14,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": 5,
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.68,
+      "y": 0.12,
+      "w": 0.14,
+      "h": 0.62,
+      "m": null,
+      "shape": "rect",
+      "frame": "polaroid",
+      "rot": -4,
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.83,
+      "y": 0.36,
+      "w": 0.15,
+      "h": 0.14,
+      "text": "Moments",
+      "font": "greatvibes",
+      "size": 6,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.83,
+      "y": 0.5,
+      "w": 0.15,
+      "h": 0.08,
+      "text": "little pieces of us",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#F1F1E6",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-plum-circles",
+   "name": "Plum circles",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "sangeet",
+    "reception"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "plum",
+    "circle",
+    "gold",
+    "leaves"
+   ],
+   "thumb": "/assets/library/designs/studio-plum-circles.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#5E2B4F"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0.15,
+      "y": 0.2,
+      "w": 0.2,
+      "h": 0.6,
+      "m": null,
+      "shape": "circle",
+      "border": {
+       "w": 0.4,
+       "color": "#D9B66A"
+      }
+     },
+     {
+      "type": "art",
+      "x": 0.12,
+      "y": 0.11,
+      "w": 0.26,
+      "h": 0.78,
+      "src": "/assets/library/art/frame-wreath.svg",
+      "tint": "#D9B66A",
+      "opacity": 0.85
+     },
+     {
+      "type": "photo",
+      "x": 0.55,
+      "y": 0.12,
+      "w": 0.2,
+      "h": 0.375,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.55,
+      "y": 0.505,
+      "w": 0.2,
+      "h": 0.375,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.78,
+      "y": 0.3,
+      "w": 0.19,
+      "h": 0.16,
+      "text": "Sweet Memories",
+      "font": "greatvibes",
+      "size": 5.4,
+      "color": "#D9B66A",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.78,
+      "y": 0.47,
+      "w": 0.19,
+      "h": 0.1,
+      "text": "the night we danced till dawn",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#E7CFE0",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "photo",
+      "x": 0.8,
+      "y": 0.6,
+      "w": 0.15,
+      "h": 0.28,
+      "m": null,
+      "shape": "rect"
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-blush-dense-label",
+   "name": "Blush grid with label",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "haldi",
+    "mehendi",
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "blush",
+    "grid",
+    "dense",
+    "label"
+   ],
+   "thumb": "/assets/library/designs/studio-blush-dense-label.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#EED7D3"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0.012,
+      "y": 0.04,
+      "w": 0.976,
+      "h": 0.92,
+      "shape": "rect",
+      "stroke": "#FFFFFF",
+      "strokeW": 0.15
+     },
+     {
+      "type": "photo",
+      "x": 0.03,
+      "y": 0.08,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.2535,
+      "y": 0.08,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.03,
+      "y": 0.5035,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.2535,
+      "y": 0.5035,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.08,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.7535,
+      "y": 0.08,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.5035,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.7535,
+      "y": 0.5035,
+      "w": 0.2165,
+      "h": 0.4165,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "shape",
+      "x": 0.425,
+      "y": 0.42,
+      "w": 0.15,
+      "h": 0.16,
+      "shape": "rect",
+      "fill": "#FFFFFF"
+     },
+     {
+      "type": "text",
+      "x": 0.425,
+      "y": 0.42,
+      "w": 0.15,
+      "h": 0.11,
+      "text": "Haldi",
+      "font": "greatvibes",
+      "size": 5,
+      "color": "#9C6B4A",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.425,
+      "y": 0.51,
+      "w": 0.15,
+      "h": 0.06,
+      "text": "the yellow day",
+      "font": "cormorant",
+      "size": 2,
+      "color": "#9C8A7A",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-olive-ghost",
+   "name": "Olive with faded portrait",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "wedding",
+    "pre-wedding"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "olive",
+    "faded",
+    "portrait",
+    "arch"
+   ],
+   "thumb": "/assets/library/designs/studio-olive-ghost.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#8B8B3E"
+    },
+    "els": [
+     {
+      "type": "photo",
+      "x": 0,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "m": null,
+      "shape": "rect",
+      "opacity": 0.4,
+      "filter": {
+       "grayscale": 1
+      }
+     },
+     {
+      "type": "photo",
+      "x": 0.17,
+      "y": 0.14,
+      "w": 0.16,
+      "h": 0.72,
+      "m": null,
+      "shape": "arch",
+      "border": {
+       "w": 0.5,
+       "color": "#F3EFD8"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "shape",
+      "x": 0.5,
+      "y": 0,
+      "w": 0.5,
+      "h": 1,
+      "shape": "rect",
+      "fill": "#F3EFDF"
+     },
+     {
+      "type": "photo",
+      "x": 0.55,
+      "y": 0.1,
+      "w": 0.19,
+      "h": 0.8,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "photo",
+      "x": 0.76,
+      "y": 0.1,
+      "w": 0.19,
+      "h": 0.38,
+      "m": null,
+      "shape": "rect"
+     },
+     {
+      "type": "text",
+      "x": 0.76,
+      "y": 0.54,
+      "w": 0.19,
+      "h": 0.14,
+      "text": "Better together",
+      "font": "greatvibes",
+      "size": 5,
+      "color": "#5C5C28",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.76,
+      "y": 0.68,
+      "w": 0.19,
+      "h": 0.1,
+      "text": "today, tomorrow, always",
+      "font": "cormorant",
+      "size": 2.4,
+      "color": "#7A7A4A",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     }
+    ]
+   }
+  },
+  {
+   "key": "studio-slate-strip",
+   "name": "Slate portrait strip",
+   "kind": "page",
+   "ratio": 3,
+   "occasions": [
+    "any"
+   ],
+   "tags": [
+    "spread",
+    "studio-style",
+    "slate",
+    "strip",
+    "portraits"
+   ],
+   "thumb": "/assets/library/designs/studio-slate-strip.jpg",
+   "page": {
+    "v": 2,
+    "s": 1,
+    "bg": {
+     "type": "color",
+     "color": "#F7F3EE"
+    },
+    "els": [
+     {
+      "type": "shape",
+      "x": 0,
+      "y": 0.2,
+      "w": 1,
+      "h": 0.6,
+      "shape": "rect",
+      "fill": "#2F4A6B"
+     },
+     {
+      "type": "photo",
+      "x": 0.04,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.19,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.34,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.53,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "photo",
+      "x": 0.68,
+      "y": 0.12,
+      "w": 0.13,
+      "h": 0.76,
+      "m": null,
+      "shape": "rect",
+      "border": {
+       "w": 0.5,
+       "color": "#FFFFFF"
+      },
+      "shadow": "soft"
+     },
+     {
+      "type": "text",
+      "x": 0.82,
+      "y": 0.3,
+      "w": 0.16,
+      "h": 0.16,
+      "text": "Moments",
+      "font": "greatvibes",
+      "size": 6.5,
+      "color": "#FFFFFF",
+      "align": "center",
+      "role": "section"
+     },
+     {
+      "type": "text",
+      "x": 0.82,
+      "y": 0.48,
+      "w": 0.16,
+      "h": 0.08,
+      "text": "frame by frame",
+      "font": "cormorant",
+      "size": 2.6,
+      "color": "#D7E0EC",
+      "align": "center",
+      "role": "caption",
+      "italic": true
+     },
+     {
+      "type": "art",
+      "x": 0.84,
+      "y": 0.6,
+      "w": 0.12,
+      "h": 0.024,
+      "src": "/assets/library/art/divider-diamond.svg",
+      "tint": "#D7E0EC"
+     }
+    ]
+   }
+  }
+ ]
 }

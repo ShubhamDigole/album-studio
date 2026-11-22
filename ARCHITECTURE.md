@@ -91,7 +91,9 @@ New albums start with these defaults: `blankDraft()` in admin.js fills the form,
 7. **Music:** `assets/music/tracks.json` lists the built-in songs (CC BY 4.0, see `assets/music/LICENSES.md`); the album stores the chosen file path or the studio's own link in `music`. The viewer shows the required credit in "How to view".
 8. **Album pages:** `assets/js/page-templates.js` holds 21 built-in page designs as data (photo spots and text boxes in fractions of the page or spread), an HTML renderer (text sized in `cqh`, crops as focus point + zoom) and `autoLayout()`, which groups photos by section and picks designs whose spots fit the photos' shapes (seeded, so "Shuffle" gives new designs). The page editor (`assets/js/page-editor.js`, Album pages tab) saves `[{t, p:[{m, c}], tx, bg, s} | {gen, text}]` to `albums.composed` (`PUT /api/admin/albums/:id/pages`, migration 0005); these pages win over page images and the automatic layout (`composedPages()` in lib/layout.js). Crops use `assets/js/crop.js`, also used for cover photo spots (`design.crops`).
 9. **Page designs:** the master draws designs in `assets/js/template-designer.js` (`#templates`); they are stored in `page_templates` (`/api/admin/master/page-templates`), listed for studios by `GET /api/admin/page-templates`, and sent with each album that uses them (`pageTemplates` in the album JSON).
-10. **Publish:** guests open `/a/<id>` (the flipbook) or `/g/<id>` (the gallery).
+10. **Free-form pages (v: 2):** `{ v: 2, s?, bg, els }` pages of layers (photo, text, shape, art) with backgrounds (colour, gradient, library or uploaded image, blurred album photo). `renderFree()` in page-templates.js draws them (class `.pt-free`); `cleanFreePage()` in lib/pages.js validates every field (enums, ranges, ≤ 80 layers, image paths only from `/assets/library/` or this album's uploads, text keeps line breaks). The editor is `assets/js/free-editor.js` (a native modal `<dialog>`), used for album pages, covers (`design[part].page`, `PUT …/design {part, page}`) and master designs (`v: 2` in page_templates). Per-album backgrounds and ornaments upload as `kind=asset`. The design library is `assets/library/library.json` (backgrounds, patterns, art, fonts, designs).
+11. **Studios:** sign-up (`#signup`), master approval, then the setup wizard (`#welcome`, assets/js/onboarding.js) for profile, logo, colour and album defaults (migration 0006); guests see the studio's logo and contact card.
+12. **Publish:** guests open `/a/<id>` (the flipbook) or `/g/<id>` (the gallery).
 
 ### 3. A guest opens an album
 The open book shows thin page edges at its sides: `updateThickness()` in viewer.js puts the pages already read on the left and the rest on the right (a few pixels, more for bigger albums). The covers are drawn as they are. Phones held sideways get a one-row toolbar so the book gets the height.
@@ -134,6 +136,10 @@ Static build output under `/albums/<id>/` is served by Pages with long cache hea
 | `GET /api/admin/config` | owner, master | browser settings (the Google Drive API key) |
 | `GET /api/admin/master/studios`, `PATCH /api/admin/master/studios/:id` | master | every studio with its profile, logo, links and defaults; approve or switch off |
 
+## Front-end conventions
+
+Vanilla HTML/CSS/JS with no build step. Code is checked against Google's modern-web-guidance (`npx modern-web-guidance@latest legacy-scan`, run with `DISABLE_TELEMETRY=1`): native `<dialog>` for modals (`showModal()`, `closedby` with a pointer fallback), `popover` for menus, `replaceChildren()` to clear elements, `structuredClone()`, copying array methods, `Object.groupBy()`, and IME-safe Enter handling (`isComposing` / keyCode 229).
+
 ## Security
 
 - **Passwords:** PBKDF2-SHA256 with 100,000 iterations and a random salt. Sessions use an HMAC-SHA256 signed cookie (`HttpOnly`, `SameSite=Strict`, `Secure` on https).
@@ -169,7 +175,7 @@ R2 must be enabled once in the dashboard.
 
 ```
 node tools/cf.mjs d1 create album_db                        # paste database_id into wrangler.toml
-node tools/cf.mjs d1 execute album_db --remote --file=schema.sql
+node tools/cf.mjs d1 execute album_db --remote --file=schema.sql      # a new database; an existing one runs migrations/0004…0006 instead
 node tools/cf.mjs r2 bucket create album-media
 node tools/cf.mjs pages project create wedding-album --production-branch main
 node tools/cf.mjs pages secret put ALBUM_SECRET --project-name wedding-album      # also ADMIN_PASSWORD, MASTER_EMAIL
