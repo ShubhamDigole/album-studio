@@ -24,17 +24,11 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 .book-shadow { position: absolute; left: 3%; right: 3%; bottom: -22px; height: 36px; border-radius: 50%; background: radial-gradient(ellipse at center, rgba(0, 0, 0, .55), transparent 70%); filter: blur(8px); pointer-events: none; transition: left .9s var(--ease), right .9s var(--ease), opacity .3s; }
 :root[data-theme="light"] .book-shadow { background: radial-gradient(ellipse at center, rgba(15, 40, 40, .35), transparent 70%); }
 .book { position: relative; z-index: 2; }
-/* thickness: stacks of page edges and the hard cover board (drawn by updateThickness in viewer.js) */
-:root { --edge-a: #f4eee2; --edge-b: #d9cfbd; --edge-line: #9b8f7a; }
-.stack, .cover-rim { position: absolute; top: 0; pointer-events: none; }
-.stack { z-index: 1; background: transparent; border-radius: 1px; transition: box-shadow .7s var(--ease); }
-.stack.left { border-radius: 2px 0 0 2px; }
-.stack.right { border-radius: 0 2px 2px 0; }
-.cover-rim { z-index: 0; border-radius: 5px; background: linear-gradient(160deg, color-mix(in srgb, var(--silk, #0F3D3E) 88%, #fff), color-mix(in srgb, var(--silk, #0F3D3E) 70%, #000));
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .12) inset, 0 14px 30px rgba(0, 0, 0, .35); transition: left .7s var(--ease), width .7s var(--ease), height .7s var(--ease); }
-.cover-rim.portrait { border-radius: 0 5px 5px 0; }
-.stack.no-anim, .cover-rim.no-anim { transition: none; }
-@media (prefers-reduced-motion: reduce) { .stack, .cover-rim { transition: none; } }
+/* page edges beside the open album (drawn by updateThickness in viewer.js) */
+:root { --edge-a: #f2ebde; --edge-b: #d6cbb6; --edge-line: #a39780; }
+.stack { position: absolute; top: 0; z-index: 1; pointer-events: none; background: transparent; transition: box-shadow .7s var(--ease); }
+.stack.no-anim { transition: none; }
+@media (prefers-reduced-motion: reduce) { .stack { transition: none; } }
 .book .stf__wrapper { position: relative; width: 100%; height: 100%; }
 .book.is-hidden { visibility: hidden; }
 

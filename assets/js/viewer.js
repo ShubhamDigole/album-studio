@@ -85,7 +85,7 @@
     const small = r.width < 720 || short;
     const padX = small ? 10 : 84;   // leave room for the side arrows
     const padY = short ? 8 : small ? 14 : 36;
-    const edge = small ? 12 : 30;      // the page edges and the cover board show around the pages (see updateThickness)
+    const edge = small ? 4 : 10;       // the page edges show beside the pages (see updateThickness)
     const aw = Math.max(120, r.width - padX * 2 - edge * 2);
     const ah = Math.max(80, r.height - padY * 2 - edge);
     const ratio = S.album.pageWidth / S.album.pageHeight;
@@ -205,10 +205,8 @@
 
     if (!S.stacks) {
       // behind the pages: the hard cover board, then the stacks of page edges on each side
-      S.rim = document.createElement('div');
-      S.rim.className = 'cover-rim';
       S.stacks = ['left', 'right'].map((side) => { const d = document.createElement('div'); d.className = 'stack ' + side; return d; });
-      [S.rim, ...S.stacks].forEach((d) => { d.setAttribute('aria-hidden', 'true'); el.shift.insertBefore(d, el.shadow.nextSibling); });
+      S.stacks.forEach((d) => { d.setAttribute('aria-hidden', 'true'); el.shift.insertBefore(d, el.shadow.nextSibling); });
     }
     const book = document.createElement('div');
     book.className = 'book';
@@ -254,44 +252,29 @@
     updateUI();
   }
 
-  /* A real album is thick: the pages already read pile up on the left, the rest on the right.
-     Each pile is drawn as layered box-shadows (page edges seen slightly from above), and the hard
-     cover board shows a few millimetres around the pages when the album is open. */
+  /* Page edges at the sides of the open album: the pages already read on the left, the rest on the right.
+     Thin layered lines (box-shadows straight out to the side); the covers stay as they are. */
   function stackShadow(t, dir) {
-    const N = 14, out = [];
+    const N = 6, out = [];
     for (let i = 1; i <= N; i++) {
       const k = (t * i) / N;
-      const color = i === N ? 'var(--edge-line)' : i % 2 ? 'var(--edge-a)' : 'var(--edge-b)';
-      out.push((dir * k).toFixed(2) + 'px ' + (k * 0.6).toFixed(2) + 'px 0 ' + color);
+      out.push((dir * k).toFixed(2) + 'px 0 0 ' + (i === N ? 'var(--edge-line)' : i % 2 ? 'var(--edge-a)' : 'var(--edge-b)'));
     }
-    out.push((dir * t).toFixed(2) + 'px ' + (t * 0.6 + 8).toFixed(2) + 'px 16px rgba(0, 0, 0, ' + (t ? 0.32 : 0) + ')');
     return out.join(', ');
   }
   function updateThickness(animate = true) {
     if (!S.stacks || !S.pw) return;
     const n = S.pages.length, v = visiblePages();
-    const T = Math.min(24, 8 + n * 0.45) * (S.pw < 320 ? 0.5 : S.pw < 480 ? 0.7 : 1);   // thickness of the whole page block
+    const T = Math.min(7, 2 + n * 0.12) * (S.pw < 320 ? 0.6 : 1);   // a few pixels, more for bigger albums
     const read = n > 2 ? Math.min(1, Math.max(0, (v[0] - 1) / (n - 3))) : 0;
-    const closedFront = !S.portrait && v.length === 1 && v[0] === 0;
-    const closedBack = !S.portrait && v.length === 1 && v[0] === n - 1;
-    let tl = T * read, tr = T * (1 - read);
-    if (S.portrait) tl = 0;
-    if (closedFront) { tl = 0; tr = T; }
-    if (closedBack) { tl = T; tr = 0; }
+    const closed = !S.portrait && v.length === 1;                       // front or back cover alone: no edges
     const [L, R] = S.stacks;
-    [L, R, S.rim].forEach((d) => d.classList.toggle('no-anim', !animate));
+    [L, R].forEach((d) => d.classList.toggle('no-anim', !animate));
     const box = (d, left, show) => Object.assign(d.style, { left: left + 'px', width: S.pw + 'px', height: S.ph + 'px', display: show ? '' : 'none' });
-    box(L, 0, !S.portrait && !closedFront);
-    box(R, S.portrait ? 0 : S.pw, !closedBack);
-    L.style.boxShadow = stackShadow(tl, -1);
-    R.style.boxShadow = stackShadow(tr, 1);
-    // the cover board: only when the album is open (a closed album shows the cover itself)
-    const rimOn = S.album.hardCover !== false && !closedFront && !closedBack;
-    const g = S.pw < 320 ? 3 : 6;
-    const x0 = S.portrait ? 0 : -(tl + g), x1 = (S.portrait ? S.pw : S.pw * 2) + tr + g;
-    Object.assign(S.rim.style, { display: rimOn ? '' : 'none', left: x0 + 'px', width: (x1 - x0) + 'px', top: -g + 'px',
-      height: (S.ph + g * 2 + Math.max(tl, tr) * 0.6) + 'px' });
-    S.rim.classList.toggle('portrait', S.portrait);
+    box(L, 0, !S.portrait && !closed);
+    box(R, S.portrait ? 0 : S.pw, !closed);
+    L.style.boxShadow = stackShadow(T * read, -1);
+    R.style.boxShadow = stackShadow(T * (1 - read), 1);
   }
 
   function relayout() {

@@ -81,7 +81,7 @@ favorites album_id, photo, visitor            views  album_id, day, count       
 8. **Publish:** guests open `/a/<id>` (the flipbook) or `/g/<id>` (the gallery).
 
 ### 3. A guest opens an album
-The book looks thick: `updateThickness()` in viewer.js draws the pages already read as a stack of edges on the left and the rest on the right (layered box-shadows that move as pages turn), with the hard cover board showing around the open pages. Phones held sideways get a one-row toolbar so the book gets the height.
+The open book shows thin page edges at its sides: `updateThickness()` in viewer.js puts the pages already read on the left and the rest on the right (a few pixels, more for bigger albums). The covers are drawn as they are. Phones held sideways get a one-row toolbar so the book gets the height.
 
 ```
 /a/<id> → /?id=<id> → index.html → GET /api/album/<id>
