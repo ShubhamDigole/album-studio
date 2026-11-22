@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="assets/css/fonts.css" />
   <link rel="stylesheet" href="assets/css/base.css" />
   <link rel="stylesheet" href="assets/css/viewer.css" />
+  <link rel="stylesheet" href="assets/css/page-templates.css" />
   <script src="assets/js/album-meta.js"></script>
 </head>
 <body>
@@ -29,7 +30,7 @@
       <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></symbol>
       <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
       <symbol id="i-sound" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></symbol>
-      <symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></symbol>
+      <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></symbol><symbol id="i-music-off" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/><path d="M3 3l18 18"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></symbol><symbol id="i-mute" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M22 9l-6 6M16 9l6 6"/></symbol>
       <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></symbol>
       <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 002 2h10a2 2 0 002-2v-6"/></symbol>
@@ -57,14 +58,14 @@
       </div>
       <div class="titlebar-right">
         <a class="studio" id="brand" target="_blank" rel="noopener"><img id="brandLogo" alt="" hidden /><span id="brandName"></span></a>
-        <button class="bless-pill" id="blessPill" data-action="bless" hidden><svg><use href="#i-bless"/></svg><span>Blessings</span></button>
+        <button class="bless-pill" id="blessPill" data-action="bless" hidden><svg><use href="#i-bless"/></svg><span>Add your blessing</span></button>
         <button class="icon-btn" data-action="help" title="How to view this album"><svg><use href="#i-help"/></svg></button>
       </div>
     </header>
     <div class="bless-nudge" id="blessNudge" role="dialog" aria-label="Write a blessing" hidden>
       <svg class="nudge-icon" aria-hidden="true"><use href="#i-bless"/></svg>
       <p>Enjoyed the album? Leave your blessings for <b id="nudgeNames"></b>.</p>
-      <div class="nudge-actions"><button class="btn" data-action="bless-write">Write a blessing</button><button class="btn quiet" data-action="nudge-close">Not now</button></div>
+      <div class="nudge-actions"><button class="btn" data-action="bless-write">Add your blessing</button><button class="btn quiet" data-action="nudge-close">Not now</button></div>
     </div>
 
     <main class="stage" id="stage">
@@ -119,6 +120,7 @@
             <button class="icon-btn hide-xs" data-action="zoom-in" title="Zoom in"><svg><use href="#i-zoom-in"/></svg></button>
             <button class="icon-btn" data-action="autoplay" id="autoplayBtn" title="Play slideshow"><svg><use href="#i-play"/></svg></button>
             <button class="icon-btn" data-action="sound" id="soundBtn" title="Sound"><svg><use href="#i-sound"/></svg></button>
+            <button class="icon-btn" data-action="music" id="musicBtn" title="Music off" hidden><svg><use href="#i-music"/></svg></button>
             <button class="icon-btn" data-action="theme" id="themeBtn" title="Light background"><svg><use href="#i-sun"/></svg></button>
             <button class="icon-btn" data-action="share" title="Share"><svg><use href="#i-share"/></svg></button>
             <a class="icon-btn hide-xs" id="downloadBtn" title="Download all photos" target="_blank" rel="noopener" hidden><svg><use href="#i-download"/></svg></a>
@@ -138,6 +140,11 @@
           <a class="share-item" id="shareWa" target="_blank" rel="noopener"><svg><use href="#i-whatsapp"/></svg>WhatsApp</a>
           <a class="share-item" id="shareFb" target="_blank" rel="noopener"><svg><use href="#i-facebook"/></svg>Facebook</a>
           <a class="share-item" id="shareMail"><svg><use href="#i-mail"/></svg>Email</a>
+        </div>
+        <div class="share-qr">
+          <div class="qr-box" id="shareQr"></div>
+          <div class="qr-text"><b>Scan to open</b><p>Guests can point a phone camera at this code. Print it on cards or show it at the venue.</p>
+            <button class="btn quiet" data-action="qr-download"><svg><use href="#i-download"/></svg>Download QR code</button></div>
         </div>
         <a id="shareX" hidden></a>
       </div>
@@ -168,7 +175,10 @@
   <script src="assets/js/vendor/page-flip.browser.js"></script>
   <script src="assets/js/cover-templates.js"></script>
   <script src="assets/js/cover-templates-more.js"></script>
+  <script src="assets/js/page-templates.js"></script>
   <script src="assets/js/guestbook.js"></script>
+  <script src="assets/js/vendor/qrcode-1.4.4.js"></script>
+  <script src="assets/js/qr.js"></script>
   <script src="assets/js/viewer.js"></script>
 </body>
 </html>

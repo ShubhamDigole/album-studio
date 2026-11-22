@@ -55,6 +55,8 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 .page .page-inner { position: absolute; inset: 0; overflow: hidden; background: var(--paper); }
 .page img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; opacity: 0; transition: opacity .35s; }
 .page img.loaded { opacity: 1; }
+/* photos inside designed pages (page-templates.css) are positioned by their own box */
+.page .pt-photo img { opacity: 1; transition: none; }
 .page img.half-left, .page img.half-right { width: 200%; }
 .page img.half-right { left: -100%; }
 .page .page-spinner { position: absolute; left: 50%; top: 50%; width: 26px; height: 26px; margin: -13px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, .1); border-top-color: var(--accent); animation: spin 1s linear infinite; }
@@ -253,6 +255,17 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 }
 
 .music-credit { margin: 0 22px 4px; color: var(--ink-soft); font-size: 13px; line-height: 1.4; }
+
+/* share: QR code */
+.share-qr { display: grid; grid-template-columns: 132px 1fr; gap: 16px; align-items: center; margin: 14px 22px 0; padding: 14px; border-radius: var(--radius-m); background: var(--hover); }
+.qr-box { width: 132px; height: 132px; border-radius: 8px; overflow: hidden; background: #fff; }
+.qr-box svg { display: block; width: 100%; height: 100%; }
+.qr-text b { font-weight: 600; }
+.qr-text p { margin: 4px 0 10px; color: var(--ink-soft); font-size: 14px; line-height: 1.4; }
+.qr-text .btn { min-height: 36px; padding: 0 12px; font-size: 14px; }
+.qr-text .btn svg { width: 16px; height: 16px; }
+#musicBtn[aria-pressed="true"] { color: var(--ink-soft); }
+@media (max-width: 440px) { .share-qr { grid-template-columns: 104px 1fr; gap: 12px; } .qr-box { width: 104px; height: 104px; } }
 
 /* generated pages (cover templates) */
 .gen { position: absolute; inset: 0; display: block; }

@@ -37,7 +37,7 @@
   const S = {
     album: null, pages: [], pageEls: [], pf: null, book: null,
     portrait: false, pw: 0, ph: 0, current: 0, shiftX: 0,
-    autoplay: false, autoplayTimer: null, sound: store.get('sound', true),
+    autoplay: false, autoplayTimer: null, sound: store.get('sound', true), music: store.get('music', true),
     thumbsBuilt: false, busy: false,
   };
 
@@ -57,6 +57,13 @@
       } else if (p.generated) {
         // drawn live from the album's cover template (cover-templates.js)
         pages.push({ gen: p.generated, text: p.text || '', title: p.title || '' });
+      } else if (p.composed) {
+        // a page from the page editor (page-templates.js); a two-page design becomes a left and a right half
+        const photos = (p.photos || []).map((x) => (x ? { src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h } : null));
+        if (p.wide) {
+          pages.push({ composed: p.composed, photos, half: 'left', title: p.title || '' });
+          pages.push({ composed: p.composed, photos, half: 'right', title: '' });
+        } else pages.push({ composed: p.composed, photos, title: p.title || '' });
       } else if (p.layout) {
         // a page laid out live from uploaded photos (full / pair / single)
         pages.push({ layout: p.layout, photos: (p.photos || []).map((x) => ({ src: abs(x.src), thumb: abs(x.thumb || x.src), zoom: abs(x.zoom || x.src), w: x.w, h: x.h })), title: p.title || '' });
@@ -139,7 +146,12 @@
     return '<div class="lay lay-' + p.layout + '">' + p.photos.map((x) =>
       '<figure style="aspect-ratio:' + (x.w || 3) + ' / ' + (x.h || 2) + '">' + img(x) + '</figure>').join('') + '</div>';
   }
+  function composedHtml(p, { small, lazy, zoom, half } = {}) {
+    if (!window.PageTemplates) return '';
+    return window.PageTemplates.render(p.composed, { album: S.album, photos: p.photos, half: half === undefined ? p.half : half, small, lazy, zoom });
+  }
   function pageVisual(p, cls) {
+    if (p.composed) return '<span class="gen' + (cls ? ' ' + cls : '') + '">' + composedHtml(p, { small: true }) + '</span>';
     if (p.layout) return '<span class="gen' + (cls ? ' ' + cls : '') + '">' + layoutHtml(p, true) + '</span>';
     if (p.gen) return '<span class="gen' + (cls ? ' ' + cls : '') + '">' + genSvg(p.gen, p.text) + '</span>';
     if (p.blank) return '';
@@ -155,7 +167,10 @@
     const inner = document.createElement('div');
     inner.className = 'page-inner';
     page.appendChild(inner);
-    if (p.layout) {
+    if (p.composed) {
+      inner.innerHTML = composedHtml(p, { lazy: true });
+      page.classList.add('is-loaded', 'is-layout');
+    } else if (p.layout) {
       inner.innerHTML = layoutHtml(p, false, true);
       page.classList.add('is-loaded', 'is-layout');
     } else if (p.gen) {
@@ -410,7 +425,7 @@
       const now = performance.now();
       if (lastTap && now - lastTap.t < 320 && Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 40) {
         clearTimeout(singleTimer); lastTap = null;
-        enterZoom(2.2, e.clientX, e.clientY);
+        enterZoom(1.5, e.clientX, e.clientY);
         return;
       }
       const tap = { x: e.clientX, y: e.clientY, t: now, page: S.current };
@@ -443,14 +458,18 @@
     const v = visiblePages();
     el.zoomSheet.innerHTML = '';
     // a panorama spread is shown as one image so no seam appears between the halves
-    const pano = v.length === 2 && S.pages[v[0]].half === 'left' && S.pages[v[1]].half === 'right' && S.pages[v[0]].src === S.pages[v[1]].src;
+    const pano = v.length === 2 && S.pages[v[0]].half === 'left' && S.pages[v[1]].half === 'right' &&
+      (S.pages[v[0]].composed ? S.pages[v[0]].composed === S.pages[v[1]].composed : S.pages[v[0]].src === S.pages[v[1]].src);
     (pano ? [v[0]] : v).forEach((i) => {
       const p = S.pages[i];
       const box = document.createElement('div');
       box.className = 'zp';
       box.style.width = (pano ? S.pw * 2 : S.pw) + 'px';
       box.style.height = S.ph + 'px';
-      if (p.layout) {
+      if (p.composed) {
+        box.innerHTML = composedHtml(p, { zoom: true, half: pano ? null : p.half });
+        box.classList.add('gen');
+      } else if (p.layout) {
         box.innerHTML = layoutHtml(p, false, false, true);
         box.classList.add('gen');
       } else if (p.gen) {
@@ -523,7 +542,7 @@
 
   function zoomStep(dir) {
     const sp = stagePoint(0, 0);
-    if (!S.zoom) { if (dir > 0) enterZoom(1.6); return; }
+    if (!S.zoom) { if (dir > 0) enterZoom(1.5); return; }
     const s = dir > 0 ? S.zoom.s * 1.5 : S.zoom.s / 1.5;
     if (s <= 1.02) exitZoom(); else zoomTo(s, sp.w / 2, sp.h / 2, true);
   }
@@ -640,7 +659,7 @@
       }
     },
     playMusic() {
-      if (!S.album.music) return;
+      if (!S.album.music || !S.music) return;
       if (!this.music) {
         this.music = new Audio(S.album.musicUrl);
         this.music.loop = true;
@@ -656,6 +675,18 @@
     stopMusic() { if (this.music) this.music.pause(); },
   };
 
+  // music has its own switch, so guests can keep the page-turn sound and silence the song (or the other way round)
+  function setMusic(on, fromUser = true) {
+    S.music = on;
+    store.set('music', on);
+    const b = $('#musicBtn');
+    b.querySelector('use').setAttribute('href', on ? '#i-music' : '#i-music-off');
+    b.title = on ? 'Music off' : 'Music on';
+    b.setAttribute('aria-pressed', String(!on));
+    if (!on) Sound.stopMusic();
+    else if (fromUser && S.sound) { Sound.unlock(); Sound.playMusic(); }
+    if (fromUser) toast(on ? 'Music on' : 'Music off');
+  }
   function setSound(on, fromUser = true) {
     S.sound = on;
     store.set('sound', on);
@@ -857,6 +888,7 @@
     $('#shareFb').href = 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url);
     $('#shareX').href = 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(title) + '&url=' + encodeURIComponent(url);
     $('#shareMail').href = 'mailto:?subject=' + encodeURIComponent(title) + '&body=' + encodeURIComponent(title + '\n' + url);
+    if (window.QR) $('#shareQr').innerHTML = window.QR.svg(url);
   }
   async function copyLink() {
     const url = shareUrl();
@@ -909,6 +941,8 @@
     'zoom-out': () => zoomStep(-1),
     autoplay: () => (S.autoplay ? stopAutoplay() : startAutoplay()),
     sound: () => setSound(!S.sound),
+    music: () => setMusic(!S.music),
+    'qr-download': () => window.QR && window.QR.download(shareUrl(), 'album-qr-code.png', { caption: S.album.title }),
     share: () => { refreshShare(); openModal(el.shareModal); },
     help: () => openModal(el.helpModal),
     fullscreen: toggleFullscreen,
@@ -1023,6 +1057,7 @@
       album.downloadUrlAbs = abs(album.downloadUrl);
       if (album.studio.logo) { album.studio.logoUrl = abs(album.studio.logo); $('#brandLogo').src = album.studio.logoUrl; }
       if (album.downloadUrl) el.downloadBtn.href = album.downloadUrlAbs;
+      if (album.pageTemplates && window.PageTemplates) Object.values(album.pageTemplates).forEach((t) => window.PageTemplates.define(t));
       S.pages = pages;
       if (api) {
         setupBlessings();
@@ -1034,6 +1069,8 @@
       buildToc();
       wire();
       setSound(S.sound, false);
+      $('#musicBtn').hidden = !S.album.music;
+      setMusic(S.music, false);
 
       const v = visiblePages(start);
       const first = [...v, v[v.length - 1] + 1, v[v.length - 1] + 2];

@@ -1,0 +1,20 @@
+/* Pages laid out from templates (page-templates.js). Shared by the viewer, the page editor and the template designer. */
+.pt-page { position: absolute; inset: 0; overflow: hidden; container-type: size; }
+.pt-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+/* a two-page template draws across both pages; each page shows its half */
+.pt-canvas.pt-spread.pt-half-left, .pt-canvas.pt-spread.pt-half-right { width: 200%; }
+.pt-canvas.pt-spread.pt-half-right { left: -100%; }
+.pt-slot { position: absolute; }
+.pt-photo { position: absolute; inset: 0; overflow: hidden; background: color-mix(in srgb, currentColor 8%, #d9d2c6); }
+.pt-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.pt-empty { position: absolute; inset: 0; display: grid; place-items: center; padding: 6px; color: #8a8173; font: 500 2.6cqh/1.2 Mukta, system-ui, sans-serif; text-align: center; }
+/* frames */
+.pt-shadow .pt-photo { box-shadow: 0 0.6cqh 2.4cqh rgba(20, 16, 10, .28); }
+.pt-mat .pt-photo { outline: 1.1cqh solid #fff; box-shadow: 0 0.5cqh 2cqh rgba(20, 16, 10, .25); }
+.pt-polaroid { background: #fff; box-shadow: 0 0.7cqh 2.6cqh rgba(20, 16, 10, .3); }
+.pt-polaroid .pt-photo { inset: 4% 5% 18% 5%; }
+.pt-dark .pt-shadow .pt-photo, .pt-dark .pt-mat .pt-photo { box-shadow: 0 0.6cqh 2.6cqh rgba(0, 0, 0, .5); }
+/* words */
+.pt-text { position: absolute; display: flex; align-items: center; line-height: 1.12; overflow: hidden; overflow-wrap: anywhere; }
+.pt-text span { display: block; width: 100%; }
+.pt-text i { opacity: .45; font-style: normal; }

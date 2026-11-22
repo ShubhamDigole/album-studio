@@ -859,12 +859,29 @@
           <a class="btn" href="/a/${encodeURIComponent(a.id)}" target="_blank" rel="noopener"><svg><use href="#i-book"/></svg>Open album</a>
           <a class="btn quiet" href="/g/${encodeURIComponent(a.id)}" target="_blank" rel="noopener"><svg><use href="#i-photos"/></svg>Photos</a>
           <button class="btn quiet" type="button" id="copyLink"><svg><use href="#i-link"/></svg>Copy guest link</button>
+          <button class="btn quiet" type="button" id="qrBtn"><svg><use href="#i-qr"/></svg>QR code</button>
         </div>
         ${viewsChart(s.daily)}
       </div>`;
     $('#copyLink').addEventListener('click', async () => {
       const url = location.origin + '/a/' + a.id;
       try { await navigator.clipboard.writeText(url); toast('Guest link copied'); } catch (e) { prompt('Copy this link', url); }
+    });
+    $('#qrBtn').addEventListener('click', () => {
+      const url = location.origin + '/a/' + a.id;
+      const card = $('#modalCard');
+      $('#modal').hidden = false;
+      document.body.classList.add('modal-open');
+      card.innerHTML = `<div class="modal-head"><h2 class="display">QR code for guests</h2>
+          <button class="icon-btn" type="button" data-close aria-label="Close"><svg><use href="#i-close"/></svg></button></div>
+        <div class="qr-modal">
+          <div class="qr-big">${window.QR ? window.QR.svg(url) : ''}</div>
+          <div><p>Guests scan this with a phone camera to open <b>${esc(M.title(a))}</b>. Print it on invitations, thank-you cards or a stand at the venue.</p>
+            <p class="hint"><code>${esc(url)}</code></p>
+            <button class="btn" type="button" id="qrDownload"><svg><use href="#i-upload"/></svg>Download PNG for printing</button></div>
+        </div>`;
+      card.querySelector('[data-close]').onclick = closeModal;
+      $('#qrDownload').onclick = () => window.QR.download(url, (a.id || 'album') + '-qr-code.png', { px: 1600, caption: M.title(a) });
     });
   }
 

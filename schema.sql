@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS albums (
   accent           TEXT NOT NULL DEFAULT '',        -- optional #rrggbb override
   template         TEXT NOT NULL DEFAULT '',        -- cover design key ('' = default for the album type)
   design           TEXT NOT NULL DEFAULT '{}',      -- per part: {cover:{template,upload,photos}, back:{…}, endpaper:{…}}
+  composed         TEXT NOT NULL DEFAULT '',        -- pages from the page editor: [{t, p:[{m, c}], tx, bg, s} | {gen, text}]
   studio_id        TEXT,                            -- owning studio (NULL = master only)
   status           TEXT NOT NULL DEFAULT 'draft',   -- draft (admins only) | published
   require_approval INTEGER NOT NULL DEFAULT 0,      -- 1 = guestbook messages wait for approval
@@ -104,3 +105,14 @@ CREATE TABLE IF NOT EXISTS media (
   created_at INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS media_album ON media(album_id, kind, position);
+
+-- Page designs drawn by the master (built-in designs live in assets/js/page-templates.js)
+CREATE TABLE IF NOT EXISTS page_templates (
+  key        TEXT PRIMARY KEY,
+  name       TEXT NOT NULL,
+  data       TEXT NOT NULL,
+  status     TEXT NOT NULL DEFAULT 'active',
+  created_by TEXT NOT NULL DEFAULT '',
+  created_at INTEGER NOT NULL,
+  updated_at INTEGER NOT NULL
+);

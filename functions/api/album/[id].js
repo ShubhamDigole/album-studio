@@ -3,13 +3,15 @@
 import { json, handle } from '../../../lib/http.js';
 import { mergeAlbum, getMedia } from '../../../lib/albums.js';
 import { loadVisibleAlbum } from '../../../lib/access.js';
+import { parseComposed, templatesFor } from '../../../lib/pages.js';
 
 export const onRequestGet = handle(async (ctx) => {
   const { row, staticAlbum } = await loadVisibleAlbum(ctx, ctx.params.id);
-  let media = null, studio = null;
+  let media = null, studio = null, templates = null;
   if (row) {
+    templates = await templatesFor(ctx.env.DB, parseComposed(row));
     media = await getMedia(ctx.env.DB, row.id);
     if (row.studio_id) studio = await ctx.env.DB.prepare('SELECT name, phone, url FROM studios WHERE id = ?').bind(row.studio_id).first();
   }
-  return json(mergeAlbum(staticAlbum, row, { media, studio }));
+  return json(mergeAlbum(staticAlbum, row, { media, studio, templates }));
 });
