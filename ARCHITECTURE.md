@@ -44,7 +44,9 @@ albums/demo/       demo album that works from file:// with no server
 ## Data model (D1)
 
 ```
-studios   id, name, phone, url, email, city, status (pending|active|suspended), plan, created_at, approved_at
+studios   id, name, phone, url, email, city, tagline, whatsapp, instagram, facebook, youtube, address, logo_key (R2), accent,
+          defaults {type, template, music, pages, requireApproval, status}, onboarded_at, terms_at,
+          status (pending|active|suspended), plan, created_at, approved_at
 users     id, email, name, pass_hash (PBKDF2), role (master|owner), studio_id
 albums    id (link), studio_id, type (occasion), title, names[], event_date, location, studio credit fields,
           music, download_url, accent, template, design {cover|back|endpaper: {template, upload, photos[]}},
@@ -63,8 +65,17 @@ favorites album_id, photo, visitor            views  album_id, day, count       
 ## Flows
 
 ### 1. A studio joins
-`/admin` → **Create a studio account** → `POST /api/admin/signup` (limited to 3 per hour per IP) → the studio is `pending`
+`/admin#signup` (linked from sign-in) → studio name, owner, email, phone (ticked if it is on WhatsApp), city, password with a strength hint, and the terms tick → `POST /api/admin/signup` (limited to 3 per hour per IP; `terms_at` is stored) → the studio is `pending` and the page explains what happens next
 → the master sees it under **Studios** → `PATCH /api/admin/master/studios/:id {status: active}` → the owner can sign in.
+
+**First-time setup** (`assets/js/onboarding.js`, route `#welcome`): while `onboarded_at` is empty, a studio owner who lands on the shelf is sent to three short steps, each saved on its own with `PUT /api/admin/studio` (only the fields sent change):
+1. **Your studio:** name, tagline, city, address, phone, WhatsApp, website, Instagram / Facebook / YouTube. Handles and bare domains are turned into `https://` links, a 10-digit WhatsApp number gets +91 (`lib/studios.js`).
+2. **Your brand:** a logo (resized in the browser, PNG/JPEG/WebP up to 2 MB, `POST /api/admin/studio-logo`, stored at `s/<studio>/logo-<id>.<ext>`, the old one deleted) and the colour new albums start with.
+3. **Album defaults:** occasion, front cover design, built-in song (with a listen button), extra pages, blessings approval, draft or published.
+
+A live preview shows a sample album wearing the studio's details (inside the back cover, the guest's title bar with the logo and contact links, the front cover). **Skip setup for now** or finishing sets `onboarded_at` (`{onboarded: true}`); the step reached is remembered in the browser, so a half-done setup resumes. The master never sees it. **Your studio** (`#studio`) shows the same sections on one page, plus the password.
+
+New albums start with these defaults: `blankDraft()` in admin.js fills the form, and `POST /api/admin/albums` fills whatever a request leaves out (`applyAlbumDefaults` in lib/studios.js). The photographer credit stays empty, so it follows the profile.
 
 ### 2. Making an album
 1. **New album** goes straight to the details page (there is no separate cover step).
@@ -91,13 +102,17 @@ The open book shows thin page edges at its sides: `updateThickness()` in viewer.
    ├─ pages: uploaded designed pages, otherwise uploaded photos (auto layout), otherwise the local build
    ├─ cover / end page / endpapers: { generated } entries drawn live by cover-templates.js
    │    (or the studio's uploaded image, or the photographer's own built cover)
-   └─ details from D1; empty photographer credit filled from the studio profile
+   └─ details from D1; empty photographer credit filled from the studio profile, plus its public fields
+        (logo, tagline, city, phone, WhatsApp, website, social links; never the email), see publicStudio() in lib/studios.js
 → viewer.js builds the flipbook (StPageFlip), loads images lazily from /media/... (R2) or /albums/... (static)
 → POST /api/view/<id> (one view per visitor per day); blessings and hearts via /api/guestbook and /api/favorite
 ```
 
+The title bar shows the studio's logo (on a light chip, so dark logos stay readable) and "Photographs by …" linking to the website. **How to view** ends with the studio's card: WhatsApp (with a greeting naming the album), call, Instagram, Facebook, YouTube and website. Without a website, the studio's name opens that card.
+
 ### 4. Images
 `/media/a/<album>/<kind>/<file>` → a Function checks the same access rules as the album → streams from R2 with private, immutable caching.
+`/media/s/<studio>/logo-<id>.<ext>` → the studio's current logo only (the key must match `studios.logo_key`), public and immutable: logos are branding that guests see.
 Static build output under `/albums/<id>/` is served by Pages with long cache headers (`_headers`).
 
 ## API
@@ -114,9 +129,10 @@ Static build output under `/albums/<id>/` is served by Pages with long cache hea
 | `GET/POST /api/admin/albums`, `GET/PUT/DELETE /api/admin/albums/:id` | owner, master | albums (scoped to the studio) |
 | `POST /api/admin/albums/:id/upload`, `PUT …/design`, `DELETE …/media/:mid` | owner, master | uploads and cover choices |
 | `GET /api/admin/guestbook/:id`, `PATCH/DELETE /api/admin/guestbook/:msg` | owner, master | moderation |
-| `GET/PUT /api/admin/studio`, `PUT /api/admin/account` | owner | studio profile, password |
+| `GET/PUT /api/admin/studio`, `PUT /api/admin/account` | owner | studio profile, brand, album defaults, setup done (`onboarded`); password |
+| `POST/DELETE /api/admin/studio-logo` | owner | the studio's logo (multipart `file`, checked by its first bytes) |
 | `GET /api/admin/config` | owner, master | browser settings (the Google Drive API key) |
-| `GET /api/admin/master/studios`, `PATCH /api/admin/master/studios/:id` | master | approve or switch off studios |
+| `GET /api/admin/master/studios`, `PATCH /api/admin/master/studios/:id` | master | every studio with its profile, logo, links and defaults; approve or switch off |
 
 ## Security
 

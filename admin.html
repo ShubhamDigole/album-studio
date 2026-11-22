@@ -44,6 +44,13 @@
       <symbol id="i-drive" viewBox="0 0 24 24"><path d="M8.5 3h7l6 10.5-3.5 6h-12L2.5 13.5z"/><path d="M8.5 3l6.5 11H2.5M15.5 3L9 14.5M21.5 13.5H9l-3 6"/></symbol>
       <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13l10.5-6.5z" fill="currentColor" stroke="none"/></symbol><symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol><symbol id="i-qr" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 20h4v-3"/></symbol><symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6L6 18M6 6l12 12"/></symbol>
       <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4a8 8 0 1010.5 10.5z"/></symbol>
+      <symbol id="i-insta" viewBox="0 0 24 24"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.2 6.8h.01"/></symbol>
+      <symbol id="i-fb" viewBox="0 0 24 24"><path d="M14 8.5h2.5V5H14a3.5 3.5 0 00-3.5 3.5V11H8v3.5h2.5V21H14v-6.5h2.5L17 11h-3V9a.5.5 0 01.5-.5z"/></symbol>
+      <symbol id="i-yt" viewBox="0 0 24 24"><rect x="2.5" y="5.5" width="19" height="13" rx="4"/><path d="M10 9.2v5.6l4.8-2.8z" fill="currentColor"/></symbol>
+      <symbol id="i-wa" viewBox="0 0 24 24"><path d="M4 20l1.2-4.1A8 8 0 1112 20a8 8 0 01-3.9-1z"/><path d="M9.2 8.6c.3 2.6 2.2 4.6 4.9 5.3l.9-1.2 1.6.7c-.2 1.2-1.2 1.9-2.4 1.7-3-.5-5.6-3-6.1-6-.2-1.2.5-2.2 1.7-2.4l.7 1.6z"/></symbol>
+      <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.5 3.5h3l1.5 4-2 1.3a10 10 0 005.2 5.2l1.3-2 4 1.5v3a2 2 0 01-2.2 2A16 16 0 014.5 5.7a2 2 0 012-2.2z"/></symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.7 5.6 3.7 9s-1.2 6.4-3.7 9c-2.5-2.6-3.7-5.6-3.7-9S9.5 5.6 12 3z"/></symbol>
+      <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0113 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></symbol>
     </defs>
   </svg>
 
@@ -61,27 +68,50 @@
           <div class="form-row"><button class="btn" type="submit">Sign in</button><button class="link" type="button" data-auth="signup">New here? Create a studio account</button></div>
           <p class="form-note" id="loginNote" role="alert"></p>
         </form>
-        <form id="signupForm" class="signin-form" hidden>
+        <form id="signupForm" class="signin-form signup-form" hidden novalidate>
           <svg class="mark"><use href="#i-bud"/></svg>
           <h1 class="display">Bring your studio</h1>
-          <p>Create an account for your studio. You can start making albums as soon as it is approved.</p>
-          <label class="field"><span>Studio name</span><input name="studioName" maxlength="80" autocomplete="organization" required /></label>
+          <p>Make flipbook albums your clients share with the whole family. Every new studio is approved by hand, usually within a day.</p>
+          <label class="field"><span>Studio name</span><input name="studioName" maxlength="80" autocomplete="organization" required placeholder="Rang Studio" /></label>
           <div class="two">
             <label class="field"><span>Your name</span><input name="name" maxlength="80" autocomplete="name" required /></label>
-            <label class="field"><span>City</span><input name="city" maxlength="80" autocomplete="address-level2" /></label>
+            <label class="field"><span>City</span><input name="city" maxlength="80" autocomplete="address-level2" placeholder="Pune" /></label>
           </div>
-          <div class="two">
-            <label class="field"><span>Email</span><input type="email" name="email" maxlength="120" autocomplete="email" required /></label>
-            <label class="field"><span>Phone</span><input name="phone" maxlength="40" inputmode="tel" autocomplete="tel" /></label>
+          <label class="field"><span>Email <em>you sign in with this</em></span><input type="email" name="email" maxlength="120" autocomplete="email" required /></label>
+          <div class="field">
+            <label for="suPhone"><span>Phone</span></label>
+            <input id="suPhone" type="tel" name="phone" maxlength="40" inputmode="tel" autocomplete="tel" placeholder="+91 98200 00000" />
+            <label class="check small"><input type="checkbox" name="whatsapp" checked /> This number is on WhatsApp</label>
           </div>
-          <label class="field"><span>Password <em>at least 8 characters</em></span><input type="password" name="password" minlength="8" autocomplete="new-password" required /></label>
-          <div class="form-row"><button class="btn" type="submit">Create studio account</button><button class="link" type="button" data-auth="login">I already have an account</button></div>
+          <div class="field pw-field">
+            <label for="suPassword"><span>Password</span></label>
+            <div class="pw-wrap"><input id="suPassword" type="password" name="password" minlength="8" maxlength="200" autocomplete="new-password" required aria-describedby="pwHint" />
+              <button type="button" class="pw-eye" id="pwEye" aria-pressed="false">Show</button></div>
+            <div class="pw-meter" aria-hidden="true"><i></i><i></i><i></i></div>
+            <small class="pw-hint" id="pwHint">At least 8 characters. A short phrase is easy to remember and hard to guess.</small>
+          </div>
+          <div class="terms">
+            <label class="check"><input type="checkbox" name="terms" required /><span>I agree to the terms of use</span></label>
+            <details><summary>Read the terms (three points)</summary>
+              <ul>
+                <li>You only upload photos you took or may share, and your clients agree to their album being online.</li>
+                <li>Albums are private: anyone with an album's link can open it, so you choose who gets the link.</li>
+                <li>The site owner can switch off a studio that breaks these terms. You can ask for your studio and its albums to be removed at any time.</li>
+              </ul></details>
+          </div>
+          <div class="form-row"><button class="btn" type="submit" id="signupBtn">Create studio account</button><button class="link" type="button" data-auth="login">I already have an account</button></div>
           <p class="form-note" id="signupNote" role="alert"></p>
         </form>
-        <div id="signupDone" class="signin-form" hidden>
+        <div id="signupDone" class="signin-form signup-done" hidden>
           <svg class="mark"><use href="#i-bud"/></svg>
-          <h1 class="display">Thank you</h1>
-          <p>Your studio account is waiting for approval. You can sign in as soon as it is approved.</p>
+          <h1 class="display" id="doneTitle">Thank you</h1>
+          <p id="doneLede">Your studio account is waiting for approval.</p>
+          <ol class="next-steps">
+            <li><b>Your studio is approved</b><span>The site owner checks every new studio by hand, usually within a day. Until then, signing in tells you it is still waiting.</span></li>
+            <li><b>Sign in</b><span id="doneEmail">with the email and password you just chose.</span></li>
+            <li><b>Set up in three short steps</b><span>Your contact details, your logo and colour, and how new albums start. About three minutes, and you can skip it.</span></li>
+            <li><b>Make your first album</b><span>The couple's names, a cover design and the photos.</span></li>
+          </ol>
           <div class="form-row"><button class="btn quiet" type="button" data-auth="login">Back to sign in</button></div>
         </div>
       </div>

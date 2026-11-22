@@ -994,7 +994,7 @@
       // a torn paper label carrying the studio's name
       const lw = Math.min(W * 0.7, 640), lh = H * 0.44, lx = (W - lw) / 2, ly = H * 0.38;
       const top = tornEdge(lw, 3), bot = tornEdge(lw, 4);
-      const label = `M${top.map(([v, o]) => `${f(lx + v)} ${f(ly + o)}`).join(' L')} L${bot.slice().reverse().map(([v, o]) => `${f(lx + v)} ${f(ly + lh + o)}`).join(' L')}Z`;
+      const label = `M${top.map(([v, o]) => `${f(lx + v)} ${f(ly + o)}`).join(' L')} L${bot.toReversed().map(([v, o]) => `${f(lx + v)} ${f(ly + lh + o)}`).join(' L')}Z`;
       s += `<defs><filter id="${id}ts" x="-10%" y="-20%" width="120%" height="140%"><feGaussianBlur stdDeviation="8"/></filter></defs>`;
       s += `<path d="${label}" fill="#000" opacity=".35" filter="url(#${id}ts)" transform="translate(0 10)"/><path d="${label}" fill="${PAPER}"/>`;
       s += `<rect x="${f(W / 2 - 70)}" y="${f(ly - 22)}" width="140" height="40" transform="rotate(-4 ${f(W / 2)} ${f(ly)})" fill="${th.accent}" opacity=".7"/>`;

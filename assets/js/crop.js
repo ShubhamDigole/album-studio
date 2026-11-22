@@ -16,12 +16,15 @@
   function open({ src, aspect = 1.5, crop, shape = 'rect', title = 'Adjust the photo' } = {}) {
     return new Promise((resolve) => {
       let c = [crop && crop[0] != null ? crop[0] : 0.5, crop && crop[1] != null ? crop[1] : 0.5, crop && crop[2] ? crop[2] : 1];
-      const start = c.slice();
-      const wrap = document.createElement('div');
-      wrap.className = 'crop-overlay';
+      // a native modal <dialog>: the browser makes the page inert, keeps focus inside, closes on Esc and
+      // returns focus to the button that opened it. closedby="any" also closes it on a click outside.
+      const wrap = document.createElement('dialog');
+      wrap.className = 'crop-dialog';
+      wrap.setAttribute('closedby', 'any');
+      wrap.setAttribute('aria-labelledby', 'cropTitle');
       wrap.innerHTML = `
-        <div class="crop-card" role="dialog" aria-modal="true" aria-label="${esc(title)}">
-          <div class="crop-head"><h2 class="display">${esc(title)}</h2></div>
+        <div class="crop-card">
+          <div class="crop-head"><h2 class="display" id="cropTitle">${esc(title)}</h2></div>
           <p class="crop-help">Drag the photo to choose what shows. Zoom with the slider or the mouse wheel.</p>
           <div class="crop-stage"><div class="crop-frame crop-${esc(shape)}" style="aspect-ratio:${aspect}">
             <img alt="" src="${esc(src)}" draggable="false"><span class="crop-grid" aria-hidden="true"></span></div></div>
@@ -30,10 +33,19 @@
             <button type="button" class="btn quiet" data-crop="reset">Reset</button>
             <span class="crop-spacer"></span>
             <button type="button" class="btn quiet" data-crop="cancel">Cancel</button>
-            <button type="button" class="btn" data-crop="ok">Use this</button>
+            <button type="button" class="btn" data-crop="ok" autofocus>Use this</button>
           </div>
         </div>`;
       document.body.appendChild(wrap);
+      wrap.showModal();
+      // browsers without closedby: close on a press and release outside the card (not on its padding)
+      if (!('closedBy' in HTMLDialogElement.prototype)) {
+        const card = wrap.querySelector('.crop-card');
+        const outside = (e) => { const r = card.getBoundingClientRect(); return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom; };
+        let pressedOutside = false;
+        wrap.addEventListener('pointerdown', (e) => { pressedOutside = outside(e); });
+        wrap.addEventListener('pointerup', (e) => { if (pressedOutside && outside(e)) wrap.close(); });
+      }
       const frame = wrap.querySelector('.crop-frame'), img = frame.querySelector('img');
       const range = wrap.querySelector('input[type=range]'), out = wrap.querySelector('output');
       // size the frame to fit the screen whatever the aspect
@@ -76,17 +88,24 @@
       frame.addEventListener('wheel', (e) => { e.preventDefault(); c[2] = clamp(c[2] * (e.deltaY < 0 ? 1.08 : 1 / 1.08), 1, 4); paint(); }, { passive: false });
       range.addEventListener('input', () => { c[2] = +range.value; paint(); });
 
-      const close = (value) => {
+      // every way of closing (Esc, click outside, the buttons) ends here; the result is set before close()
+      let result = null;
+      const close = (value) => { result = value; if (wrap.open) wrap.close(); };
+      wrap.addEventListener('close', () => {
         removeEventListener('resize', fitFrame);
         removeEventListener('keydown', onKey, true);
         wrap.remove();
-        resolve(value);
-      };
+        resolve(result);
+      });
       const round = (v) => v.map((n) => Math.round(n * 1000) / 1000);
       const onKey = (e) => {
-        if (e.key === 'Escape') { e.stopPropagation(); close(null); }
-        else if (e.key === 'Enter') { e.stopPropagation(); close(round(c)); }
-        else if (e.key.startsWith('Arrow')) {
+        // keep page shortcuts (the admin closes its own popup on Esc) away while this dialog is open;
+        // the dialog itself still closes on Esc, which is the browser's default action
+        if (e.key === 'Escape') { e.stopPropagation(); return; }
+        if (e.key === 'Enter') {
+          if (e.isComposing || e.keyCode === 229 || e.target.closest('button')) return;   // IME, or a focused button does its own thing
+          e.stopPropagation(); e.preventDefault(); close(round(c));
+        } else if (e.key.startsWith('Arrow') && e.target.type !== 'range') {
           const step = e.shiftKey ? 0.05 : 0.01;
           if (e.key === 'ArrowLeft') c[0] = clamp(c[0] - step, 0, 1);
           if (e.key === 'ArrowRight') c[0] = clamp(c[0] + step, 0, 1);
@@ -98,13 +117,11 @@
       addEventListener('keydown', onKey, true);
       wrap.addEventListener('click', (e) => {
         const b = e.target.closest('[data-crop]');
-        if (e.target === wrap) return close(null);
         if (!b) return;
         if (b.dataset.crop === 'reset') { c = [0.5, 0.5, 1]; paint(); }
         else if (b.dataset.crop === 'cancel') close(null);
-        else close(start.join() === c.join() ? round(c) : round(c));
+        else close(round(c));
       });
-      wrap.querySelector('[data-crop="ok"]').focus();
     });
   }
   window.Crop = { open, style };

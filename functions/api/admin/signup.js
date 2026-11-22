@@ -1,7 +1,8 @@
-// POST /api/admin/signup {studioName, name, email, password, phone, city}
+// POST /api/admin/signup {studioName, name, email, password, phone, city, whatsapp (true = the phone is on WhatsApp), terms (must be true)}
 // Creates a studio waiting for the master's approval, and its owner account.
 import { json, error, readJson, handle, clientIp, rateLimit, cleanText, HttpError } from '../../../lib/http.js';
 import { hashPassword } from '../../../lib/auth.js';
+import { cleanPhone, cleanWhatsapp } from '../../../lib/studios.js';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -15,12 +16,14 @@ export const onRequestPost = handle(async ({ request, env }) => {
   const studioName = cleanText(b.studioName, { min: 2, max: 80, field: 'Studio name' });
   const name = cleanText(b.name, { min: 1, max: 80, field: 'Your name' });
   const email = cleanText(b.email, { min: 3, max: 120, field: 'Email' }).toLowerCase();
-  const phone = cleanText(b.phone, { max: 40, field: 'Phone' });
+  const phone = cleanPhone(b.phone);
+  const whatsapp = b.whatsapp === true && phone ? cleanWhatsapp(phone) : '';
   const city = cleanText(b.city, { max: 80, field: 'City' });
   if (!EMAIL_RE.test(email)) throw new HttpError(400, 'Enter a valid email address.');
   const password = typeof b.password === 'string' ? b.password : '';
   if (password.length < 8) throw new HttpError(400, 'Choose a password of at least 8 characters.');
   if (password.length > 200) throw new HttpError(400, 'That password is too long.');
+  if (b.terms !== true) throw new HttpError(400, 'Tick the box to accept the terms of use.');
   if (await env.DB.prepare('SELECT id FROM users WHERE email = ?').bind(email).first()) {
     throw new HttpError(409, 'An account with this email already exists. Sign in instead.');
   }
@@ -28,8 +31,8 @@ export const onRequestPost = handle(async ({ request, env }) => {
   while (await env.DB.prepare('SELECT id FROM studios WHERE id = ?').bind(id).first()) id = `${slugify(studioName)}-${++n}`;
   const now = Date.now();
   await env.DB.batch([
-    env.DB.prepare("INSERT INTO studios (id, name, phone, email, city, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)").bind(id, studioName, phone, email, city, now),
+    env.DB.prepare("INSERT INTO studios (id, name, phone, whatsapp, email, city, status, created_at, terms_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?)").bind(id, studioName, phone, whatsapp, email, city, now, now),
     env.DB.prepare("INSERT INTO users (email, name, pass_hash, role, studio_id, created_at) VALUES (?, ?, ?, 'owner', ?, ?)").bind(email, name, await hashPassword(password), id, now),
   ]);
-  return json({ ok: true, status: 'pending' }, 201);
+  return json({ ok: true, status: 'pending', studioName, email }, 201);
 });

@@ -67,6 +67,17 @@ CREATE TABLE IF NOT EXISTS studios (
   url         TEXT NOT NULL DEFAULT '',
   email       TEXT NOT NULL DEFAULT '',
   city        TEXT NOT NULL DEFAULT '',
+  tagline     TEXT NOT NULL DEFAULT '',          -- one line under the name, e.g. Candid weddings since 2012
+  whatsapp    TEXT NOT NULL DEFAULT '',          -- number with country code, e.g. +91 98200 00000
+  instagram   TEXT NOT NULL DEFAULT '',          -- full https:// links (handles are turned into links)
+  facebook    TEXT NOT NULL DEFAULT '',
+  youtube     TEXT NOT NULL DEFAULT '',
+  address     TEXT NOT NULL DEFAULT '',
+  logo_key    TEXT NOT NULL DEFAULT '',          -- R2 key s/<studio>/logo-<id>.png, public via /media/s/…
+  accent      TEXT NOT NULL DEFAULT '',          -- #rrggbb for new albums ('' = each occasion's own colour)
+  defaults    TEXT NOT NULL DEFAULT '{}',        -- new albums: {type, template, music, pages:{…}, requireApproval, status}
+  onboarded_at INTEGER,                         -- set when the first-time setup is finished or skipped
+  terms_at    INTEGER,                          -- when the owner accepted the terms at sign-up
   status      TEXT NOT NULL DEFAULT 'pending',  -- pending | active | suspended
   plan        TEXT NOT NULL DEFAULT 'free',     -- for payments later
   created_at  INTEGER NOT NULL,

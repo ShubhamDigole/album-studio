@@ -369,8 +369,7 @@
   function autoLayout(photos, { ratio = 1.5, density = 'balanced', sections = true, welcome = true, thanks = true, seed = 1, templates } = {}) {
     const r = rng(seed);
     const pool = (templates || list()).filter((t) => t.auto !== false && t.slots.length && !(t.texts || []).length);
-    const bySize = {};
-    pool.forEach((t) => { const k = t.slots.length + (t.spread ? 's' : ''); (bySize[k] = bySize[k] || []).push(t); });
+    const bySize = Object.groupBy(pool, (t) => t.slots.length + (t.spread ? 's' : ''));
     const out = [];
     if (welcome) out.push({ gen: 'title' });
     const groups = [];

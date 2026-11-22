@@ -458,7 +458,7 @@
   function enterZoom(scale, cx, cy) {
     if (!S.pf || S.zoom || !canFlip()) return;
     const v = visiblePages();
-    el.zoomSheet.innerHTML = '';
+    el.zoomSheet.replaceChildren();
     // a panorama spread is shown as one image so no seam appears between the halves
     const pano = v.length === 2 && S.pages[v[0]].half === 'left' && S.pages[v[1]].half === 'right' &&
       (S.pages[v[0]].composed ? S.pages[v[0]].composed === S.pages[v[1]].composed : S.pages[v[0]].src === S.pages[v[1]].src);
@@ -505,7 +505,7 @@
     if (!S.zoom) return;
     const finish = () => {
       el.zoomLayer.hidden = true;
-      el.zoomSheet.innerHTML = '';
+      el.zoomSheet.replaceChildren();
       el.zoomBadge.hidden = true;
       if (S.book) S.book.classList.remove('is-hidden');
       el.shadow.style.opacity = '';
@@ -869,6 +869,7 @@
     inp.addEventListener('blur', () => { inp.value = pageLabel(); });
     inp.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
+        if (e.isComposing || e.keyCode === 229) return;   // an IME is confirming a character, not the page number
         const n = parseInt(inp.value, 10);
         if (!isNaN(n)) goTo(n - 1);
         inp.blur();
@@ -1012,7 +1013,8 @@
     $('#albumSubtitle').textContent = M.subtitle(a);
     $('#brandName').textContent = st.name ? 'Photographs by ' + st.name : '';
     if (st.url) $('#brand').href = st.url; else $('#brand').removeAttribute('href');
-    if (st.logo) { const l = $('#brandLogo'); l.src = st.logoUrl; l.alt = st.name || ''; l.hidden = false; }
+    if (st.logo) { const l = $('#brandLogo'); l.src = st.logoUrl || st.logo; l.alt = st.name ? st.name + ' logo' : ''; l.hidden = false; }
+    paintStudioCard(a);
     M.applyTheme(a);
     applyMode(M.getMode());
     if (a.downloadUrl) { el.downloadBtn.href = a.downloadUrlAbs; el.downloadBtn.hidden = false; }
@@ -1022,6 +1024,51 @@
       g.hidden = false;
     }
     el.loaderTitle.textContent = a.title;
+  }
+
+  /* The studio's card in "How to view": logo, name, tagline and ways to get in touch (public profile fields only).
+     Without a website, the studio's name in the title bar opens this card instead. */
+  function paintStudioCard(a) {
+    const st = a.studio || {}, card = $('#studioCard');
+    if (!card || !st.name) return;
+    const safe = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
+    const bare = (u) => u.replace(/^https?:\/\/(www\.)?/i, '').replace(/\/$/, '');
+    const wa = String(st.whatsapp || '').replace(/\D/g, '');
+    const tel = String(st.phone || '').replace(/[^\d+]/g, '');
+    const hello = 'Hello ' + st.name + ', I saw the album "' + (a.title || '') + '" and would like to know more.';
+    const links = [
+      wa && ['i-whatsapp', 'WhatsApp', 'https://wa.me/' + wa + '?text=' + encodeURIComponent(hello)],
+      tel && ['i-phone', 'Call', 'tel:' + tel],
+      safe(st.instagram) && ['i-insta', 'Instagram', st.instagram],
+      safe(st.facebook) && ['i-facebook', 'Facebook', st.facebook],
+      safe(st.youtube) && ['i-yt', 'YouTube', st.youtube],
+      safe(st.url) && ['i-globe', bare(st.url), st.url],
+    ].filter(Boolean);
+    card.textContent = '';
+    const head = document.createElement('div'); head.className = 'sc-head';
+    if (st.logo) { const img = document.createElement('img'); img.src = st.logoUrl || st.logo; img.alt = ''; head.appendChild(img); }
+    const who = document.createElement('div');
+    const by = document.createElement('p'); by.className = 'sc-by'; by.textContent = 'Photographs by';
+    const name = document.createElement('h3'); name.className = 'display'; name.id = 'studioCardName'; name.textContent = st.name;
+    who.append(by, name);
+    const sub = [st.tagline, st.city].filter(Boolean).join(', ');
+    if (sub) { const p = document.createElement('p'); p.className = 'sc-sub'; p.textContent = sub; who.appendChild(p); }
+    head.appendChild(who);
+    card.appendChild(head);
+    if (links.length) {
+      const row = document.createElement('div'); row.className = 'sc-links'; row.setAttribute('aria-label', 'Contact the studio');
+      for (const [icon, label, href] of links) {
+        const l = document.createElement('a'); l.className = 'sc-link'; l.href = href;
+        if (!href.startsWith('tel:')) { l.target = '_blank'; l.rel = 'noopener noreferrer'; }
+        l.innerHTML = '<svg aria-hidden="true"><use href="#' + icon + '"/></svg>';
+        const t = document.createElement('span'); t.textContent = label; l.appendChild(t);
+        row.appendChild(l);
+      }
+      card.appendChild(row);
+    }
+    card.hidden = false;
+    // no website: the studio's name in the title bar opens this card
+    if (!st.url && links.length) { $('#brand').dataset.action = 'help'; $('#brand').setAttribute('role', 'button'); $('#brand').title = 'Contact ' + st.name; }
   }
 
   function preload(indices, onProgress) {

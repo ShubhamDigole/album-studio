@@ -33,7 +33,7 @@ ADMIN_PASSWORD=<master password>
 
 Then:
 - **Sign in as master:** go to `http://127.0.0.1:8788/admin` and use `MASTER_EMAIL` with `ADMIN_PASSWORD`. The account is created on the first sign-in.
-- **Try a studio:** choose **Create a studio account**, then approve it as master under **Studios**.
+- **Try a studio:** open `/admin#signup` (or **New here? Create a studio account**), then approve it as master under **Studios**. On its first sign-in the studio goes through a three-step setup (details, logo and colour, album defaults) that it can skip; everything can be changed later under **Your studio**.
 - **Open an album:** `/a/<album-link>` opens the flipbook and `/g/<album-link>` the photo gallery. Opening `index.html` straight from disk shows the demo album.
 
 An older local database needs the files in `migrations/` run in order.

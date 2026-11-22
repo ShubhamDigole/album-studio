@@ -26,14 +26,14 @@
     const api = '/api/guestbook/' + encodeURIComponent(albumId);
     let before = 0, loaded = false;
 
-    function empty(text) { list.innerHTML = ''; const li = document.createElement('li'); li.className = 'empty'; li.textContent = text; list.appendChild(li); }
+    function empty(text) { list.replaceChildren(); const li = document.createElement('li'); li.className = 'empty'; li.textContent = text; list.appendChild(li); }
 
     async function load(older = false) {
       try {
         const res = await fetch(api + (older && before ? '?before=' + before : ''), { credentials: 'same-origin' });
         if (!res.ok) throw new Error();
         const data = await res.json();
-        if (!older) list.innerHTML = '';
+        if (!older) list.replaceChildren();
         data.messages.forEach((m) => list.appendChild(item(m)));
         if (data.messages.length) before = data.messages[data.messages.length - 1].id;
         if (more) more.hidden = !data.more;

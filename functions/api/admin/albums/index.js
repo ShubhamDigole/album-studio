@@ -3,6 +3,7 @@
 // POST /api/admin/albums -> create an album for the user's studio (master: for any studio, body.studioId)
 import { json, error, readJson, handle, HttpError } from '../../../../lib/http.js';
 import { rowToAlbum, validateAlbumInput, albumParams, getStaticAlbum, designUrls, cleanPageOptions } from '../../../../lib/albums.js';
+import { applyAlbumDefaults } from '../../../../lib/studios.js';
 
 export const onRequestGet = handle(async ({ request, env, data }) => {
   const user = data.user;
@@ -50,13 +51,15 @@ export const onRequestGet = handle(async ({ request, env, data }) => {
 
 export const onRequestPost = handle(async ({ request, env, data }) => {
   const user = data.user;
-  const body = await readJson(request);
-  const a = validateAlbumInput(body, { requireId: true });
+  let body = await readJson(request);
   let studioId = user.studioId;
   if (user.isMaster) {
     studioId = body.studioId ? String(body.studioId) : null;
     if (studioId && !(await env.DB.prepare('SELECT id FROM studios WHERE id = ?').bind(studioId).first())) throw new HttpError(400, 'That studio does not exist.');
   }
+  // what the request leaves out comes from the studio's album defaults (occasion, cover design, song, extra pages, …)
+  if (studioId) body = applyAlbumDefaults(body, await env.DB.prepare('SELECT accent, defaults FROM studios WHERE id = ?').bind(studioId).first());
+  const a = validateAlbumInput(body, { requireId: true });
   if (await env.DB.prepare('SELECT id FROM albums WHERE id = ?').bind(a.id).first()) {
     return error(409, `An album with the link "${a.id}" already exists. Choose another link.`);
   }

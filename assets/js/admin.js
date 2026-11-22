@@ -84,23 +84,47 @@
   }
 
   /* ---------- sign in / sign up ---------- */
+  // /admin shows sign-in, /admin#signup the studio sign-up; after signing up, a screen explains what happens next.
+  const SIGNIN_SAMPLES = [
+    { names: ['Aarav', 'Ananya'], type: 'wedding', template: 'jharokha', date: '2026-02-12', location: 'Udaipur' },
+    { names: ['Kabir', 'Ira'], type: 'engagement', template: 'mandala', date: '2026-12-14', location: 'Jaipur' },
+    { names: ['Rohan', 'Meera'], type: 'sangeet', template: 'toran', date: '2025-11-30', location: 'Pune' },
+  ];
+  function fanArt() {
+    $('#signinArt').className = 'signin-art';
+    $('#signinArt').innerHTML = SIGNIN_SAMPLES.map((s, i) =>
+      `<div class="fan" style="transform: translate(-50%, -50%) rotate(${[-12, -3, 7][i]}deg) translate(${[-40, 0, 46][i]}px, ${[24, 0, -18][i]}px)">${partSvg(s)}</div>`).join('');
+  }
+  // sign-up: the studio's name, as typed, printed inside the back cover of a sample album
+  function signupArt() {
+    const f = $('#signupForm');
+    const name = f.studioName.value.trim() || (state.signedUp && state.signedUp.studioName) || 'Your studio';
+    const a = Object.assign({}, SIGNIN_SAMPLES[0], { location: f.city.value.trim() || 'Udaipur', studio: { name, phone: f.phone.value.trim() } });
+    const art = $('#signinArt');
+    if (!art.classList.contains('su')) {
+      art.className = 'signin-art su';
+      art.innerHTML = '<div class="su-book"><div class="book open"><div class="leaves"></div><div class="board closeup" id="suBoard"></div></div></div><p class="su-cap">Inside the back cover of every album you make</p>';
+    }
+    $('#suBoard').innerHTML = partSvg(a, 'inside-back');
+  }
   function showAuth(which) {
     $('#loginForm').hidden = which !== 'login';
     $('#signupForm').hidden = which !== 'signup';
     $('#signupDone').hidden = which !== 'done';
+    if (which === 'login') fanArt(); else signupArt();
+    const want = which === 'login' ? '' : '#signup';
+    if (!state.user && location.hash !== want) history.replaceState(null, '', location.pathname + location.search + want);
+    document.title = which === 'login' ? 'Sign in' : which === 'done' ? 'Waiting for approval' : 'Create a studio account';
   }
-  function showSignin() {
+  function showSignin(which) {
     $('#signin').hidden = false; $('#shell').hidden = true;
-    const samples = [
-      { names: ['Aarav', 'Ananya'], type: 'wedding', template: 'jharokha', date: '2026-02-12', location: 'Udaipur' },
-      { names: ['Kabir', 'Ira'], type: 'engagement', template: 'mandala', date: '2026-12-14', location: 'Jaipur' },
-      { names: ['Rohan', 'Meera'], type: 'sangeet', template: 'toran', date: '2025-11-30', location: 'Pune' },
-    ];
-    $('#signinArt').innerHTML = samples.map((s, i) =>
-      `<div class="fan" style="transform: translate(-50%, -50%) rotate(${[-12, -3, 7][i]}deg) translate(${[-40, 0, 46][i]}px, ${[24, 0, -18][i]}px)">${partSvg(s)}</div>`).join('');
-    showAuth('login');
+    showAuth(which || (location.hash === '#signup' ? 'signup' : 'login'));
   }
-  document.querySelectorAll('[data-auth]').forEach((b) => b.addEventListener('click', () => showAuth(b.dataset.auth)));
+  document.querySelectorAll('[data-auth]').forEach((b) => b.addEventListener('click', () => {
+    showAuth(b.dataset.auth);
+    const first = document.querySelector(b.dataset.auth === 'signup' ? '#signupForm input' : '#loginForm input');
+    if (first) first.focus();
+  }));
 
   $('#loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -112,20 +136,90 @@
       await start();
     } catch (err) { note.className = 'form-note error'; note.textContent = err.message; }
   });
+
+  // sign-up checks in the browser, shown under each field once it is left (the server checks again)
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const SIGNUP_CHECKS = {
+    studioName: (v) => (v.trim().length < 2 ? 'Enter your studio name.' : ''),
+    name: (v) => (!v.trim() ? 'Enter your name.' : ''),
+    email: (v) => (!v.trim() ? 'Enter your email address.' : !EMAIL_RE.test(v.trim()) ? 'This email address looks incomplete, for example asha@rangstudio.in' : ''),
+    phone: (v) => {
+      const d = v.replace(/\D/g, '');
+      return v.trim() && (!/^\+?[\d\s().-]+$/.test(v.trim()) || d.length < 6 || d.length > 15) ? 'Enter the number in digits, for example +91 98200 00000.' : '';
+    },
+    password: (v) => (v.length < 8 ? 'Choose a password of at least 8 characters.' : ''),
+    terms: (v, el) => (!el.checked ? 'Tick the box to accept the terms of use.' : ''),
+  };
+  function fieldError(el, msg) {
+    const host = el.name === 'terms' ? el.closest('.terms') : el.closest('.field');
+    let p = host.querySelector('.field-err');
+    if (!msg) { if (p) p.remove(); el.removeAttribute('aria-invalid'); if (el.name === 'password') el.setAttribute('aria-describedby', 'pwHint'); else el.removeAttribute('aria-describedby'); return; }
+    if (!p) { p = document.createElement('small'); p.className = 'field-err'; p.id = 'err-' + el.name; host.appendChild(p); }
+    p.textContent = msg;
+    el.setAttribute('aria-invalid', 'true');
+    el.setAttribute('aria-describedby', p.id + (el.name === 'password' ? ' pwHint' : ''));
+  }
+  const checkField = (el) => { const fn = SIGNUP_CHECKS[el.name]; if (!fn) return true; const msg = fn(el.value, el); fieldError(el, msg); return !msg; };
+  // a rough strength guide: length matters most, then variety; common choices are weak
+  function pwStrength(pw, f) {
+    if (pw.length < 8) return [0, pw ? 'Too short: ' + (8 - pw.length) + ' more character' + (8 - pw.length === 1 ? '' : 's') + ' needed.' : 'At least 8 characters. A short phrase is easy to remember and hard to guess.'];
+    const low = pw.toLowerCase(), studio = f.studioName.value.trim().toLowerCase().replace(/\s+/g, '');
+    if (/^(.)\1+$/.test(pw) || /^(password|12345678|123456789|qwertyui|11111111|iloveyou|photography|wedding)/.test(low) ||
+      (studio.length > 3 && low.replace(/\s+/g, '').includes(studio))) return [1, 'Easy to guess. Avoid common words and your studio name.'];
+    const kinds = [/[a-z]/, /[A-Z]/, /\d/, /[^A-Za-z0-9]/].filter((r) => r.test(pw)).length;
+    const score = Math.min(3, (pw.length >= 12 ? 2 : 1) + (kinds >= 3 ? 1 : 0));
+    return [score, score === 3 ? 'Strong password.' : score === 2 ? 'Good. A few more characters make it stronger.' : 'Okay. Longer is stronger: try a short phrase.'];
+  }
+  function paintStrength() {
+    const f = $('#signupForm'), [score, text] = pwStrength(f.password.value, f);
+    f.querySelector('.pw-meter').dataset.score = f.password.value ? score : '';
+    $('#pwHint').textContent = text;
+  }
+  $('#pwEye').addEventListener('click', (e) => {
+    const input = $('#suPassword'), show = input.type === 'password';
+    input.type = show ? 'text' : 'password';
+    e.currentTarget.textContent = show ? 'Hide' : 'Show';
+    e.currentTarget.setAttribute('aria-pressed', String(show));
+  });
+  $('#signupForm').addEventListener('focusout', (e) => { if (e.target.name && e.target.value !== '' && e.target.name !== 'terms') checkField(e.target); });
+  $('#signupForm').addEventListener('input', (e) => {
+    if (e.target.getAttribute('aria-invalid')) checkField(e.target);
+    if (e.target.name === 'password' || e.target.name === 'studioName') paintStrength();
+    if (['studioName', 'phone', 'city'].includes(e.target.name)) signupArt();
+  });
+  $('#signupForm').addEventListener('change', (e) => { if (e.target.name === 'terms') checkField(e.target); });
   $('#signupForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const f = e.target, note = $('#signupNote');
+    const bad = Object.keys(SIGNUP_CHECKS).map((k) => f.elements[k]).filter((el) => !checkField(el));
+    if (bad.length) {
+      note.className = 'form-note error';
+      note.textContent = bad.length === 1 ? 'Check the highlighted field.' : 'Check the ' + bad.length + ' highlighted fields.';
+      bad[0].focus(); return;
+    }
     note.className = 'form-note'; note.textContent = 'Creating your account…';
+    $('#signupBtn').disabled = true;
     try {
-      await api('signup', { method: 'POST', body: { studioName: f.studioName.value, name: f.name.value, email: f.email.value, phone: f.phone.value, city: f.city.value, password: f.password.value } });
-      f.reset(); note.textContent = '';
+      const r = await api('signup', { method: 'POST', body: { studioName: f.studioName.value, name: f.name.value, email: f.email.value, phone: f.phone.value,
+        whatsapp: f.whatsapp.checked, city: f.city.value, password: f.password.value, terms: f.terms.checked } });
+      state.signedUp = { studioName: r.studioName, email: r.email, name: f.name.value.trim().split(/\s+/)[0] };
+      $('#doneTitle').textContent = 'Thank you, ' + state.signedUp.name;
+      $('#doneLede').innerHTML = 'We have your sign-up for <b>' + esc(r.studioName) + '</b>. It is waiting for approval; this is what happens next.';
+      $('#doneEmail').innerHTML = 'with <b>' + esc(r.email) + '</b> and the password you just chose.';
+      f.reset(); note.textContent = ''; paintStrength();
       showAuth('done');
-    } catch (err) { note.className = 'form-note error'; note.textContent = err.message; }
+    } catch (err) {
+      note.className = 'form-note error'; note.textContent = err.message;
+      const map = [[/email/i, 'email'], [/password/i, 'password'], [/studio name/i, 'studioName'], [/^your name/i, 'name'], [/phone|whatsapp/i, 'phone'], [/terms/i, 'terms'], [/city/i, 'city']];
+      const hit = map.find(([re]) => re.test(err.message));
+      if (hit) { fieldError(f.elements[hit[1]], err.message); f.elements[hit[1]].focus(); }
+    } finally { $('#signupBtn').disabled = false; }
   });
   $('#signOut').addEventListener('click', async () => {
     await fetch('/api/admin/session', { method: 'DELETE', credentials: 'same-origin' });
-    location.hash = ''; state.user = null;
-    showSignin();
+    state.user = null; state.profile = null;
+    history.replaceState(null, '', location.pathname + location.search);
+    showSignin('login');
   });
 
   function applyMode(mode) {
@@ -139,7 +233,10 @@
 
   function paintNav() {
     const u = state.user;
-    $('#who').textContent = u.isMaster ? 'Master' : (u.studio && u.studio.name) || '';
+    const p = state.profile;
+    const logo = !u.isMaster && p && p.logo;
+    $('#who').innerHTML = (logo ? `<img src="${esc(logo)}" alt="" />` : '') + esc(u.isMaster ? 'Master' : (p && p.name) || (u.studio && u.studio.name) || '');
+    $('#shell').classList.toggle('is-onboarding', location.hash.replace(/^#/, '').split('/')[0] === 'welcome');
     $('#navStudios').hidden = !u.isMaster;
     $('#navStudio').hidden = u.isMaster;
     $('#navTemplates').hidden = !u.isMaster;
@@ -157,6 +254,13 @@
     closeModal();
     paintNav();
     $('#searchBox').hidden = !!parts[0];
+    document.title = 'Albums';
+    // a studio that has not finished (or skipped) the first-time setup lands on it instead of the shelf
+    if (parts[0] === 'welcome' || (!parts[0] && needsOnboarding())) {
+      if (!needsOnboarding() && parts[0] === 'welcome') { location.hash = ''; return; }
+      if (!parts[0]) { location.replace('#welcome'); return; }
+      return onboardingPage();
+    }
     if (!parts[0]) return shelf();
     if (parts[0] === 'new') return wizardDetails(null);
     if (parts[0] === 'add') return wizardDetails(parts[1]);
@@ -166,11 +270,14 @@
     if (parts[0] === 'templates' && state.user.isMaster) return templatesPage();
     return shelf();
   }
-  addEventListener('hashchange', () => { if (state.user) route(); });
+  addEventListener('hashchange', () => {
+    if (state.user) route();
+    else if (!$('#signin').hidden) showAuth(location.hash === '#signup' ? 'signup' : 'login');
+  });
 
   /* ---------- shelf ---------- */
   async function shelf() {
-    view.innerHTML = '';
+    view.replaceChildren();
     try {
       const data = await api('albums');
       state.albums = data.albums; state.unregistered = data.unregistered || [];
@@ -271,11 +378,18 @@
     a.template || CT.defaultFor(a.type);
 
   /* ---------- new album: one page with the details, covers and endpaper ---------- */
+  // A new album starts with the studio's defaults (Your studio, Album defaults): occasion, cover design, song,
+  // extra pages, blessings approval, draft or published, and the studio's colour. The photographer credit stays empty,
+  // so the album follows the studio profile. The master keeps the last credit typed.
   function blankDraft() {
     let studio = {};
-    try { studio = JSON.parse(localStorage.getItem('albumviewer:studio') || '{}'); } catch (e) { /* ignore */ }
-    return { id: '', type: 'wedding', names: ['', ''], title: '', date: '', location: '', studio, music: '', downloadUrl: '', accent: '',
-      template: '', designView: {}, pending: {}, status: 'draft', requireApproval: false, studioId: '' };
+    const p = state.profile, d = (p && p.defaults) || {};
+    if (state.user.isMaster) { try { studio = JSON.parse(localStorage.getItem('albumviewer:studio') || '{}'); } catch (e) { /* ignore */ } }
+    const off = Object.fromEntries(Object.entries(d.pages || {}).filter(([, v]) => v === false));   // only pages switched off are stored
+    return { id: '', type: d.type || 'wedding', names: ['', ''], title: '', date: '', location: '', studio, music: d.music || '', downloadUrl: '',
+      accent: (p && p.accent) || '', template: d.template || '', designView: d.template ? { cover: { template: d.template } } : {},
+      design: Object.keys(off).length ? { pages: off } : {}, pending: {}, status: d.status === 'published' ? 'published' : 'draft',
+      requireApproval: !!d.requireApproval, studioId: '' };
   }
   function wizardDetails(presetId) {
     if (presetId) {
@@ -315,7 +429,8 @@
     while (names.length < 2) names.push('');
     const st = a.studio || {};
     const studioSheet = await studioOptions(a.studioId || '');
-    const fallbackStudio = (state.user.studio && state.user.studio.name) || '';
+    const prof = state.profile || state.user.studio || {};
+    const fallbackStudio = prof.name || '';
     host.innerHTML = `
       <form class="editor" id="albumForm" novalidate>
         <div>
@@ -349,12 +464,12 @@
             <div class="fields"><label class="field"><span>Link</span><input name="id" maxlength="64" value="${esc(a.id || '')}" ${a.idLocked ? 'readonly' : ''} /></label>
             <p class="hint" id="linkHint"></p></div></section>` : ''}
           ${studioSheet}
-          <section class="sheet"><div><h2>Photographer credit</h2><p class="why">Printed on the back cover. Leave empty to use ${fallbackStudio ? `your studio profile (${esc(fallbackStudio)})` : 'the studio profile'}.</p></div>
+          <section class="sheet"><div><h2>Photographer credit</h2><p class="why">Printed inside the back cover. Empty fields use ${fallbackStudio ? `your studio profile (${esc(fallbackStudio)})` : 'the studio profile'}${state.user.isMaster ? '' : ', which also gives guests your logo and ways to contact you'}. <a class="link" href="#studio">Edit the profile</a></p></div>
             <div class="fields">
               <label class="field"><span>Studio name</span><input name="studioName" maxlength="100" value="${esc(st.name || '')}" placeholder="${esc(fallbackStudio)}" /></label>
               <div class="two">
-                <label class="field"><span>Phone</span><input name="studioPhone" maxlength="40" inputmode="tel" value="${esc(st.phone || '')}" /></label>
-                <label class="field"><span>Website</span><input name="studioUrl" maxlength="300" placeholder="https://" value="${esc(st.url || '')}" /></label>
+                <label class="field"><span>Phone</span><input name="studioPhone" maxlength="40" inputmode="tel" value="${esc(st.phone || '')}" placeholder="${esc(prof.phone || '')}" /></label>
+                <label class="field"><span>Website</span><input name="studioUrl" maxlength="300" placeholder="${esc(prof.url || 'https://')}" value="${esc(st.url || '')}" /></label>
               </div>
             </div></section>
           <section class="sheet"><div><h2>Colour</h2><p class="why">The accent on the cover, buttons and highlights. Each occasion has its own.</p></div>
@@ -459,6 +574,8 @@
     function shown() {
       const v = read();
       if (!v.studio.name && fallbackStudio) v.studio.name = fallbackStudio;
+      if (!v.studio.phone && prof.phone) v.studio.phone = prof.phone;
+      if (!v.studio.url && prof.url) v.studio.url = prof.url;
       return Object.assign({}, a, v);
     }
     function drawParts() {
@@ -637,7 +754,7 @@
   }
 
   /* ---------- the front cover / back cover / endpaper modal ---------- */
-  function closeModal() { const m = $('#modal'); if (m) { m.hidden = true; $('#modalCard').innerHTML = ''; document.body.classList.remove('modal-open'); } }
+  function closeModal() { const m = $('#modal'); if (m) { m.hidden = true; $('#modalCard').replaceChildren(); document.body.classList.remove('modal-open'); } }
   $('#modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#modal').hidden) closeModal(); });
 
@@ -1436,29 +1553,51 @@
   }
 
   /* ---------- master: studios ---------- */
+  const linkLabel = (u) => String(u || '').replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
   async function studiosPage() {
-    view.innerHTML = '';
+    view.replaceChildren();
     let studios;
     try { studios = (await api('master/studios')).studios; state.studios = studios; }
     catch (err) { toast(err.message); return; }
     state.pendingStudios = studios.filter((s) => s.status === 'pending').length;
     paintNav();
     const label = { pending: 'Waiting for approval', active: 'Active', suspended: 'Switched off' };
+    const day = (t) => new Date(t).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+    const links = (s) => [
+      s.url && ['i-globe', linkLabel(s.url), s.url],
+      s.whatsapp && ['i-wa', s.whatsapp, 'https://wa.me/' + window.Onboarding.waDigits(s.whatsapp)],
+      s.instagram && ['i-insta', linkLabel(s.instagram).replace(/^instagram\.com\//, '@'), s.instagram],
+      s.facebook && ['i-fb', linkLabel(s.facebook), s.facebook],
+      s.youtube && ['i-yt', linkLabel(s.youtube).replace(/^youtube\.com\//, ''), s.youtube],
+    ].filter(Boolean);
+    const defaultsLine = (s) => {
+      const d = s.defaults || {};
+      if (!s.onboarded_at) return 'Has not finished the first-time setup yet';
+      const bits = ['set up on ' + day(s.onboarded_at), 'new albums: ' + typeLabel(d.type || 'wedding').toLowerCase()];
+      if (d.music) bits.push('with music');
+      bits.push(d.status === 'published' ? 'published straight away' : 'start as drafts');
+      if (d.requireApproval) bits.push('blessings checked first');
+      return bits.join(', ').replace(/^./, (c) => c.toUpperCase());
+    };
     view.innerHTML = `
       <h1 class="page-title display">Studios</h1>
-      <p class="lede">${plural(studios.length, 'studio has', 'studios have')} an account. New studios sign up themselves and wait here until you approve them.</p>
+      <p class="lede">${plural(studios.length, 'studio has', 'studios have')} an account. New studios sign up at <code>${esc(location.origin)}/admin#signup</code> and wait here until you approve them.</p>
       <div class="studio-list">${studios.map((s) => `
         <article class="studio-row ${s.status}">
-          <span class="avatar">${esc((Array.from(s.name.trim())[0] || '?').toUpperCase())}</span>
+          <span class="avatar${s.logo ? ' has-logo' : ''}" style="${s.accent ? '--studio-accent:' + esc(s.accent) : ''}">${s.logo ? `<img src="${esc(s.logo)}" alt="${esc(s.name)} logo" />` : esc((Array.from(s.name.trim())[0] || '?').toUpperCase())}</span>
           <div class="studio-main"><h3>${esc(s.name)}</h3>
+            ${s.tagline ? `<p class="tagline">${esc(s.tagline)}</p>` : ''}
             <p class="hint">${esc([s.owner_name, s.owner_email, s.phone, s.city].filter(Boolean).join(', '))}</p>
-            <p class="hint">Joined ${new Date(s.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}, ${plural(s.albums, 'album', 'albums')}, ${plural(s.views30, 'view', 'views')} in 30 days, ${bytes(s.bytes)} uploaded</p></div>
+            ${s.address ? `<p class="hint"><svg class="i"><use href="#i-pin"/></svg>${esc(s.address)}</p>` : ''}
+            ${links(s).length ? `<p class="studio-links">${links(s).map(([i, t, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener noreferrer"><svg class="i"><use href="#${i}"/></svg>${esc(t)}</a>`).join('')}</p>` : ''}
+            <p class="hint">Joined ${day(s.created_at)}, ${plural(s.albums, 'album', 'albums')}, ${plural(s.views30, 'view', 'views')} in 30 days, ${bytes(s.bytes)} uploaded</p>
+            <p class="hint">${esc(defaultsLine(s))}${s.accent ? ` <span class="dot" style="background:${esc(s.accent)}" title="Studio colour ${esc(s.accent)}"></span>` : ''}</p></div>
           <span class="chip ${s.status === 'active' ? 'live' : s.status === 'pending' ? 'wait' : ''}">${label[s.status] || s.status}</span>
           <div class="studio-actions">
             ${s.status !== 'active' ? `<button class="btn" data-status="active" data-id="${esc(s.id)}">${s.status === 'pending' ? 'Approve' : 'Switch back on'}</button>` : ''}
             ${s.status !== 'suspended' ? `<button class="btn quiet" data-status="suspended" data-id="${esc(s.id)}">${s.status === 'pending' ? 'Decline' : 'Switch off'}</button>` : ''}
           </div>
-        </article>`).join('') || '<p class="hint">No studios yet. Share the sign-up page: ' + esc(location.origin) + '/admin</p>'}</div>`;
+        </article>`).join('') || '<p class="hint">No studios yet. Share the sign-up page: ' + esc(location.origin) + '/admin#signup</p>'}</div>`;
     view.querySelectorAll('[data-status]').forEach((b) => b.addEventListener('click', async () => {
       if (b.dataset.status === 'suspended' && !confirm('Switch this studio off? Its owner is signed out and its albums go offline until you switch it back on.')) return;
       try { await api('master/studios/' + encodeURIComponent(b.dataset.id), { method: 'PATCH', body: { status: b.dataset.status } }); toast(b.dataset.status === 'active' ? 'Studio approved' : 'Studio switched off'); studiosPage(); }
@@ -1466,35 +1605,36 @@
     }));
   }
 
-  /* ---------- your studio ---------- */
+  /* ---------- your studio: profile, brand and album defaults (assets/js/onboarding.js), and the password ---------- */
+  const needsOnboarding = () => !!(window.Onboarding && window.Onboarding.needed(state.user, state.profile));
+  const onboardingContext = () => ({ api, toast, esc, M, CT, user: state.user, profile: state.profile, partSvg, loadSongs,
+    onProfile: (p) => { state.profile = p; if (state.user.studio) state.user.studio.name = p.name; paintNav(); },
+    go: (hash) => { location.hash = hash; } });
+  async function loadProfile() {
+    if (state.user.isMaster) { state.profile = null; return; }
+    try { state.profile = (await api('studio')).studio; } catch (err) { state.profile = null; }
+  }
+  async function onboardingPage() {
+    if (!state.profile) await loadProfile();
+    if (!window.Onboarding || !state.profile) { location.hash = ''; return; }
+    document.title = 'Set up your studio';
+    window.Onboarding.mount(view, onboardingContext());
+  }
   async function studioPage() {
-    view.innerHTML = '';
-    let s;
-    try { s = (await api('studio')).studio; } catch (err) { toast(err.message); return; }
+    view.replaceChildren();
+    if (!state.user.isMaster) await loadProfile();
+    const s = state.profile;
     view.innerHTML = `
       <h1 class="page-title display">${s ? esc(s.name) : 'Your account'}</h1>
-      <p class="lede">${s ? 'Your studio details are printed on the back cover of every album that does not set its own.' : 'The master account has no studio profile.'}</p>
-      ${s ? `<form class="sheet-form" id="studioForm">
-        <section class="sheet"><div><h2>Studio profile</h2></div><div class="fields">
-          <label class="field"><span>Studio name</span><input name="name" maxlength="80" value="${esc(s.name)}" required /></label>
-          <div class="two"><label class="field"><span>Phone</span><input name="phone" maxlength="40" value="${esc(s.phone)}" /></label>
-          <label class="field"><span>City</span><input name="city" maxlength="80" value="${esc(s.city)}" /></label></div>
-          <label class="field"><span>Website</span><input name="url" maxlength="300" placeholder="https://" value="${esc(s.url)}" /></label>
-          <div class="form-row"><button class="btn" type="submit">Save profile</button><p class="form-note" id="studioNote"></p></div>
-        </div></section></form>` : ''}
+      <p class="lede">${s ? 'Your details, logo and colour appear on every album that does not set its own, and guests can reach you from the album.' : 'The master account has no studio profile.'}</p>
+      <div id="studioHost"></div>
       <form class="sheet-form" id="pwForm">
-        <section class="sheet"><div><h2>Password</h2><p class="why">${esc(state.user.email)}</p></div><div class="fields">
+        <section class="sheet"><div><h2>Password</h2><p class="why">You sign in as ${esc(state.user.email)}</p></div><div class="fields">
           <label class="field"><span>Current password</span><input type="password" name="current" autocomplete="current-password" required /></label>
           <label class="field"><span>New password <em>at least 8 characters</em></span><input type="password" name="next" minlength="8" autocomplete="new-password" required /></label>
           <div class="form-row"><button class="btn quiet" type="submit">Change password</button><p class="form-note" id="pwNote"></p></div>
         </div></section></form>`;
-    const sf = $('#studioForm');
-    if (sf) sf.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const note = $('#studioNote');
-      try { await api('studio', { method: 'PUT', body: { name: sf.name.value, phone: sf.phone.value, city: sf.city.value, url: sf.url.value } }); note.className = 'form-note'; note.textContent = 'Saved'; state.user.studio.name = sf.name.value; paintNav(); }
-      catch (err) { note.className = 'form-note error'; note.textContent = err.message; }
-    });
+    if (s && window.Onboarding) window.Onboarding.mountStudioPage($('#studioHost'), onboardingContext());
     $('#pwForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const f = e.target, note = $('#pwNote');
@@ -1508,7 +1648,9 @@
     const d = await fetch('/api/admin/session', { credentials: 'same-origin' }).then((r) => r.json());
     if (!d.user) { showSignin(); return; }
     state.user = d.user; state.pendingStudios = d.pendingStudios || 0; state.studios = null;
+    await loadProfile();
     $('#signin').hidden = true; $('#shell').hidden = false;
+    if (location.hash === '#signup') history.replaceState(null, '', location.pathname + location.search);
     route();
   }
   document.fonts.ready.then(start).catch(() => {

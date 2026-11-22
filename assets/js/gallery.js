@@ -41,7 +41,7 @@
     const items = [{ key: 'all', label: 'All photos', n: S.photos.length }]
       .concat(S.sections.map((s) => ({ key: s.key, label: s.title, n: S.photos.filter((p) => p.section === s.key).length })).filter((s) => s.n));
     if (S.api) items.push({ key: 'favourites', label: 'My favourites', n: S.mine.size, heart: true });
-    nav.innerHTML = '';
+    nav.replaceChildren();
     items.forEach((it) => {
       const b = document.createElement('button');
       b.type = 'button';
@@ -93,7 +93,7 @@
 
   function renderPhotos() {
     const main = $('#photos');
-    main.innerHTML = '';
+    main.replaceChildren();
     let groups;
     if (S.filter === 'favourites') {
       groups = [{ title: 'My favourites', photos: S.photos.filter((p) => S.mine.has(p.id)) }];

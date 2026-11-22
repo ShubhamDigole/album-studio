@@ -38,8 +38,10 @@
 .page .pe-clip img, .page .pe-bg-img, .page .pe-art img { opacity: 1; transition: none; }
 
 /* crop dialog (crop.js), used in the admin */
-.crop-overlay { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgba(8, 10, 12, .66); backdrop-filter: blur(3px); }
-.crop-card { width: min(780px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 20px 24px 22px; border-radius: var(--radius-l, 18px); background: var(--surface-raised, #1d2226); color: var(--ink, #f3eee6); box-shadow: 0 40px 100px rgba(0, 0, 0, .5); }
+.crop-dialog { width: min(780px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); padding: 0; border: 0; border-radius: var(--radius-l, 18px); background: transparent; color: inherit; overflow: visible; }
+.crop-dialog:modal { overscroll-behavior: contain; }
+.crop-dialog::backdrop { overflow: hidden; overscroll-behavior: contain; background: rgba(8, 10, 12, .66); backdrop-filter: blur(3px); }
+.crop-card { width: 100%; max-height: calc(100dvh - 32px); overflow: auto; padding: 20px 24px 22px; border-radius: var(--radius-l, 18px); background: var(--surface-raised, #1d2226); color: var(--ink, #f3eee6); box-shadow: 0 40px 100px rgba(0, 0, 0, .5); }
 .crop-head h2 { margin: 0; font-size: 26px; }
 .crop-help { margin: 6px 0 14px; color: var(--ink-soft, #b9b2a6); font-size: 15px; }
 .crop-stage { display: grid; place-items: center; padding: 18px; border-radius: 12px; background: repeating-conic-gradient(rgba(255, 255, 255, .04) 0 25%, transparent 0 50%) 0 0 / 22px 22px; }

@@ -15,7 +15,23 @@ body { -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
 .titlebar-right { display: flex; align-items: center; gap: 6px; flex: none; padding-top: 2px; }
 .studio { display: flex; align-items: center; gap: 8px; color: var(--ink-soft); font-size: 15px; text-decoration: none; }
 .studio[href]:hover { color: var(--ink); }
-.studio img { height: 30px; width: auto; }
+.studio img { height: 32px; width: auto; max-width: 110px; object-fit: contain; padding: 3px 7px; border-radius: 7px; background: rgba(251, 247, 241, .94); }
+.studio[data-action] { cursor: pointer; }
+.studio[data-action]:hover { color: var(--ink); }
+/* the studio's card in "How to view" */
+.studio-card { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.sc-head { display: flex; align-items: center; gap: 14px; }
+.sc-head img { width: 64px; height: 64px; flex: none; object-fit: contain; padding: 6px; border-radius: 12px; background: #FBF7F1; }
+.sc-by { margin: 0; font-size: 13px; color: var(--ink-soft); }
+.sc-head h3 { margin: 0; font-size: 24px; font-weight: 400; line-height: 1.15; overflow-wrap: anywhere; }
+.sc-sub { margin: 2px 0 0; font-size: 14px; color: var(--ink-soft); }
+.sc-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.sc-link { display: inline-flex; align-items: center; gap: 7px; min-height: 38px; padding: 0 14px 0 11px; border-radius: 99px; color: var(--ink); text-decoration: none; font-size: 15px; box-shadow: inset 0 0 0 1px var(--line); max-width: 100%; }
+.sc-link span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sc-link:hover { background: var(--hover); }
+.sc-link svg { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.sc-link:first-child { background: var(--accent); color: #fff; box-shadow: none; }
+.sc-link:first-child:hover { filter: brightness(1.08); }
 
 /* blessings: a labelled button in the title bar, and the invitation at the end of the album */
 .bless-pill { display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 16px 0 12px; border: 0; border-radius: 99px; background: var(--accent); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 40%, transparent); transition: transform .2s var(--ease), box-shadow .2s; }
