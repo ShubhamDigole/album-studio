@@ -146,7 +146,7 @@
       const own = (page.tx || [])[i];
       const value = own != null && own !== '' ? own : autoText(t.role, opts.album) || (t.role === 'section' ? (page.section || '') : '') || t.text || '';
       if (!value && !opts.editable) return;
-      const font = t.font === 'ui' ? 'var(--pt-ui, Mukta, system-ui, sans-serif)' : 'var(--pt-display, "Rozha One", Georgia, serif)';
+      const font = t.font === 'ui' ? 'var(--pt-ui, Mukta, system-ui, sans-serif)' : "var(--pt-display, 'Rozha One', Georgia, serif)";
       html += `<div class="pt-text${opts.editable ? ' pt-edit' : ''}" data-text="${i}" style="left:${pct(t.x)};top:${pct(t.y)};width:${pct(t.w)};height:${pct(t.h)};` +
         `font-family:${font};font-size:${(+t.size || 4)}cqh;text-align:${t.align || 'center'};color:${textColor(t.color, th, dark)};` +
         `justify-content:${t.align === 'left' ? 'flex-start' : t.align === 'right' ? 'flex-end' : 'center'};font-weight:${t.weight || (t.font === 'ui' ? 500 : 400)}">` +
@@ -162,7 +162,7 @@
     let a = (seed >>> 0) || 1;
     return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
   }
-  const slotAR = (s, ratio, spread) => (s.w * ratio * (spread ? 2 : 1)) / s.h;
+  const slotAR = (s, ratio, spread) => (s.w * ratio * (spread ? 2 : 1) * (s.frame === 'polaroid' ? 0.9 : 1)) / (s.h * (s.frame === 'polaroid' ? 0.78 : 1));
   // how badly k photos fit a template's slots, trying the order that fits best (k <= 4) or the given order
   function fit(photos, tpl, ratio) {
     const ars = tpl.slots.map((s) => slotAR(s, ratio, tpl.spread));
