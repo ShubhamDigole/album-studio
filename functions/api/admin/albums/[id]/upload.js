@@ -58,7 +58,7 @@ export const onRequestPost = handle(async ({ request, env, params, data }) => {
     const d = design[part] || (design[part] = {});
     let old = '';
     if (slot === null) { old = d.upload || ''; d.upload = key; }
-    else { d.photos = Array.isArray(d.photos) ? d.photos : []; old = d.photos[slot] || ''; d.photos[slot] = key; }
+    else { d.photos = Array.isArray(d.photos) ? d.photos : []; old = d.photos[slot] || ''; d.photos[slot] = key; if (Array.isArray(d.crops)) d.crops[slot] = null; }
     await env.DB.prepare('UPDATE albums SET design = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(design), Date.now(), row.id).run();
     // only delete files uploaded for the design; an album photo used as the cover stays
     if (old && old.startsWith(`a/${row.id}/design/`)) await env.MEDIA.delete(old);

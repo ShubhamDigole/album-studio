@@ -1,4 +1,4 @@
-// PUT /api/admin/albums/:id/design {part, template?, removeUpload?, removeSlot?}
+// PUT /api/admin/albums/:id/design {part, template?, removeUpload?, removeSlot?, setCrop?: slot, crop?: [cx, cy, zoom, aspect] | null}
 // Choose the design for the cover, end page or endpaper, or remove an uploaded image.
 import { json, error, readJson, handle, HttpError } from '../../../../../lib/http.js';
 import { findManaged } from '../../../../../lib/access.js';
@@ -35,6 +35,18 @@ export const onRequestPut = handle(async ({ request, env, params, data }) => {
     d.photos[b.setSlot] = m.key;
   }
   if (Number.isInteger(b.removeSlot) && Array.isArray(d.photos) && d.photos[b.removeSlot]) { removed.push(d.photos[b.removeSlot]); d.photos[b.removeSlot] = ''; }
+  if (Number.isInteger(b.setSlot) || Number.isInteger(b.removeSlot)) {
+    // a new photo in a spot starts uncropped
+    const i = Number.isInteger(b.setSlot) ? b.setSlot : b.removeSlot;
+    if (Array.isArray(d.crops)) d.crops[i] = null;
+  }
+  if (Number.isInteger(b.setCrop)) {
+    if (b.setCrop < 0 || b.setCrop > 5) throw new HttpError(400, 'Unknown photo spot.');
+    const n = (v, lo, hi, def) => { const x = Number(v); return Number.isFinite(x) ? Math.min(hi, Math.max(lo, Math.round(x * 1000) / 1000)) : def; };
+    const c = Array.isArray(b.crop) ? b.crop : null;
+    d.crops = Array.isArray(d.crops) ? d.crops : [];
+    d.crops[b.setCrop] = c ? [n(c[0], 0, 1, 0.5), n(c[1], 0, 1, 0.5), n(c[2], 1, 4, 1), n(c[3], 0.1, 10, 1.5)] : null;
+  }
   await env.DB.prepare('UPDATE albums SET design = ?, updated_at = ? WHERE id = ?').bind(JSON.stringify(design), Date.now(), row.id).run();
   // only files uploaded for the design itself; album photos used in a slot stay
   const own = removed.filter((k) => k.startsWith(`a/${row.id}/design/`));

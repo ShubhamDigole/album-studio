@@ -717,7 +717,7 @@
   function designFor(album, part) {
     const pick = (album.design && album.design[part]) || {};
     const want = pick.template || album.template || defaultFor(album.type);
-    return { key: TEMPLATES[want] ? want : defaultFor(album.type), photos: pick.photos || [], upload: pick.upload || '' };
+    return { key: TEMPLATES[want] ? want : defaultFor(album.type), photos: pick.photos || [], upload: pick.upload || '', crops: pick.crops || [] };
   }
 
   function render(kind, album, opts = {}) {
@@ -730,6 +730,7 @@
     const d = details(album, opts.placeholders);
     const id = 'ct' + (++uid) + '_';
     const photos = pick.photos.length ? pick.photos : [opts.photo || album.coverPhotoUrl].filter(Boolean);
+    CROPS = ['cover', 'back'].includes(kind) || kind.startsWith('inside') || kind === 'flyleaf' ? pick.crops : [];   // read by photoSlot while drawing
     let body;
     if (kind === 'title' || kind === 'divider' || kind === 'closing') {
       // inner pages for albums made from uploaded photos: in the family of the cover design
@@ -763,13 +764,25 @@
   }
 
   // A photo window for designs with photo slots. shape: rect | circle | arch. Without a photo it shows a soft placeholder.
+  // crops of the part being drawn: [cx, cy, zoom, photo aspect] per spot (set by render; see Crop in crop.js)
+  let CROPS = [];
+  function croppedImage(href, x, y, w, h, c, cid) {
+    const [cx = 0.5, cy = 0.5, z = 1, ar] = c;
+    let dw, dh;
+    if (ar > w / h) { dh = h; dw = h * ar; } else { dw = w; dh = w / ar; }   // like object-fit: cover
+    dw *= z; dh *= z;
+    return `<image href="${esc(href)}" x="${f(x - (dw - w) * cx)}" y="${f(y - (dh - h) * cy)}" width="${f(dw)}" height="${f(dh)}" preserveAspectRatio="none" clip-path="url(#${cid})"/>`;
+  }
   function photoSlot(id, n, x, y, w, h, href, { shape = 'rect', stroke = MARIGOLD, sw = 4, radius = 0 } = {}) {
     const cid = id + 'slot' + n;
     let clip;
     if (shape === 'circle') clip = `<circle cx="${f(x + w / 2)}" cy="${f(y + h / 2)}" r="${f(Math.min(w, h) / 2)}"/>`;
     else if (shape === 'arch') clip = `<path d="M${f(x)} ${f(y + h)} V${f(y + w / 2)} A${f(w / 2)} ${f(w / 2)} 0 0 1 ${f(x + w)} ${f(y + w / 2)} V${f(y + h)} Z"/>`;
     else clip = `<rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" rx="${radius}"/>`;
-    const fill = href
+    const crop = CROPS && CROPS[n];
+    const fill = href && crop && crop[3]
+      ? croppedImage(href, x, y, w, h, crop, cid)
+      : href
       ? `<image href="${esc(href)}" x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" preserveAspectRatio="xMidYMid slice" clip-path="url(#${cid})"/>`
       : `<g clip-path="url(#${cid})"><rect x="${f(x)}" y="${f(y)}" width="${f(w)}" height="${f(h)}" fill="#000" opacity=".22"/>` +
         `<path d="M${f(x)} ${f(y + h)} L${f(x + w * 0.35)} ${f(y + h * 0.55)} L${f(x + w * 0.55)} ${f(y + h * 0.75)} L${f(x + w * 0.75)} ${f(y + h * 0.45)} L${f(x + w)} ${f(y + h * 0.8)} V${f(y + h)}Z" fill="#fff" opacity=".12"/>` +

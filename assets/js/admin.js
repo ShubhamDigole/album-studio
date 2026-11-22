@@ -545,7 +545,7 @@
           if (Object.keys(v.pages).length) design.pages = v.pages;
           await api('albums', { method: 'POST', body: Object.assign({}, v, { template: state.draft.template || '', design }) });
           state.draft.saved = true;
-          if (Object.keys(state.draft.pending || {}).length) {
+          if (Object.keys(state.draft.pending || {}).length || (state.draft.pendingCrops || []).length) {
             note.textContent = 'Uploading your images…';
             try { await sendPending(Object.assign(state.draft, { id: v.id })); }
             catch (err) { toast('The album was created, but an image did not upload: ' + err.message); location.hash = '#album/' + encodeURIComponent(v.id); return; }
@@ -709,6 +709,8 @@
       await postDesignFile(a.id, p.part, p.file, p.slot);
       URL.revokeObjectURL(p.url); delete a.pending[k];
     }
+    for (const c of a.pendingCrops || []) await api('albums/' + encodeURIComponent(a.id) + '/design', { method: 'PUT', body: c });
+    a.pendingCrops = [];
   }
   // pick a design / remove your image / use an album photo / fill a slot
   async function setPartDesign(a, body, isDraft) {
@@ -717,6 +719,7 @@
       const d = Object.assign({}, a.designView[body.part]);
       if (body.removeUpload || body.template) { dropPending(a, body.part, true); delete d.upload; }
       if (body.template) { d.template = body.template; if (body.part === 'cover') a.template = body.template; }
+      if (Number.isInteger(body.setCrop)) { d.crops = (d.crops || []).slice(); d.crops[body.setCrop] = body.crop; a.pendingCrops = a.pendingCrops || []; a.pendingCrops.push({ part: body.part, setCrop: body.setCrop, crop: body.crop }); }
       a.designView[body.part] = d;
       return;
     }
@@ -764,6 +767,7 @@
                 const src = (dv.photos || [])[i] || (i === 0 ? photoOf(p) : '');
                 return `<div class="slot"><span class="slot-img">${src ? `<img src="${esc(src)}" alt="">` : ''}</span>
                   <label class="link">Upload<input type="file" accept="image/*" data-slot="${i}" hidden /></label>
+                  ${src ? `<button type="button" class="link" data-adjust="${i}" data-src="${esc(src)}">Adjust</button>` : ''}
                   ${!isDraft && photosOfAlbum().length ? `<button type="button" class="link" data-choose="${i}">Choose from album</button>` : ''}</div>`;
               }).join('')}</div>` : ''}
             </div>
@@ -800,6 +804,26 @@
           const b = ev.target.closest('[data-use]'); if (!b) return;
           try { await saveDesign({ part, useMedia: b.dataset.use }); draw(); onChange && onChange(); toast(`Photo set as the ${label}`); } catch (err) { toast(err.message); }
         };
+        return;
+      }
+      const adj = e.target.closest('[data-adjust]');
+      if (adj) {
+        // the spot's shape and size come from the drawn design; the photo's shape from the image itself
+        const slot = +adj.dataset.adjust;
+        const svg = card.querySelector('.current-img svg');
+        const cp = svg && [...svg.querySelectorAll('clipPath')].find((x) => x.id.endsWith('slot' + slot));
+        const el = cp && cp.firstElementChild;
+        let aspect = 1.5, shape = 'rect';
+        if (el) { const bb = el.getBBox(); if (bb.width && bb.height) aspect = bb.width / bb.height; shape = el.tagName === 'circle' ? 'circle' : el.tagName === 'path' ? 'arch' : 'rect'; }
+        const im = new Image();
+        im.src = adj.dataset.src;
+        try { await im.decode(); } catch (err) { toast('This photo could not be loaded.'); return; }
+        const dv = (a.designView || {})[part] || {};
+        const was = (dv.crops || [])[slot];
+        const res = await window.Crop.open({ src: adj.dataset.src, aspect, shape, crop: was ? was.slice(0, 3) : null, title: 'Adjust the photo in this spot' });
+        if (!res) return;
+        const crop = [...res, Math.round((im.naturalWidth / im.naturalHeight) * 1000) / 1000];
+        try { await saveDesign({ part, setCrop: slot, crop }); draw(); onChange && onChange(); toast('Photo adjusted'); } catch (err) { toast(err.message); }
         return;
       }
       const choose = e.target.closest('[data-choose]');
